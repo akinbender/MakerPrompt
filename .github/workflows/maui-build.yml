@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest  # Windows required for MAUI Windows builds
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
@@ -34,9 +34,6 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore ${{ env.MAUI_PROJECT }}
-
-    - name: Build MAUI Windows
-      run: dotnet build ${{ env.MAUI_PROJECT }} -c Release -f net9.0-windows10.0.19041.0 --runtime win-x64
 
     - name: Publish MAUI Windows
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net9.0-windows10.0.19041.0 --runtime win-x64 -p:WindowsPackageType=None -o ${{ env.MAUI_PROJECT }}
