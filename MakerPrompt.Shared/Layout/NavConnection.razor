@@ -1,0 +1,193 @@
+﻿@using MakerPrompt.Shared.Infrastructure
+@using System.Globalization
+@using Microsoft.JSInterop
+@using static MakerPrompt.Shared.Utils.Enums
+@inject IJSRuntime JS
+@inject ISerialService SerialService
+@inject PrinterCommunicationServiceFactory ServiceFactory;
+@inject IStringLocalizer<Resources> localizer
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<nav class="navbar navbar-expand navbar-dark bg-dark px-2">
+    <div class="container-fluid">
+        <div class="me-2">
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                            @NavButtonText
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end p-3" style="width:max-content;">
+                            <div class="accordion mb-2">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button @(ActiveTab == PrinterConnectionType.Serial ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.Serial)">
+                                            @PrinterConnectionType.Serial.GetDisplayName()
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse @(ActiveTab == PrinterConnectionType.Serial ? "show" : "collapse")">
+                                        <div class="accordion-body">
+                                            <!-- Port Selection -->
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text">Port</span>
+                                                <select class="form-select" @bind="SelectedPort" disabled="@(IsSerialAvailable && IsConnected)">
+                                                    <option value="">@localizer[Resources.NavConnection_SelectPort]</option>
+                                                    @foreach (var port in AvailablePorts)
+                                                    {
+                                                        <option value="@port">@port</option>
+                                                    }
+                                                </select>
+                                                <button class="btn btn-outline-secondary" type="button" disabled="@(IsSerialAvailable && IsConnected)"
+                                                @onclick="RefreshPortsAsync" title="@localizer[Resources.NavConnection_RefreshPorts]">
+                                                    <i class="bi bi-arrow-clockwise"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="input-group input-group-sm">
+                                                <select class="form-select" @bind="SelectedBaudRate" disabled="@(IsSerialAvailable && IsConnected)">
+                                                    @foreach (var rate in BaudRates)
+                                                    {
+                                                        <option value="@rate">@rate</option>
+                                                    }
+                                                </select>
+                                                <span class="input-group-text">bps</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button @(ActiveTab == PrinterConnectionType.PrusaLink ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.PrusaLink)">
+                                            @PrinterConnectionType.PrusaLink
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse @(ActiveTab == PrinterConnectionType.PrusaLink ? "show" : "collapse")">
+                                        <div class="accordion-body">
+                                            <input type="text" class="form-control mb-2" placeholder="Url" @bind="ApiConnectionSettings.Url">
+                                            <input type="text" class="form-control mb-2" placeholder="Username.." @bind="ApiConnectionSettings.UserName">
+                                            <input type="text" class="form-control mb-2" placeholder="Password.." @bind="ApiConnectionSettings.Password">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button @(ActiveTab == PrinterConnectionType.Moonraker ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.Moonraker)">
+                                            @PrinterConnectionType.Moonraker
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse @(ActiveTab == PrinterConnectionType.Moonraker ? "show" : "collapse")">
+                                        <div class="accordion-body">
+                                            <input type="text" class="form-control mb-2" placeholder="Url" @bind="ApiConnectionSettings.Url">
+                                            <input type="text" class="form-control mb-2" placeholder="Username.." @bind="ApiConnectionSettings.UserName">
+                                            <input type="text" class="form-control mb-2" placeholder="Password.." @bind="ApiConnectionSettings.Password">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end">
+                                <button class="btn btn-sm ms-auto @ConnectButtonClass"
+                                @onclick="ToggleConnectionAsync"
+                                disabled="@(!HasValidSelection)">
+                                    @ConnectButtonText
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                    <CultureSelector />
+                    <ThemeSelector />
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    ApiConnectionSettings ApiConnectionSettings { get; set; } = new();
+    private List<string> AvailablePorts { get; set; } = new();
+    private string SelectedPort { get; set; } = string.Empty;
+    private int SelectedBaudRate { get; set; } = 115200;
+    private bool IsConnected { get; set; } = false;
+    private bool IsBusy { get; set; } = false;
+    private bool IsSerialAvailable { get; set; } = false;
+    private PrinterConnectionType ActiveTab = PrinterConnectionType.Serial;
+
+    private readonly List<int> BaudRates = new() 
+    { 
+        9600, 19200, 38400, 57600, 115200, 250000 
+    };
+
+    private bool HasValidSelection => !string.IsNullOrEmpty(SelectedPort) || !string.IsNullOrEmpty(ApiConnectionSettings.Url);
+    private string ConnectButtonClass => IsConnected ? "btn-danger" : "btn-success";
+    private string ConnectButtonText => IsConnected ? localizer[Resources.NavConnection_Disconnect] : localizer[Resources.NavConnection_Connect];
+    private string NavButtonText => IsConnected ? ServiceFactory.Current.ConnectionName : localizer[Resources.NavConnection_Connect];
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsSerialAvailable = await SerialService.CheckSupportedAsync();
+        ServiceFactory.ConnectionStateChanged += HandleConnectionChanged;
+        await base.OnInitializedAsync();
+    }
+
+    private async Task RefreshPortsAsync()
+    {
+        IsBusy = true;
+        try
+        {
+            AvailablePorts = (await SerialService.GetAvailablePortsAsync()).ToList();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task ToggleConnectionAsync()
+    {
+        IsBusy = true;
+        try
+        {
+            if (IsConnected)
+            {
+                if (ServiceFactory.Current == null) return;
+                await ServiceFactory.DisconnectAsync();
+            }
+            else
+            {
+                switch (ActiveTab)
+                {
+                    case PrinterConnectionType.Serial:
+                        await ServiceFactory.ConnectSerialAsync(SelectedPort, SelectedBaudRate);
+                        break;
+                    case PrinterConnectionType.PrusaLink:
+                        await ServiceFactory.ConnectPrusaLinkAsync(ApiConnectionSettings);
+                        break;
+                    case PrinterConnectionType.Moonraker:
+                        await ServiceFactory.ConnectMoonrakerAsync(ApiConnectionSettings);
+                        break;
+                }
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private void HandleConnectionChanged(object sender, bool isConnected)
+    {
+        IsConnected = isConnected;
+        StateHasChanged();
+    }
+
+    private void ShowTab(PrinterConnectionType tab)
+    {
+        ActiveTab = tab;
+    }
+
+    public void Dispose()
+    {
+        ServiceFactory.ConnectionStateChanged -= HandleConnectionChanged;
+    }
+}

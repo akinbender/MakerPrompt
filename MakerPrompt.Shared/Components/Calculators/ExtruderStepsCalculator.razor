@@ -1,0 +1,63 @@
+﻿@inject IStringLocalizer<Resources> localizer
+
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        <h5>How to use:</h5>
+        <ol>
+            <li>Mark 120mm from your extruder entrance</li>
+            <li>Heat up your hotend</li>
+            <li>Extrude 100mm (use <code>G1 E100 F100</code>)</li>
+            <li>Measure remaining filament to extruder</li>
+            <li>Enter values above (actual = 120 - remaining)</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <div class="form-group">
+            <label>Current E-steps (steps/mm)</label>
+            <input type="number" class="form-control" @bind="CurrentESteps"
+                   min="0" step="0.01" placeholder="e.g., 93.0" />
+        </div>
+
+        <div class="form-group">
+            <label>Requested Extrusion Length (mm)</label>
+            <input type="number" class="form-control" @bind="RequestedLength"
+                   min="1" step="1" placeholder="e.g., 100" />
+        </div>
+
+        <div class="form-group">
+            <label>Actual Extrusion Length (mm)</label>
+            <input type="number" class="form-control" @bind="ActualLength"
+                   min="1" step="0.1" placeholder="Measure with calipers" />
+        </div>
+    </div>
+</div>
+
+<div class="row p-2">
+    <div class="col-12 bg-secondary-subtle rounded">
+        <div class="row">
+            <h4 class="mt-2">@localizer[Resources.CalibrationPage_Result]</h4>
+            <div class="col-md-6 col-sm-12">
+                <p><strong>New esteps:</strong> @CalculatedESteps.ToString("0.00")</p>
+                <p><strong>rounded:</strong> @Math.Round(CalculatedESteps)</p>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                    <strong>G-code Example:</strong> <code>M92 E@(Math.Round(CalculatedESteps))</code>
+                    <button class="btn btn-sm btn-outline-primary action-button"
+                            @* @onclick="() => ShowCommandDetails(command)" *@>
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private decimal CurrentESteps = 93.0m;
+    private decimal RequestedLength = 100m;
+    private decimal ActualLength = 100m;
+
+    private decimal CalculatedESteps =>
+        (ActualLength / RequestedLength) * CurrentESteps;
+}

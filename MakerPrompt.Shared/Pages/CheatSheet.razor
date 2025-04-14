@@ -1,0 +1,92 @@
+﻿@page "/cheatsheet"
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@inject IStringLocalizer<Resources> localizer
+
+<LocalizedTitle TitleKey="@Resources.PageTitle_GCodeList" />
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="text" class="form-control"
+            placeholder="@localizer[Resources.CheatSheetPage_SearchCommands]" @bind="searchTerm" />
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Command)" /></th>
+                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Description)" /></th>
+                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Categories)" /></th>
+                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Parameters)" /></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var command in GetFilteredCommands())
+                {
+                    <tr>
+                        <td class="font-monospace">@command.Command</td>
+                        <td>@localizer[command.Description]</td>
+                        <td>
+                            @foreach (var category in command.Categories)
+                            {
+                                <span class="badge bg-primary">
+                                    @category.GetDisplayName()
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @if (command.Parameters.Any())
+                            {
+                                <ul class="list-unstyled me-2 mb-2">
+                                    @foreach (var param in command.Parameters)
+                                    {
+                                        <li>
+                                            <span class="badge bg-secondary">@param.Label</span>
+                                            @param.Description
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span class="text-muted">@localizer[Resources.CheatSheetPage_None]</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary action-button"
+                            @onclick="() => ShowCommandDetails(command)">
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public IModalService ModalService { get; set; } = default!;
+
+    private string searchTerm = string.Empty;
+
+    private List<GCodeCommand> GetFilteredCommands()
+    {
+        return GCodeCommands.AllCommands()
+            .Where(c => c.Command.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        c.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private void ShowCommandDetails(GCodeCommand command)
+    {
+        var parameters = new ModalParameters()
+            .Add(nameof(TestCommandModal.Command), command.Command);
+
+        ModalService.Show<TestCommandModal>(command.Command, parameters);
+    }
+}

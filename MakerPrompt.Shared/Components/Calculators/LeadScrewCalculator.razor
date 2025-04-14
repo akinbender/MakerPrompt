@@ -1,0 +1,80 @@
+﻿@inject IStringLocalizer<Resources> localizer
+
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        <div class="form-group mb-2">
+            <label>@localizer[Resources.Calculators_MotorAngle]</label>
+            <select class="form-control" @bind="SelectedStepAngle">
+                @foreach (var option in EnumExtensions.GetMotorStepAngleOptions())
+                {
+                    <option value="@option.Key">@option.Value</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>@localizer[Resources.Calculators_Microstepping]</label>
+            <select class="form-control" @bind="SelectedMicrostepping">
+                @foreach (var option in EnumExtensions.GetMicrosteppingOptions())
+                {
+                    <option value="@option.Key">@option.Value</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <div class="form-group mb-2">
+            <label>@localizer[Resources.Calculators_LeadscrewPitch]</label>
+            <select class="form-control" @bind="ScrewPitch">
+                <option value="0.635">1/16" (0.635mm)</option>
+                <option value="0.8">M8 (0.8mm)</option>
+                <option value="1.0">M10 (1.0mm)</option>
+                <option value="1.25">M8 (1.25mm)</option>
+                <option value="2.0">M10 (2.0mm)</option>
+                <option value="2.5">M12 (2.5mm)</option>
+                <option value="4.0">T8 (4.0mm)</option>
+                <option value="8.0">T8 (8.0mm)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>@localizer[Resources.Calculators_GearRatio]</label>
+            <div class="input-group">
+                <input type="number" class="form-control" @bind="GearRatioA" min="1" max="100" />
+                <span class="input-group-text">:</span>
+                <input type="number" class="form-control" @bind="GearRatioB" min="1" max="100" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row p-2">
+    <div class="col-12 bg-secondary-subtle rounded">
+        <div class="row">
+            <h4 class="mt-2">@localizer[Resources.CalibrationPage_Result]</h4>
+            <div class="col-md-6 col-sm-12">
+                <p><strong>@localizer[Resources.Calculators_Steps]:</strong> @ScrewStepsPerMm.ToString("0.00")</p>
+                <p><strong>@localizer[Resources.Calculators_Resolution]:</strong> @ScrewResolution.ToString("0.000") microns</p>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                    <p class="mb-0"><strong>G-code Example:</strong> M92 Z@(ScrewStepsPerMm.ToString("0.00"))</p>
+                    <button class="btn btn-sm btn-outline-primary action-button">
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private MotorStepAngle SelectedStepAngle = MotorStepAngle.Step1_8;
+    private MicrosteppingMode SelectedMicrostepping = MicrosteppingMode.SixteenthStep;
+    private decimal ScrewPitch = 1.25m;
+    private int GearRatioA = 1;
+    private int GearRatioB = 1;
+
+    private decimal ScrewStepsPerRev => 360m / SelectedStepAngle.GetStepAngleValue();
+    private decimal ScrewStepsPerMm => (ScrewStepsPerRev * (int)SelectedMicrostepping * GearRatioA) / (ScrewPitch * GearRatioB);
+    private decimal ScrewResolution => 1000m / ScrewStepsPerMm; // microns
+}

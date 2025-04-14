@@ -1,0 +1,52 @@
+﻿@inject IStringLocalizer<Resources> localizer
+
+<div>
+    @if (selectedCommand != null)
+    {
+        <div class="mb-3">
+            <h6>@localizer[Resources.GCodeCommand_Description]</h6>
+            <p>@localizer[selectedCommand.Description]</p>
+        </div>
+
+        @if (selectedCommand.Parameters.Any())
+        {
+            <div class="mb-3">
+                <h6>@localizer[Resources.GCodeCommand_Parameter]</h6>
+                <dl class="row">
+                    @foreach (var param in selectedCommand.Parameters)
+                    {
+                        <dt class="col-sm-3">
+                            <span class="badge bg-secondary">@param.Label</span>
+                        </dt>
+                        <dd class="col-sm-9">
+                            @param.Description
+                        </dd>
+                    }
+                </dl>
+            </div>
+        }
+
+        <div class="mb-3">
+@*             <h6>@localizer[Resources.CommandDetails_Example]</h6>
+ *@            <code>@selectedCommand.GetCommandExample()</code>
+        </div>
+    }
+
+    <button class="btn btn-secondary" @onclick="Close">Close</button>
+</div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter] public string? Command { get; set; }
+
+    private GCodeCommand selectedCommand { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        selectedCommand = GCodeCommands.AllCommands().First(g => g.Command.Equals(Command, StringComparison.CurrentCultureIgnoreCase));
+    }
+
+    private async Task Close() => await BlazoredModal.CloseAsync();
+}

@@ -1,0 +1,26 @@
+﻿@using System.Linq.Expressions
+@using System.ComponentModel
+@using System.Reflection
+
+@Label
+
+@code {
+
+    [Parameter] public Expression<Func<object>> For { get; set; }
+    [Inject] IStringLocalizer<Resources> Localizer { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Label = Localizer[GetDisplayName()];
+    }
+
+    private string Label { get; set; }
+
+    private string GetDisplayName()
+    {
+        var expression = (MemberExpression)For.Body;
+        var value = expression.Member.GetCustomAttribute(typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+        return value?.DisplayName ?? expression.Member.Name ?? "";
+    }
+}

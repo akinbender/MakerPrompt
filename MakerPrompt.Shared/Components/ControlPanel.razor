@@ -1,0 +1,178 @@
+﻿@using System.ComponentModel
+@inject PrinterCommunicationServiceFactory PrinterServiceFactory
+@inject PrinterStateService StateService
+@inject IStringLocalizer<Resources> localizer
+@implements IDisposable
+
+<div class="row">
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <h4 class="card-header">@localizer[Resources.ControlPanel_Position]</h4>
+            <div class="card-body">
+                <div class="input-group mb-2">
+                    <button class="btn btn-outline-secondary" type="button"
+                    title="@localizer[Resources.ControlPanel_MotorsOff]">
+                        <i class="bi bi-stop-btn-fill"></i>
+                    </button>
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">X: @_state.Position.X.ToString("F2")</span>
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">Y: @_state.Position.Y.ToString("F2")</span>
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">Z: @_state.Position.Z.ToString("F2")</span>
+
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">XY:</span>
+                    <input type="text" class="form-control" @bind="xySpeed"
+                           title="@localizer[Resources.ControlPanel_Set_XYSpeed]">
+                    <span class="input-group-text">Z:</span>
+                    <input type="text" class="form-control" @bind="zSpeed"
+                           title="@localizer[Resources.ControlPanel_Set_ZSpeed]">
+                    <span class="input-group-text">mm/min</span>
+                </div>
+                <style>
+                    .btn-axis-move{
+                    width:50px;
+                    }
+                </style>
+                <div class="d-flex justify-content-center">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="btn-group-vertical z-2" role="group" aria-label="z-axis">
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.Home(false, false, true)"><i class="bi bi-house"></i> Z</button>
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.RelativeMove(zSpeed,0,0,10)">10</button>
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.RelativeMove(zSpeed,0,0,1)">1</button>
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.RelativeMove(zSpeed,0,0,0.1f)"
+                                    style="border-bottom-left-radius:0px;border-bottom-right-radius:0px;">
+                                0.1
+                            </button>
+                        </div>
+                        <div class="btn-group z-2 me-2" role="group" aria-label="x-axis">
+                            <button type="button" class="btn btn-warning btn-axis-move"
+                                    style="border-top-left-radius:0px;" @onclick="async () => await StateService.Home()">
+                                <i class="bi bi-houses"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0.1f,0,0)">0.1</button>
+                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,1,0,0)">1</button>
+                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,10,0,0)">10</button>
+                            <button type="button" class="btn btn-danger" @onclick="async () => await StateService.Home(true, false, false)"><i class="bi bi-house"></i> X</button>
+                        </div>
+                        <div class="btn-group me-2 z-1" role="group" aria-label="y-axis" style="transform: translate(0, -120px) rotate(-45deg);">
+                            <button type="button" class="btn btn-success"></button>
+                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0,10,0)">10</button>
+                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0,1,0)">1</button>
+                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0,0.1f,0)">0.1</button>
+                            <button type="button" class="btn btn-info" @onclick="async () => await StateService.Home(false, true, false)"><i class="bi bi-house"></i> Y</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12">
+        <div class="card mb-3">
+            <h4 class="card-header">@localizer[Resources.ControlPanel_Heating]</h4>
+            <div class="card-body">
+                <div class="input-group mb-2">
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.HotendTemp.ToString("F1")</span>
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Target]">T: @_state.HotendTarget.ToString("F1")</span>
+                    <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" @bind:after="async () => await StateService.SetHotendTemp(hotendTarget)">
+                    <span class="input-group-text">°C</span>
+                    <button class="btn btn-outline-secondary" type="button" title="@localizer[Resources.ControlPanel_SetHotendTemp]">@localizer[Resources.ControlPanel_Set]</button>
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.BedTemp.ToString("F1")</span>
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Target]">T: @_state.BedTarget.ToString("F1")</span>
+                    <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" @bind:after="async () => await StateService.SetBedTemp(bedTarget)">
+                    <span class="input-group-text">°C</span>
+                    <button class="btn btn-outline-secondary" type="button" title="@localizer[Resources.ControlPanel_SetBedTemp]">@localizer[Resources.ControlPanel_Set]</button>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.FanSpeed.ToString()</span>
+                    <span class="input-group-text">@localizer[Resources.ControlPanel_FanSpeed]:</span>
+                    <input type="text" min="0" max="100" class="form-control" @bind="printSpeed">
+                    <span class="input-group-text">%</span>
+                    <button class="btn btn-outline-secondary" type="button" title="@localizer[Resources.ControlPanel_Set_FanSpeed]"
+                            @onclick="async () => await StateService.SetFanSpeed(printSpeed)">@localizer[Resources.ControlPanel_Set]
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <h4 class="card-header">@localizer[Resources.ControlPanel_Extrude]</h4>
+            <div class="card-body">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">@localizer[Resources.ControlPanel_Length]</span>
+                    <input type="text" class="form-control" @bind="extrudeLength">
+                    <span class="input-group-text">mm</span>
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">@localizer[Resources.ControlPanel_Speed]</span>
+                    <input type="text" class="form-control" @bind="extrudeSpeed">
+                    <span class="input-group-text">mm/min</span>
+                </div>
+                <div class="d-flex align-items-end">
+                    <div class="btn-group ms-auto" role="group">
+                        <button type="button" class="btn btn-primary" @onclick="async () => await StateService.RelativeMove(extrudeSpeed,0,0,0,extrudeLength)">@localizer[Resources.ControlPanel_Extrude]</button>
+                        <button type="button" class="btn btn-primary" @onclick="async () => await StateService.RelativeMove(extrudeSpeed,0,0,0,-extrudeLength)">@localizer[Resources.ControlPanel_Reverse]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h4 class="card-header">@localizer[Resources.ControlPanel_Status]</h4>
+            <div class="card-body">
+                <div class="mb-2">
+                    <label>@localizer[Resources.GCodeCategory_SdCard]:</label>
+                    <span>
+                        @(_state.SDCard.Printing ? $"{_state.SDCard.Progress:F1}%" :
+                            _state.SDCard.Present ? localizer[Resources.ControlPanel_SdCard_Ready] : localizer[Resources.ControlPanel_SdCard_NotPresent])
+                    </span>
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.FeedRate.ToString()</span>
+                    <span class="input-group-text">@localizer[Resources.ControlPanel_PrintSpeed]:</span>
+                    <input type="text" class="form-control" @bind="printSpeed" @bind:after="async () => await StateService.SetPrintSpeed(printSpeed)">
+                    <span class="input-group-text">%</span>
+                    <button class="btn btn-outline-secondary" type="button" disabled="disabled">@localizer[Resources.ControlPanel_Set]</button>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.FlowRate.ToString()</span>
+                    <span class="input-group-text">@localizer[Resources.ControlPanel_PrintFlow]:</span>
+                    <input type="text" class="form-control" @bind="printFlow" @bind:after="async () => await StateService.SetPrintSpeed(printFlow)">
+                    <span class="input-group-text">%</span>
+                    <button class="btn btn-outline-secondary" type="button" disabled="disabled">@localizer[Resources.ControlPanel_Set]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private PrinterTelemetry _state = new();
+    private int hotendTarget = 0;
+    private int bedTarget = 0;
+    private int fanSpeed = 0;
+    private int extrudeLength = 5;
+    private int extrudeSpeed = 100;
+    private int xySpeed = 1000;
+    private int zSpeed = 100;
+    private int printSpeed = 100;
+    private int printFlow = 100;
+
+
+    protected override void OnInitialized()
+    {
+        _state = StateService.Telemetry;
+        _state.PropertyChanged += HandleStateChanged;
+    }
+
+    private void HandleStateChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _state.PropertyChanged -= HandleStateChanged;
+    }
+}

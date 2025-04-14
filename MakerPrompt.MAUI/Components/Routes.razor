@@ -1,0 +1,8 @@
+﻿<CascadingBlazoredModal>
+    <Router AppAssembly="@typeof(MauiProgram).Assembly" AdditionalAssemblies="[typeof(MainLayout).Assembly]">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+    </Router>
+</CascadingBlazoredModal>
