@@ -7,6 +7,7 @@ on:
       - 'MakerPrompt.MAUI/**'
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 env:
   MAUI_PROJECT: 'MakerPrompt.MAUI/MakerPrompt.MAUI.csproj'
