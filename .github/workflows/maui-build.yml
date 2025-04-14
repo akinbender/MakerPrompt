@@ -1,0 +1,47 @@
+name: Build MAUI Windows App
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'MakerPrompt.MAUI/**'
+  pull_request:
+    branches: [main]
+
+env:
+  MAUI_PROJECT: 'MakerPrompt.MAUI/MakerPrompt.MAUI.csproj'
+  OUTPUT_DIR: 'publish'
+
+jobs:
+  build:
+    runs-on: windows-latest  # Windows required for MAUI Windows builds
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.15'
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install MAUI workload
+      run: dotnet workload install maui-desktop
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.MAUI_PROJECT }}
+
+    - name: Build MAUI Windows
+      run: dotnet build ${{ env.MAUI_PROJECT }} -c Release -f net8.0-windows10.0.19041.0 --runtime win10-x64
+
+    - name: Publish MAUI Windows
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-windows10.0.19041.0 --runtime win10-x64 -p:WindowsPackageType=None -o ${{ env.MAUI_PROJECT }}
+
+    - name: Upload Windows Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-app
+        path: ${{ env.OUTPUT_DIR }}/*.exe
