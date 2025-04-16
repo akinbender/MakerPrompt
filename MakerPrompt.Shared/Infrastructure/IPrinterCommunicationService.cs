@@ -1,7 +1,4 @@
-﻿using MakerPrompt.Shared.Models;
-using static MakerPrompt.Shared.Utils.Enums;
-
-namespace MakerPrompt.Shared.Infrastructure
+﻿namespace MakerPrompt.Shared.Infrastructure
 {
     public interface IPrinterCommunicationService : IAsyncDisposable
     {
@@ -12,7 +9,7 @@ namespace MakerPrompt.Shared.Infrastructure
         string ConnectionName { get; }
         bool IsConnected { get; }
 
-        Task<bool> ConnectAsync();
+        Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings);
         Task DisconnectAsync();
         Task WriteDataAsync(string command);
         Task<PrinterTelemetry> GetPrinterTelemetryAsync();

@@ -118,253 +118,253 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="GCodeCategory_Calibration" xml:space="preserve">
-    <value>Calibration</value>
+    <value>Kalibrierung</value>
   </data>
   <data name="GCodeCategory_Fan" xml:space="preserve">
-    <value>Fan</value>
+    <value>Lüfter</value>
   </data>
   <data name="GCodeCategory_Reporting" xml:space="preserve">
-    <value>Reporting</value>
+    <value>Berichte</value>
   </data>
   <data name="GCodeCategory_Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>Einstellungen</value>
   </data>
   <data name="GCodeCategory_Temperature" xml:space="preserve">
-    <value>Temperature</value>
+    <value>Temperatur</value>
   </data>
   <data name="GCodeDescription_G0" xml:space="preserve">
-    <value>Rapid linear movement (non-printing)</value>
+    <value>Schnelle lineare Bewegung (nicht druckend)</value>
   </data>
   <data name="GCodeDescription_G1" xml:space="preserve">
-    <value>Controlled linear movement (printing)</value>
+    <value>Kontrollierte lineare Bewegung (druckend)</value>
   </data>
   <data name="GCodeDescription_G28" xml:space="preserve">
-    <value>Home all or specified axes</value>
+    <value>Alle oder bestimmte Achsen nullen</value>
   </data>
   <data name="GCodeDescription_G29" xml:space="preserve">
-    <value>Auto bed leveling</value>
+    <value>Automatische Bettnivellierung</value>
   </data>
   <data name="GCodeDescription_G90" xml:space="preserve">
-    <value>Set absolute positioning mode</value>
+    <value>Absoluten Positionsmodus aktivieren</value>
   </data>
   <data name="GCodeDescription_G91" xml:space="preserve">
-    <value>Set relative positioning mode</value>
+    <value>Relativen Positionsmodus aktivieren</value>
   </data>
   <data name="GCodeDescription_G92" xml:space="preserve">
-    <value>Set current position (reset coordinates)</value>
+    <value>Aktuelle Position setzen (Koordinaten zurücksetzen)</value>
   </data>
   <data name="GCodeDescription_M104" xml:space="preserve">
-    <value>Set hotend temperature (non-blocking)</value>
+    <value>Heizdüsentemperatur setzen und warten (nicht blockierend)</value>
   </data>
   <data name="GCodeDescription_M105" xml:space="preserve">
-    <value>Report current temperatures</value>
+    <value>Aktuelle Temperaturen melden</value>
   </data>
   <data name="GCodeDescription_M106" xml:space="preserve">
-    <value>Set fan speed (S: 0-255)</value>
+    <value>Lüftergeschwindigkeit setzen (S: 0-255)</value>
   </data>
   <data name="GCodeDescription_M107" xml:space="preserve">
-    <value>Turn fan off</value>
+    <value>Lüfter ausschalten</value>
   </data>
   <data name="GCodeDescription_M109" xml:space="preserve">
-    <value>Set hotend temp &amp; wait (blocking)</value>
+    <value>Heizdüsentemperatur setzen und warten (blockierend)</value>
   </data>
   <data name="GCodeDescription_M112" xml:space="preserve">
-    <value>Emergency stop</value>
+    <value>Not-Aus</value>
   </data>
   <data name="GCodeDescription_M114" xml:space="preserve">
-    <value>Get current position</value>
+    <value>Aktuelle Position abfragen</value>
   </data>
   <data name="GCodeDescription_M115" xml:space="preserve">
-    <value>Get firmware info</value>
+    <value>Firmware-Informationen abrufen</value>
   </data>
   <data name="GCodeDescription_M140" xml:space="preserve">
-    <value>Set bed temperature (non-blocking)</value>
+    <value>Bett-Temperatur setzen (nicht blockierend)</value>
   </data>
   <data name="GCodeDescription_M190" xml:space="preserve">
-    <value>Set bed temp &amp; wait (blocking)</value>
+    <value>Bett-Temperatur setzen und warten (blockierend)</value>
   </data>
   <data name="PageTitle_GCodeList" xml:space="preserve">
-    <value>G-Code Cheat Sheet</value>
+    <value>G-Code-Referenz</value>
   </data>
   <data name="PageTitle_Homepage" xml:space="preserve">
     <value>Dashboard</value>
   </data>
   <data name="GCodeCategory_Movement" xml:space="preserve">
-    <value>Movement</value>
+    <value>Bewegung</value>
   </data>
   <data name="GCodeDescription_M303" xml:space="preserve">
-    <value>PID autotune</value>
+    <value>PID-Autokalibrierung</value>
   </data>
   <data name="GCodeDescription_M306" xml:space="preserve">
-    <value>Thermal model calibration</value>
+    <value>Thermische Modellkalibrierung</value>
   </data>
   <data name="GCodeCategory_SdCard" xml:space="preserve">
-    <value>Sd Card</value>
+    <value>SD-Karte</value>
   </data>
   <data name="Theme_Auto" xml:space="preserve">
-    <value>Auto</value>
+    <value>Automatisch</value>
   </data>
   <data name="Theme_Dark" xml:space="preserve">
-    <value>Dark</value>
+    <value>Dunkel</value>
   </data>
   <data name="Theme_Light" xml:space="preserve">
-    <value>Light</value>
+    <value>Hell</value>
   </data>
   <data name="GCodeDescription_M20" xml:space="preserve">
-    <value>List SD card contents</value>
+    <value>SD-Karteninhalt auflisten</value>
   </data>
   <data name="GCodeDescription_M21" xml:space="preserve">
-    <value>Initialize SD card</value>
+    <value>SD-Karte initialisieren</value>
   </data>
   <data name="GCodeDescription_M22" xml:space="preserve">
-    <value>Release SD card</value>
+    <value>SD-Karte freigeben</value>
   </data>
   <data name="GCodeDescription_M23" xml:space="preserve">
-    <value>Select SD file</value>
+    <value>SD-Datei auswählen</value>
   </data>
   <data name="GCodeDescription_M24" xml:space="preserve">
-    <value>Start/resume SD print</value>
+    <value>SD-Druck starten/fortsetzen</value>
   </data>
   <data name="GCodeDescription_M25" xml:space="preserve">
-    <value>Pause SD print</value>
+    <value>SD-Druck pausieren</value>
   </data>
   <data name="GCodeDescription_M26" xml:space="preserve">
-    <value>Set SD read position</value>
+    <value>SD-Leseposition setzen</value>
   </data>
   <data name="GCodeDescription_M27" xml:space="preserve">
-    <value>Report SD print status</value>
+    <value>SD-Druckstatus melden</value>
   </data>
   <data name="GCodeDescription_M28" xml:space="preserve">
-    <value>Start writing to SD card</value>
+    <value>Schreiben auf SD-Karte starten</value>
   </data>
   <data name="GCodeDescription_M29" xml:space="preserve">
-    <value>Stop writing to SD card</value>
+    <value>Schreiben auf SD-Karte beenden</value>
   </data>
   <data name="GCodeDescription_M30" xml:space="preserve">
-    <value>Delete SD file</value>
+    <value>SD-Datei löschen</value>
   </data>
   <data name="GCodeDescription_M32" xml:space="preserve">
-    <value>Select file and start print</value>
+    <value>Datei auswählen und Druck starten</value>
   </data>
   <data name="GCodeCommand_Command" xml:space="preserve">
-    <value>Command</value>
+    <value>Befehl</value>
   </data>
   <data name="GCodeCommand_Description" xml:space="preserve">
-    <value>Description</value>
+    <value>Beschreibung</value>
   </data>
   <data name="GCodeCommand_Category" xml:space="preserve">
-    <value>Categories</value>
+    <value>Kategorien</value>
   </data>
   <data name="GCodeCommand_Parameter" xml:space="preserve">
-    <value>Parameters</value>
+    <value>Parameter</value>
   </data>
   <data name="CheatSheetPage_SearchCommands" xml:space="preserve">
-    <value>Search commands..</value>
+    <value>Befehle suchen...</value>
   </data>
   <data name="GCodeDescription_S_TargetTemp" xml:space="preserve">
-    <value>Target temperature</value>
+    <value>Zieltemperatur</value>
   </data>
   <data name="GCodeDescription_C_Cycle" xml:space="preserve">
-    <value>Cycles (3-20)</value>
+    <value>Zyklen (3-20)</value>
   </data>
   <data name="GCodeDescription_X_Position" xml:space="preserve">
-    <value>X position</value>
+    <value>X-Position</value>
   </data>
   <data name="GCodeDescription_Y_Position" xml:space="preserve">
-    <value>Y position</value>
+    <value>Y-Position</value>
   </data>
   <data name="GCodeDescription_Z_Position" xml:space="preserve">
-    <value>Z position</value>
+    <value>Z-Position</value>
   </data>
   <data name="GCodeDescription_F_Feedrate" xml:space="preserve">
-    <value>Feedrate</value>
+    <value>Vorschubgeschwindigkeit</value>
   </data>
   <data name="GCodeDescription_F_File" xml:space="preserve">
-    <value>File path</value>
+    <value>Dateipfad</value>
   </data>
   <data name="GCodeDescription_E_Amount" xml:space="preserve">
-    <value>Extrude amount</value>
+    <value>Extrusionsmenge</value>
   </data>
   <data name="GCodeDescription_M17" xml:space="preserve">
-    <value>Enable Steppers</value>
+    <value>Stepper aktivieren</value>
   </data>
   <data name="GCodeDescription_M18" xml:space="preserve">
-    <value>Disable Steppers</value>
+    <value>Stepper deaktivieren</value>
   </data>
   <data name="GCodeDescription_M117" xml:space="preserve">
-    <value>Set LCD Message</value>
+    <value>LCD-Meldung einstellen</value>
   </data>
   <data name="NavConnection_Connect" xml:space="preserve">
-    <value>Connect</value>
+    <value>Verbinden</value>
   </data>
   <data name="NavConnection_Disconnect" xml:space="preserve">
-    <value>Disconnect</value>
+    <value>Trennen</value>
   </data>
   <data name="GCodeDescription_E_Position" xml:space="preserve">
-    <value>E Position</value>
+    <value>E-Position</value>
   </data>
   <data name="NavConnection_RefreshPorts" xml:space="preserve">
-    <value>Refresh ports</value>
+    <value>Ports aktualisieren</value>
   </data>
   <data name="CheatSheetPage_None" xml:space="preserve">
-    <value>None</value>
+    <value>Keine</value>
   </data>
   <data name="NavConnection_SelectPort" xml:space="preserve">
-    <value>Select port</value>
+    <value>Port auswählen</value>
   </data>
   <data name="CalibrationPage_PidTuning" xml:space="preserve">
-    <value>PID Tuning</value>
+    <value>PID-Einstellung</value>
   </data>
   <data name="CalibrationPage_ThermalModel" xml:space="preserve">
-    <value>Thermal Model</value>
+    <value>Thermisches Modell</value>
   </data>
   <data name="GCodeDescription_M500" xml:space="preserve">
-    <value>Store settings in EEPROM</value>
+    <value>Einstellungen im EEPROM speichern</value>
   </data>
   <data name="GCodeDescription_M501" xml:space="preserve">
-    <value>Read settings from EEPROM</value>
+    <value>Einstellungen aus EEPROM lesen</value>
   </data>
   <data name="GCodeDescription_M502" xml:space="preserve">
-    <value>Reset all settings in memory to their factory defaults</value>
+    <value>Alle Einstellungen auf Werkseinstellungen zurücksetzen</value>
   </data>
   <data name="GCodeDescription_M503" xml:space="preserve">
-    <value>Report current settings from EEPROM</value>
+    <value>Aktuelle Einstellungen aus EEPROM melden</value>
   </data>
   <data name="GCodeDescription_M504" xml:space="preserve">
-    <value>Validate the contents of the EEPROM</value>
+    <value>EEPROM-Inhalt validieren</value>
   </data>
   <data name="GCodeDescription_P_Proportional" xml:space="preserve">
-    <value>Proportional Value</value>
+    <value>Proportionalwert</value>
   </data>
   <data name="GCodeDescription_I_Integral" xml:space="preserve">
-    <value>Integral Value</value>
+    <value>Integralwert</value>
   </data>
   <data name="GCodeDescription_D_Derivative" xml:space="preserve">
-    <value>Derivative Value</value>
+    <value>Differentialwert</value>
   </data>
   <data name="GCodeDescription_M304" xml:space="preserve">
-    <value>Set bed PID</value>
+    <value>Bett-PID setzen</value>
   </data>
   <data name="GCodeDescription_M301" xml:space="preserve">
-    <value>Set hotend PID</value>
+    <value>Heizdüsen-PID setzen</value>
   </data>
   <data name="CommandPrompt_ConnectedMessage" xml:space="preserve">
-    <value>Connection established.</value>
+    <value>Verbindung hergestellt.</value>
   </data>
   <data name="CommandPrompt_ErrorMessage" xml:space="preserve">
-    <value>Error sending command: {0}.</value>
+    <value>Fehler beim Senden des Befehls: {0}.</value>
   </data>
   <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve">
-    <value>Connection terminated.</value>
+    <value>Verbindung getrennt.</value>
   </data>
   <data name="CommandPrompt_Send" xml:space="preserve">
-    <value>Send</value>
+    <value>Senden</value>
   </data>
   <data name="CommandPrompt_EnterCommand" xml:space="preserve">
-    <value>Enter command..</value>
+    <value>Befehl eingeben...</value>
   </data>
   <data name="CalibrationPage_Start" xml:space="preserve">
-    <value>Start</value>
+    <value>Starten</value>
   </data>
   <data name="PrinterComponent_Hotend" xml:space="preserve">
     <value>Hotend</value>
@@ -373,169 +373,169 @@
     <value>Heatbed</value>
   </data>
   <data name="Dashboard_ControlPanel" xml:space="preserve">
-    <value>Control Panel</value>
+    <value>Steuerkonsole</value>
   </data>
   <data name="CalibrationPage_HeaterIndex" xml:space="preserve">
-    <value>Heater Index</value>
+    <value>Heizer-Index</value>
   </data>
   <data name="CalibrationPage_Result" xml:space="preserve">
-    <value>Result</value>
+    <value>Ergebnis</value>
   </data>
   <data name="ControlPanel_Position" xml:space="preserve">
     <value>Position</value>
   </data>
   <data name="ControlPanel_Length" xml:space="preserve">
-    <value>Length</value>
+    <value>Länge</value>
   </data>
   <data name="ControlPanel_Set" xml:space="preserve">
-    <value>Set</value>
+    <value>Setzen</value>
   </data>
   <data name="ControlPanel_Extrude" xml:space="preserve">
-    <value>Extrude</value>
+    <value>Extrudieren</value>
   </data>
   <data name="ControlPanel_Reverse" xml:space="preserve">
-    <value>Reverse</value>
+    <value>Rückwärts</value>
   </data>
   <data name="ControlPanel_PrintFlow" xml:space="preserve">
-    <value>Print flow</value>
+    <value>Materialfluss</value>
   </data>
   <data name="ControlPanel_Heating" xml:space="preserve">
-    <value>Heating</value>
+    <value>Aufheizen</value>
   </data>
   <data name="ControlPanel_Status" xml:space="preserve">
     <value>Status</value>
   </data>
   <data name="ControlPanel_SetHotendTemp" xml:space="preserve">
-    <value>Set hotend temperature</value>
+    <value>Heizdüsentemperatur einstellen</value>
   </data>
   <data name="ControlPanel_SetBedTemp" xml:space="preserve">
-    <value>Set bed temperature</value>
+    <value>Bett-Temperatur einstellen</value>
   </data>
   <data name="ControlPanel_MotorsOff" xml:space="preserve">
-    <value>Motors off</value>
+    <value>Motoren ausschalten</value>
   </data>
   <data name="ControlPanel_SdCard_Ready" xml:space="preserve">
-    <value>Ready</value>
+    <value>Bereit</value>
   </data>
   <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve">
-    <value>Not present</value>
+    <value>Nicht vorhanden</value>
   </data>
   <data name="ControlPanel_Speed" xml:space="preserve">
-    <value>Speed</value>
+    <value>Geschwindigkeit</value>
   </data>
   <data name="ControlPanel_Current" xml:space="preserve">
-    <value>Current</value>
+    <value>Aktuell</value>
   </data>
   <data name="ControlPanel_Target" xml:space="preserve">
-    <value>Target</value>
+    <value>Ziel</value>
   </data>
   <data name="ControlPanel_Set_XYSpeed" xml:space="preserve">
-    <value>Set speed for X &amp; Y axes (mm/min)</value>
+    <value>Geschwindigkeit für X/Y-Achsen (mm/min)</value>
   </data>
   <data name="ControlPanel_Set_ZSpeed" xml:space="preserve">
-    <value>Set speed for Z axis (mm/min)</value>
+    <value>Geschwindigkeit für Z-Achse (mm/min)</value>
   </data>
   <data name="ControlPanel_PrintSpeed" xml:space="preserve">
-    <value>Print speed</value>
+    <value>Druckgeschwindigkeit</value>
   </data>
   <data name="GCodeDescription_M220" xml:space="preserve">
-    <value>Set or report the feed rate percentage for all G-code moves (X, Y, Z, E axes)</value>
+    <value>Vorschubgeschwindigkeits-Prozentsatz für alle G-Code-Bewegungen setzen/melden</value>
   </data>
   <data name="GCodeDescription_M221" xml:space="preserve">
-    <value>Set or report the flow rate percentage for E-axis extrusion moves</value>
+    <value>Materialfluss-Prozentsatz für Extrusionsbewegungen setzen/melden</value>
   </data>
   <data name="PrinterStatus_Disconnected" xml:space="preserve">
-    <value>Disconnected</value>
+    <value>Getrennt</value>
   </data>
   <data name="PrinterStatus_Connected" xml:space="preserve">
-    <value>Connected</value>
+    <value>Verbunden</value>
   </data>
   <data name="PrinterStatus_Printing" xml:space="preserve">
-    <value>Printing</value>
+    <value>Druckt</value>
   </data>
   <data name="PrinterStatus_Paused" xml:space="preserve">
-    <value>Paused</value>
+    <value>Pausiert</value>
   </data>
   <data name="PrinterStatus_Error" xml:space="preserve">
-    <value>Error</value>
+    <value>Fehler</value>
   </data>
   <data name="ControlPanel_Set_FanSpeed" xml:space="preserve">
-    <value>Set fan speed</value>
+    <value>Lüftergeschwindigkeit setzen</value>
   </data>
   <data name="ControlPanel_FanSpeed" xml:space="preserve">
-    <value>Fan speed</value>
+    <value>Lüftergeschwindigkeit</value>
   </data>
   <data name="Calculators_LeadScrewSteps" xml:space="preserve">
-    <value>Leadscrew Steps per Millimeter Calculator</value>
+    <value>Schritte pro Millimeter (Spindel)</value>
   </data>
   <data name="Calculators_ExtruderSteps" xml:space="preserve">
-    <value>E-Steps Calculator</value>
+    <value>E-Schritte Rechner</value>
   </data>
   <data name="PageTitle_Calculators" xml:space="preserve">
-    <value>Calculators</value>
+    <value>Rechner</value>
   </data>
   <data name="Calculators_MotorAngle" xml:space="preserve">
-    <value>Motor Step Angle</value>
+    <value>Motorschritt-Winkel</value>
   </data>
   <data name="Calculators_Microstepping" xml:space="preserve">
-    <value>Driver Microsteppin</value>
+    <value>Mikroschrittung</value>
   </data>
   <data name="Calculators_BeltSteps" xml:space="preserve">
-    <value>Belt Steps per Millimeter Calculator</value>
+    <value>Schritte pro Millimeter (Riemen)</value>
   </data>
   <data name="Calculators_PrintPrice" xml:space="preserve">
-    <value>Print price Calculator</value>
+    <value>Druckkosten Rechner</value>
   </data>
   <data name="Calculators_BeltPitch" xml:space="preserve">
-    <value>Belt Pitch (mm)</value>
+    <value>Riementeilung (mm)</value>
   </data>
   <data name="Calculators_PulleyToothCount" xml:space="preserve">
-    <value>Pulley Tooth Count</value>
+    <value>Riemenscheibenzähne</value>
   </data>
   <data name="Calculators_LeadscrewPitch" xml:space="preserve">
-    <value>Leadscrew Pitch (mm/revolution)</value>
+    <value>Spindelsteigung (mm/Umdrehung)</value>
   </data>
   <data name="Calculators_GearRatio" xml:space="preserve">
-    <value>Gear Ratio</value>
+    <value>Übersetzungsverhältnis</value>
   </data>
   <data name="Calculators_Steps" xml:space="preserve">
-    <value>Steps per mm</value>
+    <value>Schritte pro mm</value>
   </data>
   <data name="Calculators_Resolution" xml:space="preserve">
-    <value>Resolution</value>
+    <value>Auflösung</value>
   </data>
   <data name="Calculators_GCodeExample" xml:space="preserve">
-    <value>G-code Example</value>
+    <value>G-Code Beispiel</value>
   </data>
   <data name="Calculators_RequestedExtrusionLength" xml:space="preserve">
-    <value>Requested Extrusion Length (mm)</value>
+    <value>Angeforderte Extrusionslänge (mm)</value>
   </data>
   <data name="Calculators_CurrentEsteps" xml:space="preserve">
-    <value>Current E-steps (steps/mm)</value>
+    <value>Aktuelle E-Schritte (Schritte/mm)</value>
   </data>
   <data name="Calculators_ActualExtrusionLength" xml:space="preserve">
-    <value>Actual Extrusion Length (mm)</value>
+    <value>Tatsächliche Extrusionslänge (mm)</value>
   </data>
   <data name="Calculators_MeasureCaliper" xml:space="preserve">
-    <value>Measure with a caliper</value>
+    <value>Messen mit einem Messschieber</value>
   </data>
   <data name="Calculators_Esteps_HowTo" xml:space="preserve">
-    <value>        &lt;h5&gt;How to use:&lt;/h5&gt;
-        &lt;ol&gt;
-            &lt;li&gt;Mark 120mm from your extruder entrance&lt;/li&gt;
-            &lt;li&gt;Heat up your hotend&lt;/li&gt;
-            &lt;li&gt;Extrude 100mm (use &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;
-            &lt;li&gt;Measure remaining filament to extruder&lt;/li&gt;
-            &lt;li&gt;Enter values above (actual = 120 - remaining)&lt;/li&gt;
-        &lt;/ol&gt;</value>
+    <value>&lt;h5&gt;Anleitung:&lt;/h5&gt;
+&lt;ol&gt;
+    &lt;li&gt;Messen Sie 120 mm vom Extrudereingang ab und markieren Sie diese Stelle&lt;/li&gt;
+    &lt;li&gt;Erhitzen Sie das Hotend auf Betriebstemperatur&lt;/li&gt;
+    &lt;li&gt;Extrudieren Sie 100 mm (verwenden Sie &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;
+    &lt;li&gt;Messen Sie das verbleibende Filament bis zur Markierung&lt;/li&gt;
+    &lt;li&gt;Tragen Sie die Werte oben ein (tatsächliche Länge = 120 - verbleibende Länge)&lt;/li&gt;
+&lt;/ol&gt;</value>
   </data>
   <data name="GCodeDescription_M92" xml:space="preserve">
-    <value>Get or set the steps-per-unit for one or more axes</value>
+    <value>Schritte pro Einheit für eine oder mehrere Achsen ermitteln oder festlegen</value>
   </data>
   <data name="NavConnection_BrowserNotSupported" xml:space="preserve">
-    <value>Browser not supported.</value>
+    <value>Browser nicht unterstützt.</value>
   </data>
   <data name="Calculators_RememberSave" xml:space="preserve">
-    <value>Remember to save after testing</value>
+    <value>Vergessen Sie nicht, nach dem Testen zu speichern</value>
   </data>
 </root>

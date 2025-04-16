@@ -1,14 +1,4 @@
-﻿using System.ComponentModel;
-using System.Net;
-using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
-using static MakerPrompt.Shared.Utils.Enums;
-
-namespace MakerPrompt.Shared.Services
+﻿namespace MakerPrompt.Shared.Services
 {
     public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
@@ -18,27 +8,27 @@ namespace MakerPrompt.Shared.Services
 
         public override PrinterConnectionType ConnectionType => PrinterConnectionType.PrusaLink;
 
-        public PrusaLinkApiService(ApiConnectionSettings connectionSettings)
+        public PrusaLinkApiService()
         {
             // TODO check compatibility warning
-            _baseUri = new Uri(connectionSettings.Url);
-            var handler = new HttpClientHandler
-            {
-                PreAuthenticate = true
-            };
+            //_baseUri = new Uri(connectionSettings.Url);
+            //var handler = new HttpClientHandler
+            //{
+            //    PreAuthenticate = true
+            //};
 
-            if (true)
-            {
-                var credentials = new NetworkCredential(
-                    connectionSettings.UserName,
-                    connectionSettings.Password);
-                handler.Credentials = credentials;
-            }
+            //if (true)
+            //{
+            //    var credentials = new NetworkCredential(
+            //        connectionSettings.UserName,
+            //        connectionSettings.Password);
+            //    handler.Credentials = credentials;
+            //}
 
-            _httpClient = new HttpClient(handler) { BaseAddress = _baseUri };
+            //_httpClient = new HttpClient(handler) { BaseAddress = _baseUri };
         }
 
-        public override async Task<bool> ConnectAsync()
+        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             try
             {

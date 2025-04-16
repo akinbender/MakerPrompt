@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
-
-namespace MakerPrompt.Shared.Infrastructure
+﻿namespace MakerPrompt.Shared.Infrastructure
 {
     public abstract class BasePrinterConnectionService : IPrinterCommunicationService
     {
@@ -27,13 +19,12 @@ namespace MakerPrompt.Shared.Infrastructure
             ConnectionStateChanged?.Invoke(this, IsConnected);
         }
 
-
         public void RaiseTelemetryUpdated()
         {
             TelemetryUpdated?.Invoke(this, LastTelemetry);
         }
 
-        public abstract Task<bool> ConnectAsync();
+        public abstract Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings);
 
         public abstract Task DisconnectAsync();
 

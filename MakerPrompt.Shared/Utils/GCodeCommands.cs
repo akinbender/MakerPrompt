@@ -1,8 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Properties;
-using static MakerPrompt.Shared.Utils.Enums;
 
 namespace MakerPrompt.Shared.Utils
 {
@@ -149,6 +145,13 @@ namespace MakerPrompt.Shared.Utils
         public static GCodeCommand SelectAndStartPrint = 
             new("M32", Resources.GCodeDescription_M32, [GCodeCategory.SDCard], [GCodeParameters.FilePath]);
 
+        public static GCodeCommand SetAxisSteps =
+            new("M92", Resources.GCodeDescription_M92, [GCodeCategory.Movement, GCodeCategory.Settings],
+                   [ GCodeParameters.PositionX,
+                     GCodeParameters.PositionY,
+                     GCodeParameters.PositionZ,
+                     GCodeParameters.PositionE ]);
+
         public static GCodeCommand SetTemp =
             new("M104", Resources.GCodeDescription_M104, [GCodeCategory.Temperature],
                 [GCodeParameters.TargetTemp]);
@@ -166,6 +169,9 @@ namespace MakerPrompt.Shared.Utils
         public static GCodeCommand SetAndWaitTemp =
             new("M109", Resources.GCodeDescription_M109, [GCodeCategory.Temperature],
                 [GCodeParameters.TargetTemp]);
+
+        public static GCodeCommand GetCurrentPosition =
+            new("M114", Resources.GCodeDescription_M114, [GCodeCategory.Movement, GCodeCategory.Reporting]);
 
         public static GCodeCommand SetLcdMessage =
             new("M117", Resources.GCodeDescription_M117, [GCodeCategory.Reporting],

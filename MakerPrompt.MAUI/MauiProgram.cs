@@ -1,5 +1,4 @@
-﻿using MakerPrompt.Shared.Infrastructure;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MakerPrompt.Shared.Utils;
 using Microsoft.AspNetCore.Builder;
 using MakerPrompt.MAUI.Services;
@@ -22,7 +21,6 @@ namespace MakerPrompt.MAUI
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
-
 
             builder.Services.AddLocalization(options =>
             {

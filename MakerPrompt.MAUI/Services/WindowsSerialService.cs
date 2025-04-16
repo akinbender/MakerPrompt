@@ -1,13 +1,9 @@
 ﻿#if WINDOWS
 using System.IO.Ports;
-using System.Collections.Concurrent;
 using System.Threading.Tasks.Dataflow;
 using MakerPrompt.Shared.Infrastructure;
 using System.Text;
-using MakerPrompt.Shared.Utils;
 using MakerPrompt.Shared.Models;
-using System.Text.RegularExpressions;
-using MakerPrompt.Shared.Services;
 
 namespace MakerPrompt.MAUI.Services
 {
@@ -16,7 +12,6 @@ namespace MakerPrompt.MAUI.Services
         private readonly SerialPort _serialPort;
         private readonly BufferBlock<string> _commandQueue = new();
         private readonly CancellationTokenSource _cts = new();
-        private StringBuilder _receiveBuffer = new();
         private Task? _sendTask;
         private Task? _receiveTask;
         public bool IsSupported => true;
@@ -36,18 +31,20 @@ namespace MakerPrompt.MAUI.Services
             };
         }
 
-        public async Task<bool> ConnectAsync(string portName, int baudRate)
+        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (IsConnected) return IsConnected;
 
-            _serialPort.PortName = portName;
-            _serialPort.BaudRate = baudRate;
+            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrWhiteSpace(connectionSettings.Serial.PortName)) return false;
+
+            _serialPort.PortName = connectionSettings.Serial.PortName;
+            _serialPort.BaudRate = connectionSettings.Serial.BaudRate;
 
             try
             {
                 await Task.Run(() => _serialPort.Open());
                 IsConnected = true;
-                ConnectionName = portName;
+                ConnectionName = connectionSettings.Serial.PortName;
                 _sendTask = Task.Run(() => SendLoopAsync(_cts.Token));
                 _receiveTask = Task.Run(() => ReceiveLoopAsync(_cts.Token));
                 updateTimer.Elapsed += async (s, e) => await GetPrinterTelemetryAsync();
@@ -130,29 +127,6 @@ namespace MakerPrompt.MAUI.Services
             }
         }
 
-        private void ProcessReceivedData(string data)
-        {
-            _receiveBuffer.Append(data);
-
-            while (true)
-            {
-                var bufferStr = _receiveBuffer.ToString();
-                var newlineIndex = bufferStr.IndexOf('\n');
-
-                if (newlineIndex < 0) break;
-
-                var line = bufferStr.Substring(0, newlineIndex + 1)
-                    .Trim('\r', '\n', ' ');
-
-                if (!string.IsNullOrEmpty(line))
-                {
-                    ParseResponse(line);
-                }
-
-                _receiveBuffer = _receiveBuffer.Remove(0, newlineIndex + 1);
-            }
-        }
-
         public override async ValueTask DisposeAsync()
         {
             if (!IsConnected) return;
@@ -198,8 +172,6 @@ namespace MakerPrompt.MAUI.Services
         public Task<bool> CheckSupportedAsync() => Task.FromResult(true);
 
         public Task RequestPortAsync() => Task.CompletedTask;
-
-        public override Task<bool> ConnectAsync() => throw new NotImplementedException();
     }
 
     public class SerialException : Exception

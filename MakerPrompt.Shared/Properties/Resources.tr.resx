@@ -118,424 +118,424 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="GCodeCategory_Calibration" xml:space="preserve">
-    <value>Calibration</value>
+    <value>Kalibrasyon</value>
   </data>
   <data name="GCodeCategory_Fan" xml:space="preserve">
     <value>Fan</value>
   </data>
   <data name="GCodeCategory_Reporting" xml:space="preserve">
-    <value>Reporting</value>
+    <value>Raporlama</value>
   </data>
   <data name="GCodeCategory_Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>Ayarlar</value>
   </data>
   <data name="GCodeCategory_Temperature" xml:space="preserve">
-    <value>Temperature</value>
+    <value>Sıcaklık</value>
   </data>
   <data name="GCodeDescription_G0" xml:space="preserve">
-    <value>Rapid linear movement (non-printing)</value>
+    <value>Hızlı doğrusal hareket (baskı dışı)</value>
   </data>
   <data name="GCodeDescription_G1" xml:space="preserve">
-    <value>Controlled linear movement (printing)</value>
+    <value>Kontrollü doğrusal hareket (baskı)</value>
   </data>
   <data name="GCodeDescription_G28" xml:space="preserve">
-    <value>Home all or specified axes</value>
+    <value>Tüm veya belirli eksenleri sıfırla</value>
   </data>
   <data name="GCodeDescription_G29" xml:space="preserve">
-    <value>Auto bed leveling</value>
+    <value>Otomatik yatak kalibrasyonu</value>
   </data>
   <data name="GCodeDescription_G90" xml:space="preserve">
-    <value>Set absolute positioning mode</value>
+    <value>Mutlak konum modunu aktif et</value>
   </data>
   <data name="GCodeDescription_G91" xml:space="preserve">
-    <value>Set relative positioning mode</value>
+    <value>Göreceli konum modunu aktif et</value>
   </data>
   <data name="GCodeDescription_G92" xml:space="preserve">
-    <value>Set current position (reset coordinates)</value>
+    <value>Mevcut konumu ayarla (koordinatları sıfırla)</value>
   </data>
   <data name="GCodeDescription_M104" xml:space="preserve">
-    <value>Set hotend temperature (non-blocking)</value>
+    <value>Nozul sıcaklığını ayarla (bekleme yok)</value>
   </data>
   <data name="GCodeDescription_M105" xml:space="preserve">
-    <value>Report current temperatures</value>
+    <value>Mevcut sıcaklıkları raporla</value>
   </data>
   <data name="GCodeDescription_M106" xml:space="preserve">
-    <value>Set fan speed (S: 0-255)</value>
+    <value>Fan hızını ayarla (S: 0-255)</value>
   </data>
   <data name="GCodeDescription_M107" xml:space="preserve">
-    <value>Turn fan off</value>
+    <value>Fanı kapat</value>
   </data>
   <data name="GCodeDescription_M109" xml:space="preserve">
-    <value>Set hotend temp &amp; wait (blocking)</value>
+    <value>Nozul sıcaklığını ayarla ve bekle (beklemeli)</value>
   </data>
   <data name="GCodeDescription_M112" xml:space="preserve">
-    <value>Emergency stop</value>
+    <value>Acil durdurma</value>
   </data>
   <data name="GCodeDescription_M114" xml:space="preserve">
-    <value>Get current position</value>
+    <value>Mevcut konumu al</value>
   </data>
   <data name="GCodeDescription_M115" xml:space="preserve">
-    <value>Get firmware info</value>
+    <value>Firmware bilgilerini al</value>
   </data>
   <data name="GCodeDescription_M140" xml:space="preserve">
-    <value>Set bed temperature (non-blocking)</value>
+    <value>Yatak sıcaklığını ayarla (bekleme yok)</value>
   </data>
   <data name="GCodeDescription_M190" xml:space="preserve">
-    <value>Set bed temp &amp; wait (blocking)</value>
+    <value>Yatak sıcaklığını ayarla ve bekle (beklemeli)</value>
   </data>
   <data name="PageTitle_GCodeList" xml:space="preserve">
-    <value>G-Code Cheat Sheet</value>
+    <value>G-Code Kılavuzu</value>
   </data>
   <data name="PageTitle_Homepage" xml:space="preserve">
-    <value>Dashboard</value>
+    <value>Kontrol Paneli</value>
   </data>
   <data name="GCodeCategory_Movement" xml:space="preserve">
-    <value>Movement</value>
+    <value>Hareket</value>
   </data>
   <data name="GCodeDescription_M303" xml:space="preserve">
-    <value>PID autotune</value>
+    <value>PID otomatik ayarı</value>
   </data>
   <data name="GCodeDescription_M306" xml:space="preserve">
-    <value>Thermal model calibration</value>
+    <value>Termal model kalibrasyonu</value>
   </data>
   <data name="GCodeCategory_SdCard" xml:space="preserve">
-    <value>Sd Card</value>
+    <value>SD Kart</value>
   </data>
   <data name="Theme_Auto" xml:space="preserve">
-    <value>Auto</value>
+    <value>Otomatik</value>
   </data>
   <data name="Theme_Dark" xml:space="preserve">
-    <value>Dark</value>
+    <value>Koyu</value>
   </data>
   <data name="Theme_Light" xml:space="preserve">
-    <value>Light</value>
+    <value>Açık</value>
   </data>
   <data name="GCodeDescription_M20" xml:space="preserve">
-    <value>List SD card contents</value>
+    <value>SD kart içeriğini listele</value>
   </data>
   <data name="GCodeDescription_M21" xml:space="preserve">
-    <value>Initialize SD card</value>
+    <value>SD kartı başlat</value>
   </data>
   <data name="GCodeDescription_M22" xml:space="preserve">
-    <value>Release SD card</value>
+    <value>SD kartı serbest bırak</value>
   </data>
   <data name="GCodeDescription_M23" xml:space="preserve">
-    <value>Select SD file</value>
+    <value>SD dosyasını seç</value>
   </data>
   <data name="GCodeDescription_M24" xml:space="preserve">
-    <value>Start/resume SD print</value>
+    <value>SD baskısını başlat/devam ettir</value>
   </data>
   <data name="GCodeDescription_M25" xml:space="preserve">
-    <value>Pause SD print</value>
+    <value>SD baskısını duraklat</value>
   </data>
   <data name="GCodeDescription_M26" xml:space="preserve">
-    <value>Set SD read position</value>
+    <value>SD okuma pozisyonunu ayarla</value>
   </data>
   <data name="GCodeDescription_M27" xml:space="preserve">
-    <value>Report SD print status</value>
+    <value>SD baskı durumunu raporla</value>
   </data>
   <data name="GCodeDescription_M28" xml:space="preserve">
-    <value>Start writing to SD card</value>
+    <value>SD karta yazmaya başla</value>
   </data>
   <data name="GCodeDescription_M29" xml:space="preserve">
-    <value>Stop writing to SD card</value>
+    <value>SD karta yazmayı durdur</value>
   </data>
   <data name="GCodeDescription_M30" xml:space="preserve">
-    <value>Delete SD file</value>
+    <value>SD dosyasını sil</value>
   </data>
   <data name="GCodeDescription_M32" xml:space="preserve">
-    <value>Select file and start print</value>
+    <value>Dosya seç ve baskıyı başlat</value>
   </data>
   <data name="GCodeCommand_Command" xml:space="preserve">
-    <value>Command</value>
+    <value>Komut</value>
   </data>
   <data name="GCodeCommand_Description" xml:space="preserve">
-    <value>Description</value>
+    <value>Açıklama</value>
   </data>
   <data name="GCodeCommand_Category" xml:space="preserve">
-    <value>Categories</value>
+    <value>Kategoriler</value>
   </data>
   <data name="GCodeCommand_Parameter" xml:space="preserve">
-    <value>Parameters</value>
+    <value>Parametreler</value>
   </data>
   <data name="CheatSheetPage_SearchCommands" xml:space="preserve">
-    <value>Search commands..</value>
+    <value>Komut ara...</value>
   </data>
   <data name="GCodeDescription_S_TargetTemp" xml:space="preserve">
-    <value>Target temperature</value>
+    <value>Hedef sıcaklık</value>
   </data>
   <data name="GCodeDescription_C_Cycle" xml:space="preserve">
-    <value>Cycles (3-20)</value>
+    <value>Döngüler (3-20)</value>
   </data>
   <data name="GCodeDescription_X_Position" xml:space="preserve">
-    <value>X position</value>
+    <value>X Pozisyonu</value>
   </data>
   <data name="GCodeDescription_Y_Position" xml:space="preserve">
-    <value>Y position</value>
+    <value>Y Pozisyonu</value>
   </data>
   <data name="GCodeDescription_Z_Position" xml:space="preserve">
-    <value>Z position</value>
+    <value>Z Pozisyonu</value>
   </data>
   <data name="GCodeDescription_F_Feedrate" xml:space="preserve">
-    <value>Feedrate</value>
+    <value>Besleme hızı</value>
   </data>
   <data name="GCodeDescription_F_File" xml:space="preserve">
-    <value>File path</value>
+    <value>Dosya yolu</value>
   </data>
   <data name="GCodeDescription_E_Amount" xml:space="preserve">
-    <value>Extrude amount</value>
+    <value>Eksstrüzyon miktarı</value>
   </data>
   <data name="GCodeDescription_M17" xml:space="preserve">
-    <value>Enable Steppers</value>
+    <value>Stepper'ları etkinleştir</value>
   </data>
   <data name="GCodeDescription_M18" xml:space="preserve">
-    <value>Disable Steppers</value>
+    <value>Stepper'ları devre dışı bırak</value>
   </data>
   <data name="GCodeDescription_M117" xml:space="preserve">
-    <value>Set LCD Message</value>
+    <value>LCD Mesajını Ayarla</value>
   </data>
   <data name="NavConnection_Connect" xml:space="preserve">
-    <value>Connect</value>
+    <value>Bağlan</value>
   </data>
   <data name="NavConnection_Disconnect" xml:space="preserve">
-    <value>Disconnect</value>
+    <value>Bağlantıyı Kes</value>
   </data>
   <data name="GCodeDescription_E_Position" xml:space="preserve">
-    <value>E Position</value>
+    <value>E Pozisyonu</value>
   </data>
   <data name="NavConnection_RefreshPorts" xml:space="preserve">
-    <value>Refresh ports</value>
+    <value>Portları Yenile</value>
   </data>
   <data name="CheatSheetPage_None" xml:space="preserve">
-    <value>None</value>
+    <value>Yok</value>
   </data>
   <data name="NavConnection_SelectPort" xml:space="preserve">
-    <value>Select port</value>
+    <value>Port Seç</value>
   </data>
   <data name="CalibrationPage_PidTuning" xml:space="preserve">
-    <value>PID Tuning</value>
+    <value>PID Ayarlama</value>
   </data>
   <data name="CalibrationPage_ThermalModel" xml:space="preserve">
-    <value>Thermal Model</value>
+    <value>Termal Model</value>
   </data>
   <data name="GCodeDescription_M500" xml:space="preserve">
-    <value>Store settings in EEPROM</value>
+    <value>Ayarları EEPROM'a kaydet</value>
   </data>
   <data name="GCodeDescription_M501" xml:space="preserve">
-    <value>Read settings from EEPROM</value>
+    <value>EEPROM'dan ayarları oku</value>
   </data>
   <data name="GCodeDescription_M502" xml:space="preserve">
-    <value>Reset all settings in memory to their factory defaults</value>
+    <value>Tüm ayarları fabrika varsayılanlarına sıfırla</value>
   </data>
   <data name="GCodeDescription_M503" xml:space="preserve">
-    <value>Report current settings from EEPROM</value>
+    <value>EEPROM'dan mevcut ayarları raporla</value>
   </data>
   <data name="GCodeDescription_M504" xml:space="preserve">
-    <value>Validate the contents of the EEPROM</value>
+    <value>EEPROM içeriğini doğrula</value>
   </data>
   <data name="GCodeDescription_P_Proportional" xml:space="preserve">
-    <value>Proportional Value</value>
+    <value>Oransal Değer</value>
   </data>
   <data name="GCodeDescription_I_Integral" xml:space="preserve">
-    <value>Integral Value</value>
+    <value>İntegral Değeri</value>
   </data>
   <data name="GCodeDescription_D_Derivative" xml:space="preserve">
-    <value>Derivative Value</value>
+    <value>Türev Değeri</value>
   </data>
   <data name="GCodeDescription_M304" xml:space="preserve">
-    <value>Set bed PID</value>
+    <value>Yatak PID ayarı</value>
   </data>
   <data name="GCodeDescription_M301" xml:space="preserve">
-    <value>Set hotend PID</value>
+    <value>Nozul PID ayarı</value>
   </data>
   <data name="CommandPrompt_ConnectedMessage" xml:space="preserve">
-    <value>Connection established.</value>
+    <value>Bağlantı kuruldu.</value>
   </data>
   <data name="CommandPrompt_ErrorMessage" xml:space="preserve">
-    <value>Error sending command: {0}.</value>
+    <value>Komut gönderilirken hata: {0}.</value>
   </data>
   <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve">
-    <value>Connection terminated.</value>
+    <value>Bağlantı kesildi.</value>
   </data>
   <data name="CommandPrompt_Send" xml:space="preserve">
-    <value>Send</value>
+    <value>Gönder</value>
   </data>
   <data name="CommandPrompt_EnterCommand" xml:space="preserve">
-    <value>Enter command..</value>
+    <value>Komut girin...</value>
   </data>
   <data name="CalibrationPage_Start" xml:space="preserve">
-    <value>Start</value>
+    <value>Başlat</value>
   </data>
   <data name="PrinterComponent_Hotend" xml:space="preserve">
-    <value>Hotend</value>
+    <value>Sıcak uç</value>
   </data>
   <data name="PrinterComponent_Heatbed" xml:space="preserve">
-    <value>Heatbed</value>
+    <value>Isı Yatağı</value>
   </data>
   <data name="Dashboard_ControlPanel" xml:space="preserve">
-    <value>Control Panel</value>
+    <value>Kontrol Paneli</value>
   </data>
   <data name="CalibrationPage_HeaterIndex" xml:space="preserve">
-    <value>Heater Index</value>
+    <value>Isıtıcı İndeksi</value>
   </data>
   <data name="CalibrationPage_Result" xml:space="preserve">
-    <value>Result</value>
+    <value>Sonuç</value>
   </data>
   <data name="ControlPanel_Position" xml:space="preserve">
-    <value>Position</value>
+    <value>Pozisyon</value>
   </data>
   <data name="ControlPanel_Length" xml:space="preserve">
-    <value>Length</value>
+    <value>Uzunluk</value>
   </data>
   <data name="ControlPanel_Set" xml:space="preserve">
-    <value>Set</value>
+    <value>Ayarla</value>
   </data>
   <data name="ControlPanel_Extrude" xml:space="preserve">
-    <value>Extrude</value>
+    <value>Eksstrüde Et</value>
   </data>
   <data name="ControlPanel_Reverse" xml:space="preserve">
-    <value>Reverse</value>
+    <value>Geri Sar</value>
   </data>
   <data name="ControlPanel_PrintFlow" xml:space="preserve">
-    <value>Print flow</value>
+    <value>Akış Hızı</value>
   </data>
   <data name="ControlPanel_Heating" xml:space="preserve">
-    <value>Heating</value>
+    <value>Isınma</value>
   </data>
   <data name="ControlPanel_Status" xml:space="preserve">
-    <value>Status</value>
+    <value>Durum</value>
   </data>
   <data name="ControlPanel_SetHotendTemp" xml:space="preserve">
-    <value>Set hotend temperature</value>
+    <value>Nozul Sıcaklığını Ayarla</value>
   </data>
   <data name="ControlPanel_SetBedTemp" xml:space="preserve">
-    <value>Set bed temperature</value>
+    <value>Yatak Sıcaklığını Ayarla</value>
   </data>
   <data name="ControlPanel_MotorsOff" xml:space="preserve">
-    <value>Motors off</value>
+    <value>Motorları Kapat</value>
   </data>
   <data name="ControlPanel_SdCard_Ready" xml:space="preserve">
-    <value>Ready</value>
+    <value>Hazır</value>
   </data>
   <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve">
-    <value>Not present</value>
+    <value>Bulunamadı</value>
   </data>
   <data name="ControlPanel_Speed" xml:space="preserve">
-    <value>Speed</value>
+    <value>Hız</value>
   </data>
   <data name="ControlPanel_Current" xml:space="preserve">
-    <value>Current</value>
+    <value>Mevcut</value>
   </data>
   <data name="ControlPanel_Target" xml:space="preserve">
-    <value>Target</value>
+    <value>Hedef</value>
   </data>
   <data name="ControlPanel_Set_XYSpeed" xml:space="preserve">
-    <value>Set speed for X &amp; Y axes (mm/min)</value>
+    <value>X/Y Eksen Hızı (mm/dak)</value>
   </data>
   <data name="ControlPanel_Set_ZSpeed" xml:space="preserve">
-    <value>Set speed for Z axis (mm/min)</value>
+    <value>Z Eksen Hızı (mm/dak)</value>
   </data>
   <data name="ControlPanel_PrintSpeed" xml:space="preserve">
-    <value>Print speed</value>
+    <value>Baskı Hızı</value>
   </data>
   <data name="GCodeDescription_M220" xml:space="preserve">
-    <value>Set or report the feed rate percentage for all G-code moves (X, Y, Z, E axes)</value>
+    <value>Tüm G-code hareketleri için besleme hızı yüzdesini ayarla/raporla</value>
   </data>
   <data name="GCodeDescription_M221" xml:space="preserve">
-    <value>Set or report the flow rate percentage for E-axis extrusion moves</value>
+    <value>Eksstrüzyon hareketleri için akış hızı yüzdesini ayarla/raporla</value>
   </data>
   <data name="PrinterStatus_Disconnected" xml:space="preserve">
-    <value>Disconnected</value>
+    <value>Bağlantı Kesildi</value>
   </data>
   <data name="PrinterStatus_Connected" xml:space="preserve">
-    <value>Connected</value>
+    <value>Bağlı</value>
   </data>
   <data name="PrinterStatus_Printing" xml:space="preserve">
-    <value>Printing</value>
+    <value>Baskıda</value>
   </data>
   <data name="PrinterStatus_Paused" xml:space="preserve">
-    <value>Paused</value>
+    <value>Duraklatıldı</value>
   </data>
   <data name="PrinterStatus_Error" xml:space="preserve">
-    <value>Error</value>
+    <value>Hata</value>
   </data>
   <data name="ControlPanel_Set_FanSpeed" xml:space="preserve">
-    <value>Set fan speed</value>
+    <value>Fan Hızını Ayarla</value>
   </data>
   <data name="ControlPanel_FanSpeed" xml:space="preserve">
-    <value>Fan speed</value>
+    <value>Fan Hızı</value>
   </data>
   <data name="Calculators_LeadScrewSteps" xml:space="preserve">
-    <value>Leadscrew Steps per Millimeter Calculator</value>
+    <value>Mil Başına Adım Hesaplayıcı (Vida)</value>
   </data>
   <data name="Calculators_ExtruderSteps" xml:space="preserve">
-    <value>E-Steps Calculator</value>
+    <value>E-Adım Hesaplayıcı</value>
   </data>
   <data name="PageTitle_Calculators" xml:space="preserve">
-    <value>Calculators</value>
+    <value>Hesaplayıcılar</value>
   </data>
   <data name="Calculators_MotorAngle" xml:space="preserve">
-    <value>Motor Step Angle</value>
+    <value>Motor Adım Açısı</value>
   </data>
   <data name="Calculators_Microstepping" xml:space="preserve">
-    <value>Driver Microsteppin</value>
+    <value>Mikro Adımlama</value>
   </data>
   <data name="Calculators_BeltSteps" xml:space="preserve">
-    <value>Belt Steps per Millimeter Calculator</value>
+    <value>Mil Başına Adım Hesaplayıcı (Kayış)</value>
   </data>
   <data name="Calculators_PrintPrice" xml:space="preserve">
-    <value>Print price Calculator</value>
+    <value>Baskı Maliyeti Hesaplayıcı</value>
   </data>
   <data name="Calculators_BeltPitch" xml:space="preserve">
-    <value>Belt Pitch (mm)</value>
+    <value>Kayış Diş Aralığı (mm)</value>
   </data>
   <data name="Calculators_PulleyToothCount" xml:space="preserve">
-    <value>Pulley Tooth Count</value>
+    <value>Kasnak Diş Sayısı</value>
   </data>
   <data name="Calculators_LeadscrewPitch" xml:space="preserve">
-    <value>Leadscrew Pitch (mm/revolution)</value>
+    <value>Vida Adımı (mm/devir)</value>
   </data>
   <data name="Calculators_GearRatio" xml:space="preserve">
-    <value>Gear Ratio</value>
+    <value>Dişli Oranı</value>
   </data>
   <data name="Calculators_Steps" xml:space="preserve">
-    <value>Steps per mm</value>
+    <value>Mil Başına Adım</value>
   </data>
   <data name="Calculators_Resolution" xml:space="preserve">
-    <value>Resolution</value>
+    <value>Çözünürlük</value>
   </data>
   <data name="Calculators_GCodeExample" xml:space="preserve">
-    <value>G-code Example</value>
+    <value>G-code örneği</value>
   </data>
   <data name="Calculators_RequestedExtrusionLength" xml:space="preserve">
-    <value>Requested Extrusion Length (mm)</value>
+    <value>Talep Edilen Ekstrüzyon Uzunluğu (mm)</value>
   </data>
   <data name="Calculators_CurrentEsteps" xml:space="preserve">
-    <value>Current E-steps (steps/mm)</value>
+    <value>Mevcut E-adımları (adım/mm)</value>
   </data>
   <data name="Calculators_ActualExtrusionLength" xml:space="preserve">
-    <value>Actual Extrusion Length (mm)</value>
+    <value>Gerçek Ekstrüzyon Uzunluğu (mm)</value>
   </data>
   <data name="Calculators_MeasureCaliper" xml:space="preserve">
-    <value>Measure with a caliper</value>
+    <value>Bir kumpas ile ölçün</value>
   </data>
   <data name="Calculators_Esteps_HowTo" xml:space="preserve">
-    <value>        &lt;h5&gt;How to use:&lt;/h5&gt;
-        &lt;ol&gt;
-            &lt;li&gt;Mark 120mm from your extruder entrance&lt;/li&gt;
-            &lt;li&gt;Heat up your hotend&lt;/li&gt;
-            &lt;li&gt;Extrude 100mm (use &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;
-            &lt;li&gt;Measure remaining filament to extruder&lt;/li&gt;
-            &lt;li&gt;Enter values above (actual = 120 - remaining)&lt;/li&gt;
-        &lt;/ol&gt;</value>
+    <value>&lt;h5&gt;Nasıl Kullanılır:&lt;/h5&gt;
+&lt;ol&gt;
+    &lt;li&gt;Ekstruder girişinden 120 mm işaretleyin&lt;/li&gt;
+    &lt;li&gt;Hotend'i çalışma sıcaklığına ısıtın&lt;/li&gt;
+    &lt;li&gt;100 mm ekstrüde edin (&lt;code&gt;G1 E100 F100&lt;/code&gt; komutunu kullanın)&lt;/li&gt;
+    &lt;li&gt;Ekstrudere kalan filament uzunluğunu ölçün&lt;/li&gt;
+    &lt;li&gt;Yukarıdaki değerleri girin (gerçek uzunluk = 120 - kalan uzunluk)&lt;/li&gt;
+&lt;/ol&gt;</value>
   </data>
   <data name="GCodeDescription_M92" xml:space="preserve">
-    <value>Get or set the steps-per-unit for one or more axes</value>
+    <value>Bir veya daha fazla eksen için birim başına adımları sorma veya ayarlama</value>
   </data>
   <data name="NavConnection_BrowserNotSupported" xml:space="preserve">
-    <value>Browser not supported.</value>
+    <value>Tarayıcı desteklenmiyor.</value>
   </data>
   <data name="Calculators_RememberSave" xml:space="preserve">
-    <value>Remember to save after testing</value>
+    <value>Test ettikten sonra kaydetmeyi unutmayın</value>
   </data>
 </root>

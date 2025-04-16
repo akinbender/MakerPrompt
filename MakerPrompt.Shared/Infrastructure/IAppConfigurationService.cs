@@ -1,6 +1,4 @@
-﻿using MakerPrompt.Shared.Utils;
-
-namespace MakerPrompt.Shared.Infrastructure
+﻿namespace MakerPrompt.Shared.Infrastructure
 {
     public interface IAppConfigurationService
     {

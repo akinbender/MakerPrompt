@@ -5,45 +5,42 @@
 @inject PrinterCommunicationServiceFactory PrinterServiceFactory
 @implements IAsyncDisposable
 
-<div class="container-fluid" style="height: 100vh;">
-    <div class="terminal bg-dark-subtle rounded p-3" style="height: 70vh;">
-        <div class="terminal-history overflow-auto mb-2" style="height: 90%;" @ref="historyContainer">
-            @foreach (var entry in GetHistorySnapshot())
-            {
-                <div class="terminal-line">
-                    @if (entry.Type == TerminalEntryType.Sent)
-                    {
-                        <span class="text-primary">&gt;&gt;</span>
-                        <span class="text-muted">@DateTime.Now.ToString("HH:mm:ss")</span>
-                        <span class="text-white">@entry.Text</span>
-                    }
-                    else if (entry.Type == TerminalEntryType.Received)
-                    {
-                        <span class="text-success">&lt;&lt;</span>
-                        <span class="text-muted">@DateTime.Now.ToString("HH:mm:ss")</span>
-                        <span class="text-white">@entry.Text</span>
-                    }
-                    else
-                    {
-                        <span class="text-warning">@entry.Text</span>
-                    }
-                </div>
-            }
-        </div>
+<div class="terminal bg-dark-subtle rounded p-3 mt-md-3" style="height: 70vh;">
+    <div class="terminal-history overflow-auto mb-2" style="height: 90%;" @ref="historyContainer">
+        @foreach (var entry in GetHistorySnapshot())
+        {
+            <div class="terminal-line">
+                @if (entry.Type == TerminalEntryType.Sent)
+                {
+                    <span class="text-primary">&gt;&gt;</span>
+                    <span class="text-muted">@DateTime.Now.ToString("HH:mm:ss")</span>
+                    <span class="text-white">@entry.Text</span>
+                }
+                else if (entry.Type == TerminalEntryType.Received)
+                {
+                    <span class="text-success">&lt;&lt;</span>
+                    <span class="text-muted">@DateTime.Now.ToString("HH:mm:ss")</span>
+                    <span class="text-white">@entry.Text</span>
+                }
+                else
+                {
+                    <span class="text-warning">@entry.Text</span>
+                }
+            </div>
+        }
+    </div>
 
-        <div class="input-group">
-            <input type="text" class="form-control bg-dark-subtle border-light-subtle"
-                   placeholder="@localizer[Resources.CommandPrompt_EnterCommand]" @bind="inputCommand"
-                   disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)"
-            @onkeypress="HandleKeyPress" />
-            <button class="btn btn-outline-secondary" @onclick="SendCommand"
-                    disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)">
-                @localizer[Resources.CommandPrompt_Send]
-            </button>
-        </div>
+    <div class="input-group">
+        <input type="text" class="form-control bg-dark-subtle border-light-subtle"
+               placeholder="@localizer[Resources.CommandPrompt_EnterCommand]" @bind="inputCommand"
+               disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)"
+               @onkeypress="HandleKeyPress" />
+        <button class="btn btn-outline-secondary" @onclick="SendCommand"
+                disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)">
+            @localizer[Resources.CommandPrompt_Send]
+        </button>
     </div>
 </div>
-
 @code {
     private enum TerminalEntryType { Sent, Received, System }
     private class TerminalEntry

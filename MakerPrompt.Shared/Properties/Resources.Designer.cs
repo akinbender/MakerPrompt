@@ -61,6 +61,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actual Extrusion Length (mm).
+        /// </summary>
+        public static string Calculators_ActualExtrusionLength {
+            get {
+                return ResourceManager.GetString("Calculators_ActualExtrusionLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Belt Pitch (mm).
         /// </summary>
         public static string Calculators_BeltPitch {
@@ -70,11 +79,36 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Steps per Millimeter Calculator(belt).
+        ///   Looks up a localized string similar to Belt Steps per Millimeter Calculator.
         /// </summary>
         public static string Calculators_BeltSteps {
             get {
                 return ResourceManager.GetString("Calculators_BeltSteps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current E-steps (steps/mm).
+        /// </summary>
+        public static string Calculators_CurrentEsteps {
+            get {
+                return ResourceManager.GetString("Calculators_CurrentEsteps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to         &lt;h5&gt;How to use:&lt;/h5&gt;
+        ///        &lt;ol&gt;
+        ///            &lt;li&gt;Mark 120mm from your extruder entrance&lt;/li&gt;
+        ///            &lt;li&gt;Heat up your hotend&lt;/li&gt;
+        ///            &lt;li&gt;Extrude 100mm (use &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;
+        ///            &lt;li&gt;Measure remaining filament to extruder&lt;/li&gt;
+        ///            &lt;li&gt;Enter values above (actual = 120 - remaining)&lt;/li&gt;
+        ///        &lt;/ol&gt;.
+        /// </summary>
+        public static string Calculators_Esteps_HowTo {
+            get {
+                return ResourceManager.GetString("Calculators_Esteps_HowTo", resourceCulture);
             }
         }
         
@@ -84,6 +118,15 @@ namespace MakerPrompt.Shared.Properties {
         public static string Calculators_ExtruderSteps {
             get {
                 return ResourceManager.GetString("Calculators_ExtruderSteps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to G-code Example.
+        /// </summary>
+        public static string Calculators_GCodeExample {
+            get {
+                return ResourceManager.GetString("Calculators_GCodeExample", resourceCulture);
             }
         }
         
@@ -106,11 +149,20 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Steps per Millimeter Calculator(lead).
+        ///   Looks up a localized string similar to Leadscrew Steps per Millimeter Calculator.
         /// </summary>
         public static string Calculators_LeadScrewSteps {
             get {
                 return ResourceManager.GetString("Calculators_LeadScrewSteps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Measure with a caliper.
+        /// </summary>
+        public static string Calculators_MeasureCaliper {
+            get {
+                return ResourceManager.GetString("Calculators_MeasureCaliper", resourceCulture);
             }
         }
         
@@ -147,6 +199,24 @@ namespace MakerPrompt.Shared.Properties {
         public static string Calculators_PulleyToothCount {
             get {
                 return ResourceManager.GetString("Calculators_PulleyToothCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remember to save after testing.
+        /// </summary>
+        public static string Calculators_RememberSave {
+            get {
+                return ResourceManager.GetString("Calculators_RememberSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requested Extrusion Length (mm).
+        /// </summary>
+        public static string Calculators_RequestedExtrusionLength {
+            get {
+                return ResourceManager.GetString("Calculators_RequestedExtrusionLength", resourceCulture);
             }
         }
         
@@ -1024,6 +1094,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Get or set the steps-per-unit for one or more axes.
+        /// </summary>
+        public static string GCodeDescription_M92 {
+            get {
+                return ResourceManager.GetString("GCodeDescription_M92", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Proportional Value.
         /// </summary>
         public static string GCodeDescription_P_Proportional {
@@ -1065,6 +1144,15 @@ namespace MakerPrompt.Shared.Properties {
         public static string GCodeDescription_Z_Position {
             get {
                 return ResourceManager.GetString("GCodeDescription_Z_Position", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Browser not supported..
+        /// </summary>
+        public static string NavConnection_BrowserNotSupported {
+            get {
+                return ResourceManager.GetString("NavConnection_BrowserNotSupported", resourceCulture);
             }
         }
         

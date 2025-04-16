@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
-using MakerPrompt.Shared.Properties;
-using static MakerPrompt.Shared.Utils.Enums;
+using System.Resources;
 
 namespace MakerPrompt.Shared.Utils
 {
@@ -124,7 +122,16 @@ namespace MakerPrompt.Shared.Utils
         {
             var field = value.GetType().GetField(value.ToString());
             var attribute = field?.GetCustomAttribute<DisplayAttribute>();
-            return attribute?.Description ?? value.ToString();
+            return attribute?.Name?? value.ToString();
+        }
+
+        public static string GetLocalizedDisplayName(this Enum value)
+        {
+            var rm = new ResourceManager(typeof(Resources));
+            var name = value.GetDisplayName();
+            var resourceDisplayName = rm.GetString(name);
+
+            return string.IsNullOrWhiteSpace(resourceDisplayName) ? name : resourceDisplayName;
         }
     }
 }

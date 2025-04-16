@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using static MakerPrompt.Shared.Utils.Enums;
 
 namespace MakerPrompt.Shared.Models
 {

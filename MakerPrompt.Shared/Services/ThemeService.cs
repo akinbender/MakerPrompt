@@ -1,8 +1,4 @@
-﻿using MakerPrompt.Shared.Infrastructure;
-using Microsoft.JSInterop;
-using static MakerPrompt.Shared.Utils.Enums;
-
-namespace MakerPrompt.Shared.Services
+﻿namespace MakerPrompt.Shared.Services
 {
     public sealed class ThemeService : IAsyncDisposable
     {

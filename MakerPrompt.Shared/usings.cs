@@ -1,0 +1,9 @@
+﻿global using static MakerPrompt.Shared.Utils.Enums;
+global using System.Text.RegularExpressions;
+global using System.Text.Json;
+global using System.Reflection;
+global using MakerPrompt.Shared.Infrastructure;
+global using MakerPrompt.Shared.Properties;
+global using MakerPrompt.Shared.Models;
+global using MakerPrompt.Shared.Utils;
+global using Microsoft.JSInterop;

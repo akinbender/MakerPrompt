@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Blazored.Modal;
-using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 

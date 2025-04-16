@@ -1,33 +1,37 @@
 ﻿using System.Net;
-using System.Text.Json;
-using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
-using static MakerPrompt.Shared.Utils.Enums;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace MakerPrompt.Shared.Services
 {
     public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService, IDisposable
     {
-        private readonly HttpClient _httpClient;
-        private readonly Uri _baseUri;
-
+        private HttpClient _httpClient;
+        private Uri _baseUri;
+        private string _jwtToken = string.Empty;
+        private string _refreshToken = string.Empty;
         public override PrinterConnectionType ConnectionType { get; } = PrinterConnectionType.Moonraker;
 
-        public MoonrakerApiService(ApiConnectionSettings connectionSettings)
+        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
-            
-            _baseUri = new Uri(connectionSettings.Url);
+            if (IsConnected) return IsConnected;
+
+            if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Api == null) throw new ArgumentException();
+
+            _baseUri = new Uri(connectionSettings.Api.Url);
             _httpClient = new HttpClient
             {
                 BaseAddress = _baseUri,
                 Timeout = TimeSpan.FromSeconds(30)
             };
-        }
 
-        public override async Task<bool> ConnectAsync()
-        {
-            //TODO implement auth
+            if (!string.IsNullOrEmpty(connectionSettings.Api.UserName) && !string.IsNullOrEmpty(connectionSettings.Api.Password))
+            {
+                IsConnected = await AuthenticateAsync(connectionSettings.Api.UserName, connectionSettings.Api.Password);
+                if (!IsConnected) return IsConnected;
+            }
+
             try
             {
                 var response = await _httpClient.GetAsync("/printer/info");
@@ -40,6 +44,7 @@ namespace MakerPrompt.Shared.Services
             {
                 IsConnected = false;
             }
+
             RaiseConnectionChanged();
             return IsConnected;
         }
@@ -84,6 +89,32 @@ namespace MakerPrompt.Shared.Services
                 LastTelemetry.HotendTarget = root.GetProperty("extruder").GetProperty("target").GetDouble();
             }
 
+            var motionResponse = await _httpClient.GetAsync("/printer/objects/query?gcode_move,fan");
+            if (motionResponse.IsSuccessStatusCode)
+            {
+                var json = await motionResponse.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                var status = doc.RootElement.GetProperty("result").GetProperty("status");
+
+                // Position data
+                var position = status.GetProperty("gcode_move").GetProperty("position");
+                LastTelemetry.Position = new Vector3(
+                    (double)position[0].GetDecimal(),
+                    (double)position[1].GetDecimal(),
+                    (double)position[2].GetDecimal()
+                );
+
+                // Speed and flow data
+                LastTelemetry.FeedRate = (int)status.GetProperty("gcode_move")
+                    .GetProperty("speed").GetDecimal();
+                LastTelemetry.FlowRate = (int)(status.GetProperty("gcode_move")
+                    .GetProperty("extrude_factor").GetDecimal() * 100);
+
+                // Fan speed
+                LastTelemetry.FanSpeed = (int)(status.GetProperty("fan")
+                    .GetProperty("speed").GetDecimal() * 100);
+            }
+
             // Get printer status
             var statusResponse = await _httpClient.GetAsync("/printer/objects/query?print_stats");
             if (statusResponse.IsSuccessStatusCode)
@@ -98,6 +129,43 @@ namespace MakerPrompt.Shared.Services
             return LastTelemetry;
         }
 
+        public async Task<bool> AuthenticateAsync(string username, string password)
+        {
+            try
+            {
+                var request = new
+                {
+                    username,
+                    password,
+                    source = "moonraker"
+                };
+
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("/access/login", content);
+                response.EnsureSuccessStatusCode();
+
+                var responseJson = await response.Content.ReadAsStringAsync();
+                var authResponse = JsonSerializer.Deserialize<AuthResponse>(responseJson);
+
+                _jwtToken = authResponse?.Token ?? string.Empty;
+                _refreshToken = authResponse?.RefreshToken ?? string.Empty;
+
+                if (!string.IsNullOrEmpty(_jwtToken))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", _jwtToken);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public void Dispose()
         {
             updateTimer.Dispose();
@@ -109,6 +177,24 @@ namespace MakerPrompt.Shared.Services
         {
             Dispose();
             return ValueTask.CompletedTask;
+        }
+
+        private record AuthResponse
+        {
+            [JsonPropertyName("username")]
+            public string Username { get; set; } = string.Empty;
+
+            [JsonPropertyName("token")]
+            public string Token { get; set; } = string.Empty;
+
+            [JsonPropertyName("refresh_token")]
+            public string RefreshToken { get; set; } = string.Empty;
+
+            [JsonPropertyName("action")]
+            public string Action { get; set; } = string.Empty;
+
+            [JsonPropertyName("source")]
+            public string Source { get; set; } = string.Empty;
         }
     }
 

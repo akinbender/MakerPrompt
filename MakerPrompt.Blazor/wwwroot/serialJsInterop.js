@@ -1,11 +1,6 @@
 // Individual exported functions following Microsoft's pattern
 export async function checkSupported() {
-    if ('serial' in navigator) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return navigator.serial != undefined
 }
 
 export async function requestPort() {
@@ -42,7 +37,7 @@ export async function openPort(options, dotNetRef) {
         });
 
         startReading(port, dotNetRef);
-        return true;
+        return port;
     } catch (error) {
         console.error('Error opening port:', error);
         if (port) await safeClosePort(port);

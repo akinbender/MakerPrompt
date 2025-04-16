@@ -1,8 +1,6 @@
 ﻿using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
 using Microsoft.JSInterop;
-using static MakerPrompt.Shared.Utils.Enums;
 
 namespace MakerPrompt.Blazor.Services
 {
@@ -23,7 +21,6 @@ namespace MakerPrompt.Blazor.Services
 
         public async Task<bool> CheckSupportedAsync()
         {
-            //TODO fix
             var module = await _moduleTask.Value;
             IsSupported = await module.InvokeAsync<bool>("checkSupported");
             return IsSupported;
@@ -37,15 +34,10 @@ namespace MakerPrompt.Blazor.Services
 
         public async Task<IEnumerable<string>> GetAvailablePortsAsync()
         {
+            await RequestPortAsync();
             var module = await _moduleTask.Value;
             var ports = await module.InvokeAsync<IEnumerable<SerialPortInfo>>("getGrantedPorts");
             return ports.Select(p => $"{p.Name} ({p.Manufacturer})");
-        }
-
-        public async Task<bool> ConnectAsync(string portName, int baudRate)
-        {
-            await OpenPortAsync(portName, baudRate);
-            return IsConnected;
         }
 
         public override async Task DisconnectAsync()
@@ -60,6 +52,13 @@ namespace MakerPrompt.Blazor.Services
             }
         }
 
+        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        {
+            if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Serial == null) throw new ArgumentException();
+            await OpenPortAsync(connectionSettings.Serial.PortName, connectionSettings.Serial.BaudRate); 
+            return IsConnected;
+        }
+
         public async Task OpenPortAsync(string port, int baudRate, int dataBits = 8,
             int stopBits = 1, string parity = "none", string flowControl = "none")
         {
@@ -67,6 +66,7 @@ namespace MakerPrompt.Blazor.Services
             var options = new { baudRate, dataBits, stopBits, parity, flowControl };
             _portReference = await module.InvokeAsync<IJSObjectReference>("openPort", options, _dotNetRef);
             IsConnected = true;
+            ConnectionName = port;
             RaiseConnectionChanged();
         }
 
@@ -80,7 +80,7 @@ namespace MakerPrompt.Blazor.Services
         [JSInvokable]
         public void OnDataReceived(string data)
         {
-            ParseResponse(data);
+            ProcessReceivedData(data);
         }
 
         [JSInvokable]
@@ -102,8 +102,6 @@ namespace MakerPrompt.Blazor.Services
 
             _dotNetRef?.Dispose();
         }
-
-        public override Task<bool> ConnectAsync() => throw new NotImplementedException();
     }
 
     public class SerialPortInfo

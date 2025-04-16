@@ -1,45 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using static MakerPrompt.Shared.Utils.Enums;
-
-namespace MakerPrompt.Shared.Services
+﻿namespace MakerPrompt.Shared.Services
 {
     public class PrinterCommunicationServiceFactory(
-        ISerialService serialService)
+        ISerialService serialService) : IAsyncDisposable
     {
         public event EventHandler<bool>? ConnectionStateChanged;
         public bool IsConnected { get; private set; }
         public IPrinterCommunicationService? Current { get; private set; }
 
         private readonly ISerialService serialService = serialService;
+        private readonly PrusaLinkApiService prusaLinkApiService = new();
+        private readonly MoonrakerApiService moonrakerApiService = new();
 
-        public async Task ConnectSerialAsync(string portName, int baudRate)
+        public async Task ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
-            if (serialService.IsSupported == false) return;
-
-            if (Current != null && Current.ConnectionType != PrinterConnectionType.Serial)
+            if (Current != null && Current.ConnectionType != connectionSettings.ConnectionType)
             {
                 await Current.DisposeAsync();
             }
 
-            if (await serialService.ConnectAsync(portName, baudRate))
+            IPrinterCommunicationService service = connectionSettings.ConnectionType switch
             {
-                Current = serialService;
+                PrinterConnectionType.Serial => serialService,
+                PrinterConnectionType.PrusaLink => prusaLinkApiService,
+                PrinterConnectionType.Moonraker => moonrakerApiService,
+                _ => throw new NotImplementedException(),
+            };
+
+            if (await service.ConnectAsync(connectionSettings))
+            {
+                Current = service;
                 IsConnected = Current.IsConnected;
                 ConnectionStateChanged?.Invoke(this, IsConnected);
             }
         }
-
-        public async Task ConnectPrusaLinkAsync(ApiConnectionSettings connectionSettings) => 
-            await TryConnectAsync(new PrusaLinkApiService(connectionSettings));
-
-        public async Task ConnectMoonrakerAsync(ApiConnectionSettings connectionSettings) => 
-            await TryConnectAsync(new MoonrakerApiService(connectionSettings));
 
         public async Task DisconnectAsync()
         {
@@ -49,19 +42,13 @@ namespace MakerPrompt.Shared.Services
             ConnectionStateChanged?.Invoke(this, IsConnected);
         }
 
-        private async Task TryConnectAsync(IPrinterCommunicationService service)
+        public async ValueTask DisposeAsync()
         {
-            if (Current != null && Current.ConnectionType != service.ConnectionType)
-            {
-                await Current.DisposeAsync();
-            }
-
-            if (await service.ConnectAsync())
-            {
-                Current = service;
-                IsConnected = Current.IsConnected;
-                ConnectionStateChanged?.Invoke(this, IsConnected);
-            }
+            await DisconnectAsync();
+            await serialService.DisposeAsync();
+            await prusaLinkApiService.DisposeAsync();
+            await moonrakerApiService.DisposeAsync();
+            GC.SuppressFinalize(this);
         }
     }
 }

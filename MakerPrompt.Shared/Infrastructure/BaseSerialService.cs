@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
+﻿using System.Text;
 
 namespace MakerPrompt.Shared.Infrastructure
 {
@@ -14,16 +7,41 @@ namespace MakerPrompt.Shared.Infrastructure
         private readonly Regex _tempRegex = new(@"T:([\d.]+)\s/\s*([\d.]+)\sB:([\d.]+)\s/\s*([\d.]+)");
         private readonly Regex _posRegex = new(@"X:([\d.]+)\sY:([\d.]+)\sZ:([\d.]+)");
         public override Enums.PrinterConnectionType ConnectionType => Enums.PrinterConnectionType.Serial;
-
+        
+        StringBuilder _receiveBuffer = new();
         public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
-            // Request fresh data
-            await WriteDataAsync("M105"); // Temperature
-            await WriteDataAsync("M114"); // Position
+            await WriteDataAsync(GCodeCommands.GetTemperature.ToString());
+            await WriteDataAsync(GCodeCommands.GetCurrentPosition.ToString());
+            //await WriteDataAsync("M123");
+            //await WriteDataAsync(GCodeCommands.SetFeedratePercentage.ToString());
+            //await WriteDataAsync(GCodeCommands.SetFlowratePercentage.ToString());
 
-            // Small delay to allow responses to come in
             await Task.Delay(200);
             return LastTelemetry;
+        }
+
+        public void ProcessReceivedData(string data)
+        {
+            _receiveBuffer.Append(data);
+
+            while (true)
+            {
+                var bufferStr = _receiveBuffer.ToString();
+                var newlineIndex = bufferStr.IndexOf('\n');
+
+                if (newlineIndex < 0) break;
+
+                var line = bufferStr.Substring(0, newlineIndex + 1)
+                    .Trim('\r', '\n', ' ');
+
+                if (!string.IsNullOrEmpty(line))
+                {
+                    ParseResponse(line);
+                }
+
+                _receiveBuffer = _receiveBuffer.Remove(0, newlineIndex + 1);
+            }
         }
 
         public PrinterTelemetry ParseResponse(string data)

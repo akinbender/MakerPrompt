@@ -1,8 +1,4 @@
-﻿using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
-
-namespace MakerPrompt.Shared.Services
+﻿namespace MakerPrompt.Shared.Services
 {
     public class PrinterStateService : IDisposable
     {
@@ -111,6 +107,24 @@ namespace MakerPrompt.Shared.Services
             if (factory.Current == null || (flow < 1 || flow > 200)) return;
             var command = GCodeCommands.SetFlowratePercentage.SetParameterValue(GCodeParameters.RatePercentage.Label, flow.ToString());
             await factory.Current.WriteDataAsync(command.ToString());
+        }
+
+        public async Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            if (factory.Current == null) return;
+            var command = GCodeCommands.MoveLinear;
+
+            if (!IsEqual(x, 0.0f)) command.SetParameterValue(GCodeParameters.PositionX.Label, x.ToString("0.0"));
+            if (!IsEqual(y, 0.0f)) command.SetParameterValue(GCodeParameters.PositionY.Label, y.ToString("0.0"));
+            if (!IsEqual(z, 0.0f)) command.SetParameterValue(GCodeParameters.PositionZ.Label, z.ToString("0.0"));
+            if (!IsEqual(e, 0.0f)) command.SetParameterValue(GCodeParameters.PositionE.Label, e.ToString("0.0"));
+            await factory.Current.WriteDataAsync(command.ToString());
+        }
+
+        public async Task SaveEEPROM()
+        {
+            if (factory.Current == null) return;
+            await factory.Current.WriteDataAsync(GCodeCommands.StoreEEPROM.ToString());
         }
 
         private static bool IsEqual(float a, float b, float tolerance = 0.001f)
