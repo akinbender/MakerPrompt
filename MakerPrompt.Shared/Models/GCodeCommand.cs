@@ -28,9 +28,12 @@ namespace MakerPrompt.Shared.Models
             if (Parameters == null || Parameters.Count == 0)
                 return Command;
 
-            return $"{Command} {string.Join(" ", Parameters
+            var result = $"{Command} {string.Join(" ", Parameters
                 .Where(p => !string.IsNullOrEmpty(p.Value))
                 .Select(p => $"{p.Label}{p.Value}"))}";
+
+            Parameters.ForEach(p => p.Value = string.Empty);
+            return result;
         }
     }
 }
