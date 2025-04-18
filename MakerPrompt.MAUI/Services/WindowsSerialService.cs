@@ -10,8 +10,6 @@ namespace MakerPrompt.MAUI.Services
     public class WindowsSerialService : BaseSerialService, ISerialService
     {
         private readonly SerialPort _serialPort;
-        private readonly BufferBlock<string> _commandQueue = new();
-        private readonly CancellationTokenSource _cts = new();
         private Task? _sendTask;
         private Task? _receiveTask;
         public bool IsSupported => true;
@@ -81,48 +79,39 @@ namespace MakerPrompt.MAUI.Services
                 .ToList());
         }
 
-        private async Task SendLoopAsync(CancellationToken ct)
+        private async Task SendLoop()
         {
-            try
+            while (IsConnected)
             {
-                while (IsConnected && !ct.IsCancellationRequested)
+                var pending = await _commandQueue.ReceiveAsync(_cts.Token);
+                try
                 {
-                    var command = await _commandQueue.ReceiveAsync(ct);
-                    await Task.Run(() => _serialPort.WriteLine(command), ct);
-                    await Task.Delay(10, ct); // Flow control delay
+                    _serialPort.WriteLine(pending.Command);
+                    await pending.ResponseSource.Task
+                        .WaitAsync(TimeSpan.FromSeconds(2), _cts.Token);
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                // Normal shutdown
+                catch (TimeoutException)
+                {
+                    if (!pending.IsAutomatic)
+                        RaiseDataRecieved($"CMD: {pending.Command} → Timeout");
+                }
             }
         }
 
-        private async Task ReceiveLoopAsync(CancellationToken ct)
+        private async Task ReceiveLoop()
         {
             var buffer = new byte[4096];
-
-            while (!ct.IsCancellationRequested && IsConnected)
+            while (IsConnected)
             {
-                try
-                {
-                    var bytesRead = await _serialPort.BaseStream
-                        .ReadAsync(buffer, 0, buffer.Length, ct);
+                var bytesRead = await _serialPort.BaseStream.ReadAsync(buffer, 0, buffer.Length);
+                var data = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                _receiveBuffer.Append(data);
 
-                    if (bytesRead > 0)
-                    {
-                        var received = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                        ProcessReceivedData(received);
-                    }
-                }
-                catch (OperationCanceledException)
+                while (_receiveBuffer.ToString().Contains('\n'))
                 {
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Receive error: {ex.Message}");
-                    await DisposeAsync();
+                    var line = _receiveBuffer.ToString().Split('\n')[0];
+                    _receiveBuffer = _receiveBuffer.Remove(0, line.Length + 1);
+                    ProcessReceivedData(line.Trim());
                 }
             }
         }

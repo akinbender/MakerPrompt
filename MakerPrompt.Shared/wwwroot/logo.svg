@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="360mm"
+   height="360mm"
+   viewBox="0 0 360 360"
+   version="1.1"
+   id="svg641"
+   sodipodi:docname="maker-prompt-logo.svg"
+   inkscape:version="1.2.1 (9c6d41e4, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview836"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.08005836"
+     inkscape:cx="-380.97208"
+     inkscape:cy="730.71694"
+     inkscape:window-width="2560"
+     inkscape:window-height="1387"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg641">
+    <inkscape:grid
+       type="xygrid"
+       id="grid1563"
+       originx="30.000001"
+       originy="30.000001" />
+  </sodipodi:namedview>
+  <defs
+     id="defs638" />
+  <rect
+     style="fill:#ef9f0c;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:100.1"
+     id="rect7297"
+     width="360"
+     height="360"
+     x="1e-06"
+     y="1e-06"
+     rx="18"
+     ry="18" />
+  <path
+     style="fill:#ffffff;fill-opacity:1;stroke-width:0"
+     d="M 30,60 H 90 L 190,180 90,300 H 30 L 130,180 Z"
+     id="path621"
+     sodipodi:nodetypes="ccccccc" />
+  <path
+     id="path623"
+     style="fill:#ffffff;fill-opacity:1;stroke-width:0"
+     d="M 219.99997,30.000001 220,190.00024 c -2e-5,13.80711 11.19289,25 25.00003,24.99998 13.80693,0 25,-11.19256 25,-24.99946 v -5.2e-4 L 270,30.000515 Z" />
+  <path
+     style="fill:#ffffff;fill-opacity:1;stroke-width:0"
+     d="M 280,30.000515 V 330 h 50 V 30.000515 Z"
+     id="path625" />
+</svg>

@@ -67,8 +67,7 @@ namespace MakerPrompt.Shared.Services
                 null);
 
             var content = await response.Content.ReadAsStringAsync();
-            LastTelemetry.LastResponse = content;
-            RaiseTelemetryUpdated();
+            RaiseDataRecieved(content);
         }
 
         public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
@@ -177,6 +176,11 @@ namespace MakerPrompt.Shared.Services
         {
             Dispose();
             return ValueTask.CompletedTask;
+        }
+
+        public override async Task WriteDataAsync(GCodeCommand command)
+        {
+            await this.WriteDataAsync(command.ToString());
         }
 
         private record AuthResponse

@@ -1,18 +1,24 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
+using System.Threading.Tasks.Dataflow;
 
 namespace MakerPrompt.Shared.Infrastructure
 {
     public abstract class BaseSerialService : BasePrinterConnectionService
     {
+        private readonly object _commandLock = new();
+        public BufferBlock<PendingCommand> _commandQueue = new();
         private readonly Regex _tempRegex = new(@"T:([\d.]+)\s/\s*([\d.]+)\sB:([\d.]+)\s/\s*([\d.]+)");
         private readonly Regex _posRegex = new(@"X:([\d.]+)\sY:([\d.]+)\sZ:([\d.]+)");
-        public override Enums.PrinterConnectionType ConnectionType => Enums.PrinterConnectionType.Serial;
-        
-        StringBuilder _receiveBuffer = new();
+        private readonly Regex _rateRegex = new(@"(\d+)%");
+        public override PrinterConnectionType ConnectionType => PrinterConnectionType.Serial;
+
+        public StringBuilder _receiveBuffer = new();
+
         public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
-            await WriteDataAsync(GCodeCommands.GetTemperature.ToString());
-            await WriteDataAsync(GCodeCommands.GetCurrentPosition.ToString());
+            await WriteDataAsync(GCodeCommands.GetTemperature);
+            await WriteDataAsync(GCodeCommands.GetCurrentPosition);
             //await WriteDataAsync("M123");
             //await WriteDataAsync(GCodeCommands.SetFeedratePercentage.ToString());
             //await WriteDataAsync(GCodeCommands.SetFlowratePercentage.ToString());
@@ -21,34 +27,59 @@ namespace MakerPrompt.Shared.Infrastructure
             return LastTelemetry;
         }
 
-        public void ProcessReceivedData(string data)
+        public async Task WriteDataAsync(GCodeCommand command, bool isAutomatic = false)
         {
-            _receiveBuffer.Append(data);
-
-            while (true)
+            var pending = new PendingCommand
             {
-                var bufferStr = _receiveBuffer.ToString();
-                var newlineIndex = bufferStr.IndexOf('\n');
+                Command = command.ToString(),
+                ResponseSource = new TaskCompletionSource<string>(),
+                ExpectedResponsePattern = GetExpectedResponse(command),
+                IsAutomatic = isAutomatic
+            };
 
-                if (newlineIndex < 0) break;
+            await _commandQueue.SendAsync(pending);
+        }
 
-                var line = bufferStr.Substring(0, newlineIndex + 1)
-                    .Trim('\r', '\n', ' ');
-
-                if (!string.IsNullOrEmpty(line))
+        protected void ProcessReceivedData(string data)
+        {
+            lock (_commandLock)
+            {
+                if (_commandQueue.TryReceive(out var pending))
                 {
-                    ParseResponse(line);
+                    if (pending.ExpectedResponsePattern.IsMatch(data))
+                    {
+                        pending.ResponseSource.TrySetResult(data);
+                        ParseResponse(data, pending.IsAutomatic);
+                        if (!pending.IsAutomatic)
+                            RaiseDataRecieved($"> {pending.Command}\n< {data}");
+                        return;
+                    }
                 }
 
-                _receiveBuffer = _receiveBuffer.Remove(0, newlineIndex + 1);
+                if (!data.StartsWith("ok") && !data.StartsWith("echo"))
+                    RaiseDataRecieved($"SYS: {data}");
+                ParseResponse(data, false);
             }
         }
 
-        public PrinterTelemetry ParseResponse(string data)
+        private Regex GetExpectedResponse(GCodeCommand command)
+        {
+            return command.Command switch
+            {
+                "M105" => _tempRegex,
+                "M114" => _posRegex,
+                "M220" => _rateRegex,
+                "M221" => _rateRegex,
+                _ => new Regex(".*") // Match anything
+            };
+        }
+
+        protected virtual void ParseResponse(string data, bool isAutomatic)
         {
             try
             {
-                LastTelemetry.LastResponse = data;
+                //LastTelemetry.LastResponse = data;
+
                 if (data.StartsWith("ok T:"))
                 {
                     var match = _tempRegex.Match(data);
@@ -72,21 +103,41 @@ namespace MakerPrompt.Shared.Infrastructure
                         );
                     }
                 }
-                else if (data.Contains("SD printing byte"))
-                {
-                    LastTelemetry.SDCard.Printing = true;
-                }
+                //else if (data.Contains("FR:"))
+                //{
+                //    var match = _rateRegex.Match(data);
+                //    if (match.Success)
+                //    {
+                //        LastTelemetry.FeedRate = int.Parse(match.Groups[1].Value);
+                //    }
+                //}
+                //else if (data.Contains("Flow:"))
+                //{
+                //    var match = _rateRegex.Match(data);
+                //    if (match.Success)
+                //    {
+                //        LastTelemetry.FlowRate = int.Parse(match.Groups[1].Value);
+                //    }
+                //}
 
-                RaiseTelemetryUpdated();
-                return LastTelemetry;
+                // Only raise event for non-automatic updates
+                if (!isAutomatic)
+                {
+                    RaiseTelemetryUpdated();
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error parsing data: {ex.Message}");
             }
+        }
 
-            RaiseTelemetryUpdated();
-            return LastTelemetry;
+        public class PendingCommand
+        {
+            public string Command { get; set; }
+            public TaskCompletionSource<string> ResponseSource { get; set; }
+            public Regex ExpectedResponsePattern { get; set; }
+            public bool IsAutomatic { get; set; }
         }
     }
 }

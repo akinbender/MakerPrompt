@@ -4,7 +4,6 @@
     {
         private readonly HttpClient _httpClient;
         private readonly Uri _baseUri;
-        private readonly CancellationTokenSource _cts = new();
 
         public override PrinterConnectionType ConnectionType => PrinterConnectionType.PrusaLink;
 
@@ -56,12 +55,14 @@
             await Task.CompletedTask;
         }
 
-        public override async Task WriteDataAsync(string command)
+        public override Task WriteDataAsync(string command)
         {
             // PrusaLink doesn't support direct G-code injection like Moonraker
             // This would need to be implemented differently based on actual capabilities
             throw new NotSupportedException("Direct G-code commands not supported in PrusaLink");
         }
+
+        public override Task WriteDataAsync(GCodeCommand command) => WriteDataAsync(string.Empty);
 
         public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
@@ -70,7 +71,6 @@
 
             LastTelemetry = new PrinterTelemetry
             {
-                LastResponse = "PrusaLink status update",
                 ConnectionTime = IsConnected ? DateTime.Now : null,
                 HotendTemp = status?.Printer.TempNozzle ?? 0,
                 HotendTarget = status?.Printer.TargetNozzle ?? 0,

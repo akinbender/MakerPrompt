@@ -6,13 +6,6 @@ namespace MakerPrompt.Shared.Models
     {
         private readonly object _lock = new();
 
-        private string _lastResponse = "";
-        public string LastResponse
-        {
-            get => _lastResponse;
-            set => SetField(ref _lastResponse, value, nameof(LastResponse));
-        }
-
         private string _printerName = "My 3D Printer";
         public string PrinterName
         {
