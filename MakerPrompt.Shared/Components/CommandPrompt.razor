@@ -5,8 +5,8 @@
 @inject PrinterCommunicationServiceFactory PrinterServiceFactory
 @implements IAsyncDisposable
 
-<div class="terminal bg-dark-subtle rounded p-3 mt-md-3" style="height: 70vh;">
-    <div class="terminal-history overflow-auto mb-2" style="height: 90%;" @ref="historyContainer">
+<div class="bg-body-tertiary rounded p-3 mt-md-3" style="height: 70vh;">
+    <div class="overflow-auto mb-2" style="height: 90%;" @ref="historyContainer">
         @foreach (var entry in GetHistorySnapshot())
         {
             <div class="terminal-line">

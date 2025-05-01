@@ -68,7 +68,9 @@ namespace MakerPrompt.Shared.Utils
             [Display(Name = nameof(Resources.Theme_Light), ResourceType = typeof(Resources))]
             Light,
             [Display(Name = nameof(Resources.Theme_Dark), ResourceType = typeof(Resources))]
-            Dark
+            Dark,
+            [Display(Name = "MakerPrompt")]
+            MpDark
         }
 
         public enum GCodeCategory
