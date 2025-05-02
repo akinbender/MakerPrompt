@@ -1,59 +1,39 @@
-﻿<nav id="sidebarMenu" class="col-md-3 col-lg-2 bg-body-secondary d-md-block sidebar collapse">
-    <div class="position-sticky pt-3">
-        <ul class="nav flex-column">
-            <div class="nav-item px-3">
+﻿<nav id="sidebarMenu" class="col-md-3 col-lg-2 bg-body-secondary d-flex flex-column flex-shrink-0 sidebar collapse">
+<ul class="nav flex-column mb-auto pt-3">
+            <li class="nav-item px-3">
                 <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @Resources.PageTitle_Homepage
                 </NavLink>
-            </div>
-            <div class="nav-item px-3">
+            </li>
+            <li class="nav-item px-3">
                 <NavLink class="nav-link" href="cheatsheet">
                     <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> @Resources.PageTitle_GCodeList
                 </NavLink>
-            </div>
-            <div class="nav-item px-3">
+            </li>
+            <li class="nav-item px-3">
                 <NavLink class="nav-link" href="calculators">
                     <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> @Resources.PageTitle_Calculators
                 </NavLink>
-            </div>
+            </li>
         </ul>
-    </div>
+        <hr/>
+        <div class="nav-item px-3">
+            <p class="text-break">@($"v{Version}")</p>
+        </div>
 </nav>
 
-
-@* <div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">MakerPrompt.Blazor</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div> *@
-
 @code {
+    private string Version = "v0.0.0-alpha";
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override void OnInitialized()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var versionAttribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        Version = versionAttribute?.InformationalVersion ?? "v0.0.0-alpha";
+    }
 
     private void ToggleNavMenu()
     {
