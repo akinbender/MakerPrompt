@@ -66,7 +66,7 @@
         public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
             var response = await _httpClient.GetStringAsync("/api/v1/status");
-            var status = JsonSerializer.Deserialize<PrusaStatus>(response);
+            var status = JsonSerializer.Deserialize<PrusaStatusResponse>(response);
 
             LastTelemetry = new PrinterTelemetry
             {
@@ -98,7 +98,7 @@
             return new List<FileEntry>();
             // var response = await _httpClient.GetAsync("/api/v1/storage");
             // response.EnsureSuccessStatusCode();
-            // var content = JsonSerializer.Deserialize<PrusaStorageItem>(await response.Content.ReadAsStringAsync());
+            // var content = JsonSerializer.Deserialize<PrusaFile‚Item>(await response.Content.ReadAsStringAsync());
             // return response?.Storage.Select(s => new FileEntry
             // {
             //     FullPath = s.Path,
@@ -146,14 +146,14 @@
         public string Firmware { get; set; }
     }
 
-    private record PrusaStatusResponse
+    public class PrusaStatusResponse
     {
         public PrusaStatusPrinter Printer { get; set; }
         public PrusaStatusJob? Job { get; set; }
         public List<PrusaStorage>? Storage { get; set; }
     }
 
-    private record PrusaStatusPrinter
+    public class PrusaStatusPrinter
     {
         public string State { get; set; }
         public double? TempNozzle { get; set; }
@@ -166,7 +166,7 @@
         public int? FanPrint { get; set; }
     }
 
-    private record PrusaStatusJob
+    public class PrusaStatusJob
     {
         public int Id { get; set; }
         public double Progress { get; set; }
@@ -174,7 +174,14 @@
         public int TimePrinting { get; set; }
     }
 
-    private record PrusaStorageItem
+    public class PrusaStorage
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public bool Available { get; set; }
+    }
+
+    public class PrusaFileItem
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

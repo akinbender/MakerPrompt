@@ -121,10 +121,7 @@ namespace MakerPrompt.Shared.Infrastructure
 
                     var file = new FileEntry
                     {
-                        Name = parts[0].Contains('/') ? parts[0].Substring(parts[0].LastIndexOf('/') + 1) : parts[0],
-                        FullPath = parts[0],
-                        IsDirectory = false,
-                        Type = "G-code"
+                        FullPath = parts[0]
                     };
 
                     // Parse size
@@ -135,7 +132,7 @@ namespace MakerPrompt.Shared.Infrastructure
 
                     // Parse timestamp if available (hex format)
                     if (parts.Length > 2 && parts[2].StartsWith("0x") && 
-                        long.TryParse(parts[2].Substring(2), NumberStyles.HexNumber, null, out var timestamp))
+                        long.TryParse(parts[2].Substring(2), System.Globalization.NumberStyles.HexNumber, null, out var timestamp))
                     {
                         // Convert Unix hex timestamp to DateTime
                         file.ModifiedDate = DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime;
@@ -144,7 +141,7 @@ namespace MakerPrompt.Shared.Infrastructure
                     // Use long filename if available
                     if (parts.Length > 3)
                     {
-                        file.Name = parts[3].Trim();
+                        file.FullPath = parts[3].Trim();
                     }
 
                     files.Add(file);

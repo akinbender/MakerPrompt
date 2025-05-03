@@ -135,12 +135,12 @@ namespace MakerPrompt.Shared.Services
                 $"/server/files/list?root=gcodes");
             response.EnsureSuccessStatusCode();
             var content = JsonSerializer.Deserialize<FileListResponse>(await response.Content.ReadAsStringAsync());
-            return response?.Files.Select(f => new FileEntry
+            return content.Files.Select(f => new FileEntry
                 {
                     FullPath = f.Path,
                     Size = f.Size,
-                    ModifiedDate = DateTimeOffset.FromUnixTimeSeconds((long)f.Modified).DateTime,
-                    Available = s.Permissions.Contains("rw"),
+                    ModifiedDate = f.ModifiedDate,
+                    IsAvailable = f.Permissions.Contains("rw"),
                 }).ToList() ?? new List<FileEntry>();
         }
 
