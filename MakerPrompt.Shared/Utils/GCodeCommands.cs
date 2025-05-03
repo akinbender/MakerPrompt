@@ -98,6 +98,7 @@ namespace MakerPrompt.Shared.Utils
             new("M20", Resources.GCodeDescription_M20, [GCodeCategory.SDCard],
             [
                 new('L', "Long format listing (optional)")
+                new('T', "Timestamp (optional)")
             ]);
 
         public static GCodeCommand InitSDCard = 

@@ -9,6 +9,11 @@
         <!-- When App Sandbox is enabled, this value is required to open outgoing network connections. -->
         <key>com.apple.security.network.client</key>
         <true/>
+
+        <key>com.apple.security.device.serial</key>
+        <true/>
+        <key>com.apple.security.device.usb</key>
+        <true/>
     </dict>
 </plist>
 

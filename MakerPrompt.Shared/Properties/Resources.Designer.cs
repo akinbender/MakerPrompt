@@ -1308,5 +1308,50 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("Theme_Light", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Files.
+        /// </summary>
+        public static string Dashboard_FileExplorer {
+            get {
+                return ResourceManager.GetString("Dashboard_FileExplorer", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Files_Name {
+            get {
+                return ResourceManager.GetString("Files_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Date modified.
+        /// </summary>
+        public static string Files_DateModified {
+            get {
+                return ResourceManager.GetString("Files_DateModified", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        public static string Files_Size {
+            get {
+                return ResourceManager.GetString("Files_Size", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string Files_Refresh {
+            get {
+                return ResourceManager.GetString("Files_Refresh", resourceCulture);
+            }
+        }
     }
 }

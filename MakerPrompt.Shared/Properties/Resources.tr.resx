@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,79 +26,79 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -119,423 +119,574 @@
   </resheader>
   <data name="GCodeCategory_Calibration" xml:space="preserve">
     <value>Kalibrasyon</value>
+    <comment/>
   </data>
   <data name="GCodeCategory_Fan" xml:space="preserve">
     <value>Fan</value>
+    <comment/>
   </data>
   <data name="GCodeCategory_Reporting" xml:space="preserve">
     <value>Raporlama</value>
+    <comment/>
   </data>
   <data name="GCodeCategory_Settings" xml:space="preserve">
     <value>Ayarlar</value>
+    <comment/>
   </data>
   <data name="GCodeCategory_Temperature" xml:space="preserve">
     <value>Sıcaklık</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_G0" xml:space="preserve">
     <value>Hızlı doğrusal hareket (baskı dışı)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_G1" xml:space="preserve">
     <value>Kontrollü doğrusal hareket (baskı)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_G28" xml:space="preserve">
     <value>Tüm veya belirli eksenleri sıfırla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_G29" xml:space="preserve">
     <value>Otomatik yatak kalibrasyonu</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_G90" xml:space="preserve">
     <value>Mutlak konum modunu aktif et</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_G91" xml:space="preserve">
     <value>Göreceli konum modunu aktif et</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_G92" xml:space="preserve">
     <value>Mevcut konumu ayarla (koordinatları sıfırla)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M104" xml:space="preserve">
     <value>Nozul sıcaklığını ayarla (bekleme yok)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M105" xml:space="preserve">
     <value>Mevcut sıcaklıkları raporla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M106" xml:space="preserve">
     <value>Fan hızını ayarla (S: 0-255)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M107" xml:space="preserve">
     <value>Fanı kapat</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M109" xml:space="preserve">
     <value>Nozul sıcaklığını ayarla ve bekle (beklemeli)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M112" xml:space="preserve">
     <value>Acil durdurma</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M114" xml:space="preserve">
     <value>Mevcut konumu al</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M115" xml:space="preserve">
     <value>Firmware bilgilerini al</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M140" xml:space="preserve">
     <value>Yatak sıcaklığını ayarla (bekleme yok)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M190" xml:space="preserve">
     <value>Yatak sıcaklığını ayarla ve bekle (beklemeli)</value>
+    <comment/>
   </data>
   <data name="PageTitle_GCodeList" xml:space="preserve">
     <value>G-Code Kılavuzu</value>
+    <comment/>
   </data>
   <data name="PageTitle_Homepage" xml:space="preserve">
     <value>Kontrol Paneli</value>
+    <comment/>
   </data>
   <data name="GCodeCategory_Movement" xml:space="preserve">
     <value>Hareket</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M303" xml:space="preserve">
     <value>PID otomatik ayarı</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M306" xml:space="preserve">
     <value>Termal model kalibrasyonu</value>
+    <comment/>
   </data>
   <data name="GCodeCategory_SdCard" xml:space="preserve">
     <value>SD Kart</value>
+    <comment/>
   </data>
   <data name="Theme_Auto" xml:space="preserve">
     <value>Otomatik</value>
+    <comment/>
   </data>
   <data name="Theme_Dark" xml:space="preserve">
     <value>Koyu</value>
+    <comment/>
   </data>
   <data name="Theme_Light" xml:space="preserve">
     <value>Açık</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M20" xml:space="preserve">
     <value>SD kart içeriğini listele</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M21" xml:space="preserve">
     <value>SD kartı başlat</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M22" xml:space="preserve">
     <value>SD kartı serbest bırak</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M23" xml:space="preserve">
     <value>SD dosyasını seç</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M24" xml:space="preserve">
     <value>SD baskısını başlat/devam ettir</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M25" xml:space="preserve">
     <value>SD baskısını duraklat</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M26" xml:space="preserve">
     <value>SD okuma pozisyonunu ayarla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M27" xml:space="preserve">
     <value>SD baskı durumunu raporla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M28" xml:space="preserve">
     <value>SD karta yazmaya başla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M29" xml:space="preserve">
     <value>SD karta yazmayı durdur</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M30" xml:space="preserve">
     <value>SD dosyasını sil</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M32" xml:space="preserve">
     <value>Dosya seç ve baskıyı başlat</value>
+    <comment/>
   </data>
   <data name="GCodeCommand_Command" xml:space="preserve">
     <value>Komut</value>
+    <comment/>
   </data>
   <data name="GCodeCommand_Description" xml:space="preserve">
     <value>Açıklama</value>
+    <comment/>
   </data>
   <data name="GCodeCommand_Category" xml:space="preserve">
     <value>Kategoriler</value>
+    <comment/>
   </data>
   <data name="GCodeCommand_Parameter" xml:space="preserve">
     <value>Parametreler</value>
+    <comment/>
   </data>
   <data name="CheatSheetPage_SearchCommands" xml:space="preserve">
     <value>Komut ara...</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_S_TargetTemp" xml:space="preserve">
     <value>Hedef sıcaklık</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_C_Cycle" xml:space="preserve">
     <value>Döngüler (3-20)</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_X_Position" xml:space="preserve">
     <value>X Pozisyonu</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_Y_Position" xml:space="preserve">
     <value>Y Pozisyonu</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_Z_Position" xml:space="preserve">
     <value>Z Pozisyonu</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_F_Feedrate" xml:space="preserve">
     <value>Besleme hızı</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_F_File" xml:space="preserve">
     <value>Dosya yolu</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_E_Amount" xml:space="preserve">
     <value>Eksstrüzyon miktarı</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M17" xml:space="preserve">
     <value>Stepper'ları etkinleştir</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M18" xml:space="preserve">
     <value>Stepper'ları devre dışı bırak</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M117" xml:space="preserve">
     <value>LCD Mesajını Ayarla</value>
+    <comment/>
   </data>
   <data name="NavConnection_Connect" xml:space="preserve">
     <value>Bağlan</value>
+    <comment/>
   </data>
   <data name="NavConnection_Disconnect" xml:space="preserve">
     <value>Bağlantıyı Kes</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_E_Position" xml:space="preserve">
     <value>E Pozisyonu</value>
+    <comment/>
   </data>
   <data name="NavConnection_RefreshPorts" xml:space="preserve">
     <value>Portları Yenile</value>
+    <comment/>
   </data>
   <data name="CheatSheetPage_None" xml:space="preserve">
     <value>Yok</value>
+    <comment/>
   </data>
   <data name="NavConnection_SelectPort" xml:space="preserve">
     <value>Port Seç</value>
+    <comment/>
   </data>
   <data name="CalibrationPage_PidTuning" xml:space="preserve">
     <value>PID Ayarlama</value>
+    <comment/>
   </data>
   <data name="CalibrationPage_ThermalModel" xml:space="preserve">
     <value>Termal Model</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M500" xml:space="preserve">
     <value>Ayarları EEPROM'a kaydet</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M501" xml:space="preserve">
     <value>EEPROM'dan ayarları oku</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M502" xml:space="preserve">
     <value>Tüm ayarları fabrika varsayılanlarına sıfırla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M503" xml:space="preserve">
     <value>EEPROM'dan mevcut ayarları raporla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M504" xml:space="preserve">
     <value>EEPROM içeriğini doğrula</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_P_Proportional" xml:space="preserve">
     <value>Oransal Değer</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_I_Integral" xml:space="preserve">
     <value>İntegral Değeri</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_D_Derivative" xml:space="preserve">
     <value>Türev Değeri</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M304" xml:space="preserve">
     <value>Yatak PID ayarı</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M301" xml:space="preserve">
     <value>Nozul PID ayarı</value>
+    <comment/>
   </data>
   <data name="CommandPrompt_ConnectedMessage" xml:space="preserve">
     <value>Bağlantı kuruldu.</value>
+    <comment/>
   </data>
   <data name="CommandPrompt_ErrorMessage" xml:space="preserve">
     <value>Komut gönderilirken hata: {0}.</value>
+    <comment/>
   </data>
   <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve">
     <value>Bağlantı kesildi.</value>
+    <comment/>
   </data>
   <data name="CommandPrompt_Send" xml:space="preserve">
     <value>Gönder</value>
+    <comment/>
   </data>
   <data name="CommandPrompt_EnterCommand" xml:space="preserve">
     <value>Komut girin...</value>
+    <comment/>
   </data>
   <data name="CalibrationPage_Start" xml:space="preserve">
     <value>Başlat</value>
+    <comment/>
   </data>
   <data name="PrinterComponent_Hotend" xml:space="preserve">
     <value>Sıcak uç</value>
+    <comment/>
   </data>
   <data name="PrinterComponent_Heatbed" xml:space="preserve">
     <value>Isı Yatağı</value>
+    <comment/>
   </data>
   <data name="Dashboard_ControlPanel" xml:space="preserve">
     <value>Kontrol Paneli</value>
+    <comment/>
   </data>
   <data name="CalibrationPage_HeaterIndex" xml:space="preserve">
     <value>Isıtıcı İndeksi</value>
+    <comment/>
   </data>
   <data name="CalibrationPage_Result" xml:space="preserve">
     <value>Sonuç</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Position" xml:space="preserve">
     <value>Pozisyon</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Length" xml:space="preserve">
     <value>Uzunluk</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Set" xml:space="preserve">
     <value>Ayarla</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Extrude" xml:space="preserve">
     <value>Eksstrüde Et</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Reverse" xml:space="preserve">
     <value>Geri Sar</value>
+    <comment/>
   </data>
   <data name="ControlPanel_PrintFlow" xml:space="preserve">
     <value>Akış Hızı</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Heating" xml:space="preserve">
     <value>Isınma</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Status" xml:space="preserve">
     <value>Durum</value>
+    <comment/>
   </data>
   <data name="ControlPanel_SetHotendTemp" xml:space="preserve">
     <value>Nozul Sıcaklığını Ayarla</value>
+    <comment/>
   </data>
   <data name="ControlPanel_SetBedTemp" xml:space="preserve">
     <value>Yatak Sıcaklığını Ayarla</value>
+    <comment/>
   </data>
   <data name="ControlPanel_MotorsOff" xml:space="preserve">
     <value>Motorları Kapat</value>
+    <comment/>
   </data>
   <data name="ControlPanel_SdCard_Ready" xml:space="preserve">
     <value>Hazır</value>
+    <comment/>
   </data>
   <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve">
     <value>Bulunamadı</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Speed" xml:space="preserve">
     <value>Hız</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Current" xml:space="preserve">
     <value>Mevcut</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Target" xml:space="preserve">
     <value>Hedef</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Set_XYSpeed" xml:space="preserve">
     <value>X/Y Eksen Hızı (mm/dak)</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Set_ZSpeed" xml:space="preserve">
     <value>Z Eksen Hızı (mm/dak)</value>
+    <comment/>
   </data>
   <data name="ControlPanel_PrintSpeed" xml:space="preserve">
     <value>Baskı Hızı</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M220" xml:space="preserve">
     <value>Tüm G-code hareketleri için besleme hızı yüzdesini ayarla/raporla</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M221" xml:space="preserve">
     <value>Eksstrüzyon hareketleri için akış hızı yüzdesini ayarla/raporla</value>
+    <comment/>
   </data>
   <data name="PrinterStatus_Disconnected" xml:space="preserve">
     <value>Bağlantı Kesildi</value>
+    <comment/>
   </data>
   <data name="PrinterStatus_Connected" xml:space="preserve">
     <value>Bağlı</value>
+    <comment/>
   </data>
   <data name="PrinterStatus_Printing" xml:space="preserve">
     <value>Baskıda</value>
+    <comment/>
   </data>
   <data name="PrinterStatus_Paused" xml:space="preserve">
     <value>Duraklatıldı</value>
+    <comment/>
   </data>
   <data name="PrinterStatus_Error" xml:space="preserve">
     <value>Hata</value>
+    <comment/>
   </data>
   <data name="ControlPanel_Set_FanSpeed" xml:space="preserve">
     <value>Fan Hızını Ayarla</value>
+    <comment/>
   </data>
   <data name="ControlPanel_FanSpeed" xml:space="preserve">
     <value>Fan Hızı</value>
+    <comment/>
   </data>
   <data name="Calculators_LeadScrewSteps" xml:space="preserve">
     <value>Mil Başına Adım Hesaplayıcı (Vida)</value>
+    <comment/>
   </data>
   <data name="Calculators_ExtruderSteps" xml:space="preserve">
     <value>E-Adım Hesaplayıcı</value>
+    <comment/>
   </data>
   <data name="PageTitle_Calculators" xml:space="preserve">
     <value>Hesaplayıcılar</value>
+    <comment/>
   </data>
   <data name="Calculators_MotorAngle" xml:space="preserve">
     <value>Motor Adım Açısı</value>
+    <comment/>
   </data>
   <data name="Calculators_Microstepping" xml:space="preserve">
     <value>Mikro Adımlama</value>
+    <comment/>
   </data>
   <data name="Calculators_BeltSteps" xml:space="preserve">
     <value>Mil Başına Adım Hesaplayıcı (Kayış)</value>
+    <comment/>
   </data>
   <data name="Calculators_PrintPrice" xml:space="preserve">
     <value>Baskı Maliyeti Hesaplayıcı</value>
+    <comment/>
   </data>
   <data name="Calculators_BeltPitch" xml:space="preserve">
     <value>Kayış Diş Aralığı (mm)</value>
+    <comment/>
   </data>
   <data name="Calculators_PulleyToothCount" xml:space="preserve">
     <value>Kasnak Diş Sayısı</value>
+    <comment/>
   </data>
   <data name="Calculators_LeadscrewPitch" xml:space="preserve">
     <value>Vida Adımı (mm/devir)</value>
+    <comment/>
   </data>
   <data name="Calculators_GearRatio" xml:space="preserve">
     <value>Dişli Oranı</value>
+    <comment/>
   </data>
   <data name="Calculators_Steps" xml:space="preserve">
     <value>Mil Başına Adım</value>
+    <comment/>
   </data>
   <data name="Calculators_Resolution" xml:space="preserve">
     <value>Çözünürlük</value>
+    <comment/>
   </data>
   <data name="Calculators_GCodeExample" xml:space="preserve">
     <value>G-code örneği</value>
+    <comment/>
   </data>
   <data name="Calculators_RequestedExtrusionLength" xml:space="preserve">
     <value>Talep Edilen Ekstrüzyon Uzunluğu (mm)</value>
+    <comment/>
   </data>
   <data name="Calculators_CurrentEsteps" xml:space="preserve">
     <value>Mevcut E-adımları (adım/mm)</value>
+    <comment/>
   </data>
   <data name="Calculators_ActualExtrusionLength" xml:space="preserve">
     <value>Gerçek Ekstrüzyon Uzunluğu (mm)</value>
+    <comment/>
   </data>
   <data name="Calculators_MeasureCaliper" xml:space="preserve">
     <value>Bir kumpas ile ölçün</value>
+    <comment/>
   </data>
   <data name="Calculators_Esteps_HowTo" xml:space="preserve">
-    <value>&lt;h5&gt;Nasıl Kullanılır:&lt;/h5&gt;
-&lt;ol&gt;
-    &lt;li&gt;Ekstruder girişinden 120 mm işaretleyin&lt;/li&gt;
-    &lt;li&gt;Hotend'i çalışma sıcaklığına ısıtın&lt;/li&gt;
-    &lt;li&gt;100 mm ekstrüde edin (&lt;code&gt;G1 E100 F100&lt;/code&gt; komutunu kullanın)&lt;/li&gt;
-    &lt;li&gt;Ekstrudere kalan filament uzunluğunu ölçün&lt;/li&gt;
-    &lt;li&gt;Yukarıdaki değerleri girin (gerçek uzunluk = 120 - kalan uzunluk)&lt;/li&gt;
-&lt;/ol&gt;</value>
+    <value>&lt;h5&gt;Nasıl Kullanılır:&lt;/h5&gt;&lt;ol&gt;    &lt;li&gt;Ekstruder girişinden 120 mm işaretleyin&lt;/li&gt;    &lt;li&gt;Hotend'i çalışma sıcaklığına ısıtın&lt;/li&gt;    &lt;li&gt;100 mm ekstrüde edin (&lt;code&gt;G1 E100 F100&lt;/code&gt; komutunu kullanın)&lt;/li&gt;    &lt;li&gt;Ekstrudere kalan filament uzunluğunu ölçün&lt;/li&gt;    &lt;li&gt;Yukarıdaki değerleri girin (gerçek uzunluk = 120 - kalan uzunluk)&lt;/li&gt;&lt;/ol&gt;</value>
+    <comment/>
   </data>
   <data name="GCodeDescription_M92" xml:space="preserve">
     <value>Bir veya daha fazla eksen için birim başına adımları sorma veya ayarlama</value>
+    <comment/>
   </data>
   <data name="NavConnection_BrowserNotSupported" xml:space="preserve">
     <value>Tarayıcı desteklenmiyor.</value>
+    <comment/>
   </data>
   <data name="Calculators_RememberSave" xml:space="preserve">
     <value>Test ettikten sonra kaydetmeyi unutmayın</value>
+    <comment/>
+  </data>
+  <data name="Dashboard_FileExplorer" xml:space="preserve">
+    <value>Dosyalar</value>
+    <comment/>
+  </data>
+  <data name="Files_Name" xml:space="preserve">
+    <value>İsim</value>
+    <comment/>
+  </data>
+  <data name="Files_DateModified" xml:space="preserve">
+    <value>Değiştirildiği Tarih</value>
+    <comment/>
+  </data>
+  <data name="Files_Size" xml:space="preserve">
+    <value>Boyut</value>
+    <comment/>
+  </data>
+  <data name="Files_Refresh" xml:space="preserve">
+    <value>Yenile</value>
+    <comment/>
   </data>
 </root>

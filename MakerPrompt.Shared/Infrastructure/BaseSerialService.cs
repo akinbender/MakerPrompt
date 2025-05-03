@@ -21,6 +21,14 @@ namespace MakerPrompt.Shared.Infrastructure
             return LastTelemetry;
         }
 
+        public override async Task<List<FileEntry>> GetFilesAsync()
+        {
+            // await WriteDataAsync("M20 L T");
+            // await Task.Delay(500); // Wait for response
+            
+            return new List<FileEntry>();
+        }
+
         public void ProcessReceivedData(string data)
         {
             _receiveBuffer.Append(data);
@@ -87,6 +95,68 @@ namespace MakerPrompt.Shared.Infrastructure
 
             RaiseTelemetryUpdated();
             return LastTelemetry;
+        }
+
+        private List<FileEntry> ParseM20Response(string response)
+        {
+            var files = new List<FileEntry>();
+            
+            if (string.IsNullOrEmpty(response))
+                return files;
+
+            // Split into lines and skip non-file lines
+            var lines = response.Split('\n')
+                .Where(line => line.Contains(".G", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            foreach (var line in lines)
+            {
+                try
+                {
+                    // Split into parts - format: "filename size timestamp longname"
+                    var parts = line.Split(new[] {' '}, 4, StringSplitOptions.RemoveEmptyEntries);
+                    
+                    if (parts.Length < 2) // Need at least filename and size
+                        continue;
+
+                    var file = new FileEntry
+                    {
+                        Name = parts[0].Contains('/') ? parts[0].Substring(parts[0].LastIndexOf('/') + 1) : parts[0],
+                        FullPath = parts[0],
+                        IsDirectory = false,
+                        Type = "G-code"
+                    };
+
+                    // Parse size
+                    if (long.TryParse(parts[1], out var size))
+                    {
+                        file.Size = size;
+                    }
+
+                    // Parse timestamp if available (hex format)
+                    if (parts.Length > 2 && parts[2].StartsWith("0x") && 
+                        long.TryParse(parts[2].Substring(2), NumberStyles.HexNumber, null, out var timestamp))
+                    {
+                        // Convert Unix hex timestamp to DateTime
+                        file.ModifiedDate = DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime;
+                    }
+
+                    // Use long filename if available
+                    if (parts.Length > 3)
+                    {
+                        file.Name = parts[3].Trim();
+                    }
+
+                    files.Add(file);
+                }
+                catch
+                {
+                    // Skip malformed entries
+                    continue;
+                }
+            }
+
+            return files;
         }
     }
 }

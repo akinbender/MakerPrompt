@@ -13,6 +13,6 @@
         Task DisconnectAsync();
         Task WriteDataAsync(string command);
         Task<PrinterTelemetry> GetPrinterTelemetryAsync();
+        Task<List<FileEntry>> GetFilesAsync();
     }
-
 }

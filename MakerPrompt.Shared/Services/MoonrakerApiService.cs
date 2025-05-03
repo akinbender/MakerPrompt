@@ -1,11 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace MakerPrompt.Shared.Services
 {
-    public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService, IDisposable
+    public class MoonrakerApiService : BasePrinterConnectionService, IDisposable
     {
         private HttpClient _httpClient;
         private Uri _baseUri;
@@ -129,6 +127,23 @@ namespace MakerPrompt.Shared.Services
             return LastTelemetry;
         }
 
+        public override async Task<List<FileEntry>> GetFilesAsync()
+        {
+            if (!IsConnected) return new List<FileEntry>();
+
+            var response = await _httpClient.GetAsync(
+                $"/server/files/list?root=gcodes");
+            response.EnsureSuccessStatusCode();
+            var content = JsonSerializer.Deserialize<FileListResponse>(await response.Content.ReadAsStringAsync());
+            return response?.Files.Select(f => new FileEntry
+                {
+                    FullPath = f.Path,
+                    Size = f.Size,
+                    ModifiedDate = DateTimeOffset.FromUnixTimeSeconds((long)f.Modified).DateTime,
+                    Available = s.Permissions.Contains("rw"),
+                }).ToList() ?? new List<FileEntry>();
+        }
+
         public async Task<bool> AuthenticateAsync(string username, string password)
         {
             try
@@ -195,6 +210,34 @@ namespace MakerPrompt.Shared.Services
 
             [JsonPropertyName("source")]
             public string Source { get; set; } = string.Empty;
+        }
+
+        private record FileListResponse
+        {
+            [JsonPropertyName("result")]
+            public List<FileItem> Files { get; set; } = new List<FileItem>();
+        }
+
+        private record FileItem
+        {
+            [JsonPropertyName("path")]
+            public string Path { get; set; } = string.Empty;
+
+            [JsonPropertyName("modified")]
+            public double ModifiedSeconds { get; set; }
+
+            [JsonIgnore]
+            public DateTime ModifiedDate => 
+                DateTimeOffset.FromUnixTimeSeconds((long)ModifiedSeconds).DateTime;
+
+            [JsonPropertyName("size")]
+            public long Size { get; set; }
+
+            [JsonPropertyName("permissions")]
+            public string Permissions { get; set; } = string.Empty;
+
+            [JsonIgnore]
+            public bool IsDirectory => Size == 0;
         }
     }
 

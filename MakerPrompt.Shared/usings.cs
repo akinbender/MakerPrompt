@@ -1,6 +1,8 @@
 ﻿global using static MakerPrompt.Shared.Utils.Enums;
-global using System.Text.RegularExpressions;
+global using System.Text;
 global using System.Text.Json;
+global using System.Text.RegularExpressions;
+global using System.Text.Json.Serialization;
 global using System.Reflection;
 global using MakerPrompt.Shared.Infrastructure;
 global using MakerPrompt.Shared.Properties;

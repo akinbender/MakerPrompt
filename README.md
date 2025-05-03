@@ -12,12 +12,13 @@ In our 3D-lab @[x-hain](https://x-hain.de) hackspace we have several printers fr
 
 ## TODOs
 - [ ] TEST & BUGFIX
-- [ ] Add logo
+- [x] Add logo
+- [x] Versioning
 - [ ] Enable PrusaLink
 - [ ] Fix Web serial telemety update
 - [ ] Fix CommandPrompt usage
 - [ ] Fix ControlPanel coordinate axis movement
-- [ ] Implement File list component
-- [ ] Add Android support
+- [x] Implement File list component
+- [ ] Add Android&Macos support
 - [ ] Moonraker GCode list
 - [ ] Expand language support? (es, pl, fr)

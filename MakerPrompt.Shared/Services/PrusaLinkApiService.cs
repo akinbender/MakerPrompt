@@ -66,7 +66,7 @@
         public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
             var response = await _httpClient.GetStringAsync("/api/v1/status");
-            var status = JsonSerializer.Deserialize<PrusaStatusResponse>(response);
+            var status = JsonSerializer.Deserialize<PrusaStatus>(response);
 
             LastTelemetry = new PrinterTelemetry
             {
@@ -91,6 +91,20 @@
 
             RaiseTelemetryUpdated();
             return LastTelemetry;
+        }
+
+        public override async Task<List<FileEntry>> GetFilesAsync()
+        {
+            return new List<FileEntry>();
+            // var response = await _httpClient.GetAsync("/api/v1/storage");
+            // response.EnsureSuccessStatusCode();
+            // var content = JsonSerializer.Deserialize<PrusaStorageItem>(await response.Content.ReadAsStringAsync());
+            // return response?.Storage.Select(s => new FileEntry
+            // {
+            //     FullPath = s.Path,
+            //     Size = s.Size,
+            //     Available = !s.Readonly,
+            // }).ToList() ?? new List<FileEntry>();
         }
 
         private async Task<PrusaVersionResponse?> GetVersionAsync()
@@ -132,14 +146,14 @@
         public string Firmware { get; set; }
     }
 
-    public class PrusaStatusResponse
+    private record PrusaStatusResponse
     {
         public PrusaStatusPrinter Printer { get; set; }
         public PrusaStatusJob? Job { get; set; }
         public List<PrusaStorage>? Storage { get; set; }
     }
 
-    public class PrusaStatusPrinter
+    private record PrusaStatusPrinter
     {
         public string State { get; set; }
         public double? TempNozzle { get; set; }
@@ -152,7 +166,7 @@
         public int? FanPrint { get; set; }
     }
 
-    public class PrusaStatusJob
+    private record PrusaStatusJob
     {
         public int Id { get; set; }
         public double Progress { get; set; }
@@ -160,10 +174,15 @@
         public int TimePrinting { get; set; }
     }
 
-    public class PrusaStorage
+    private record PrusaStorageItem
     {
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        public string Type { get; set; }
-        public bool Available { get; set; }
+        [JsonPropertyName("path")]
+        public string Path { get; set; }
+        [JsonPropertyName("read_only")]
+        public bool Readonly { get; set; }
+        [JsonPropertyName("free_space")]
+        public long Size { get; set; }
     }
 }

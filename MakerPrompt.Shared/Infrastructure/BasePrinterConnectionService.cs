@@ -32,6 +32,8 @@
 
         public abstract Task<PrinterTelemetry> GetPrinterTelemetryAsync();
 
+        public abstract Task<List<FileEntry>> GetFilesAsync();
+
         public abstract ValueTask DisposeAsync();
     }
 }
