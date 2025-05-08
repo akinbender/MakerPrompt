@@ -42,8 +42,8 @@ jobs:
     - name: Publish MAUI Windows
       continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-windows10.0.19041.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows 
-          -p:ApplicationDisplayVersion=${{ VERSION }} 
-          -p:ApplicationVersion=${{ VERSION }}
+          -p:ApplicationDisplayVersion=$VERSION  
+          -p:ApplicationVersion=$VERSION
 
     - name: Upload Windows Artifact
       if: always()
@@ -55,8 +55,8 @@ jobs:
     - name: Publish MAUI Android
       continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-android -o ${{ env.OUTPUT_DIR }}/android 
-          -p:ApplicationDisplayVersion=${{ VERSION }} 
-          -p:ApplicationVersion=${{ VERSION }}
+          -p:ApplicationDisplayVersion=$VERSION 
+          -p:ApplicationVersion=$VERSION
 
     - name: Upload Android Artifact
       if: always()
@@ -68,8 +68,8 @@ jobs:
     - name: Publish MAUI MacCatalyst
       continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-maccatalyst -o ${{ env.OUTPUT_DIR }}/maccatalyst -p:CreatePackage=false
-          -p:ApplicationDisplayVersion=${{ VERSION }} 
-          -p:ApplicationVersion=${{ VERSION }}
+          -p:ApplicationDisplayVersion=$VERSION 
+          -p:ApplicationVersion=$VERSION
 
     - name: Upload MacCatalyst Artifact
       if: always()
