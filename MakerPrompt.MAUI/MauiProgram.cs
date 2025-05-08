@@ -21,6 +21,7 @@ namespace MakerPrompt.MAUI
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
+#endif
 
             builder.Services.AddLocalization(options =>
             {
@@ -28,17 +29,12 @@ namespace MakerPrompt.MAUI
             });
 
             //TODO fix
-            var supportedCultures = new[] { "en-US", "de-DE" };
+            var supportedCultures = new AppConfiguration().SupportedCultures;
             var localizationOptions = new RequestLocalizationOptions()
                 .SetDefaultCulture(supportedCultures[0])
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
-
-
-#endif
-#if WINDOWS
-            builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, WindowsSerialService>();
-#endif
+            builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, SerialService>();
             return builder.Build();
         }
     }

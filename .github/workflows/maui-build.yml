@@ -1,4 +1,4 @@
-name: Build MAUI Windows App
+name: Build MAUI Apps
 
 on:
   push:
@@ -29,20 +29,23 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Install MAUI workload
-      run: dotnet workload install maui-desktop
+    - name: Install MAUI workloads
+      run: |
+        dotnet workload install maui
+        dotnet workload install maui-desktop
+        dotnet workload install maui-android
+        dotnet workload install maui-maccatalyst
 
     - name: Restore dependencies
       run: dotnet restore ${{ env.MAUI_PROJECT }}
 
-      # Generate version number
     - name: Generate Version
       run: |
         echo "VERSION=$(date +%Y.%m.%d)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         echo "BUILD_NUMBER=$((GITHUB_RUN_NUMBER))" >> $GITHUB_ENV
 
     - name: Publish MAUI Windows
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net9.0-windows10.0.19041.0 --runtime win-x64 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }} \
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-windows10.0.19041.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows \
           -p:ApplicationDisplayVersion=${{ env.VERSION }} \
           -p:ApplicationVersion=${{ env.BUILD_NUMBER }}
 
@@ -50,4 +53,26 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: windows-app
-        path: ${{ env.OUTPUT_DIR }}
+        path: ${{ env.OUTPUT_DIR }}/windows
+
+    - name: Publish MAUI Android
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-android -o ${{ env.OUTPUT_DIR }}/android \
+          -p:ApplicationDisplayVersion=${{ env.VERSION }} \
+          -p:ApplicationVersion=${{ env.BUILD_NUMBER }}
+
+    - name: Upload Android Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-app
+        path: ${{ env.OUTPUT_DIR }}/android
+
+    - name: Publish MAUI MacCatalyst
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-maccatalyst -o ${{ env.OUTPUT_DIR }}/maccatalyst \
+          -p:ApplicationDisplayVersion=${{ env.VERSION }} \
+          -p:ApplicationVersion=${{ env.BUILD_NUMBER }}
+
+    - name: Upload MacCatalyst Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: maccatalyst-app
+        path: ${{ env.OUTPUT_DIR }}/maccatalyst

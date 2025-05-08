@@ -1,5 +1,4 @@
-﻿#if WINDOWS
-using System.IO.Ports;
+﻿using System.IO.Ports;
 using System.Threading.Tasks.Dataflow;
 using MakerPrompt.Shared.Infrastructure;
 using System.Text;
@@ -180,4 +179,3 @@ namespace MakerPrompt.MAUI.Services
             : base(message, inner) { }
     }
 }
-#endif

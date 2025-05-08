@@ -37,6 +37,9 @@ ScaffoldingReadMe.txt
 # NuGet Symbol Packages
 *.snupkg
 
+# Ignore .csproj.user files
+*.csproj.user
+
 # Others
 ~$*
 *~
