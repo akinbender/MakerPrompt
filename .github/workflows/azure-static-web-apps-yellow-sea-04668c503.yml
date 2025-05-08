@@ -22,8 +22,7 @@ jobs:
 
       - name: Generate Version
         run: |
-          echo "VERSION=$(date +%Y.%m.%d)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "BUILD_NUMBER=$((GITHUB_RUN_NUMBER))" >> $GITHUB_ENV
+          echo "VERSION=$(date +%Y.%m.%d)" >> $GITHUB_ENV
 
       - name: Build And Deploy
         id: builddeploy
