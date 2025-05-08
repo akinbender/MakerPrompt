@@ -3,7 +3,7 @@
         <TargetFrameworks>net8.0-windows10.0.19041.0;net8.0-android;net8.0-maccatalyst</TargetFrameworks>
         <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">win-x64</RuntimeIdentifiers>
         <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm64;android-x64</RuntimeIdentifiers>
-        <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">osx-arm64;osx-x64;maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
 
         <OutputType>Exe</OutputType>
         <RootNamespace>MakerPrompt.MAUI</RootNamespace>
@@ -18,10 +18,6 @@
 
         <!-- App Identifier -->
         <ApplicationId>com.makerprompt.maui</ApplicationId>
-
-        <!-- Versions -->
-        <ApplicationDisplayVersion>$(ApplicationDisplayVersion)</ApplicationDisplayVersion>
-        <ApplicationVersion>$(ApplicationVersion)</ApplicationVersion>
 
         <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
