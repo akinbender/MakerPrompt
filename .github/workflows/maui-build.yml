@@ -44,33 +44,39 @@ jobs:
         echo "VERSION=$(date +%Y.%m.%d)" >> $GITHUB_ENV
 
     - name: Publish MAUI Windows
+      continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-windows10.0.19041.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows 
           -p:ApplicationDisplayVersion=${{ env.VERSION }} 
           -p:ApplicationVersion=${{ env.VERSION }}
 
     - name: Upload Windows Artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: windows-app
         path: ${{ env.OUTPUT_DIR }}/windows
 
     - name: Publish MAUI Android
+      continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-android -o ${{ env.OUTPUT_DIR }}/android 
           -p:ApplicationDisplayVersion=${{ env.VERSION }} 
           -p:ApplicationVersion=${{ env.VERSION }}
 
     - name: Upload Android Artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: android-app
         path: ${{ env.OUTPUT_DIR }}/android
 
     - name: Publish MAUI MacCatalyst
+      continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-maccatalyst -o ${{ env.OUTPUT_DIR }}/maccatalyst 
           -p:ApplicationDisplayVersion=${{ env.VERSION }} 
           -p:ApplicationVersion=${{ env.VERSION }}
 
     - name: Upload MacCatalyst Artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: maccatalyst-app

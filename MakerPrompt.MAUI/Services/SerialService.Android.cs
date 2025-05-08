@@ -10,7 +10,6 @@ namespace MakerPrompt.MAUI.Services
     public class SerialService : BaseSerialService, ISerialService
     {
         private UsbDriverBase? _usbDriver;
-        private bool _isConnected;
         public bool IsSupported => true;
 
         public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
@@ -39,31 +38,32 @@ namespace MakerPrompt.MAUI.Services
                 _usbDriver = UsbDriverFactory.CreateUsbDriver(usbDevice.DeviceId);
                 _usbDriver.Open(baudRate, dataBits, stopBits, parity);
 
-                _isConnected = true;
+                IsConnected = true;
                 RaiseConnectionChanged();
-                return _isConnected;
             }
             catch (Exception ex)
             {
+                IsConnected = false;
                 Console.WriteLine($"Error connecting to device: {ex.Message}");
-                return false;
             }
+
+            return IsConnected;
         }
 
         public override async Task DisconnectAsync()
         {
-            if (_isConnected && _usbDriver != null)
+            if (IsConnected && _usbDriver != null)
             {
                 _usbDriver.Close();
                 _usbDriver = null;
-                _isConnected = false;
+                IsConnected = false;
                 RaiseConnectionChanged();
             }
         }
 
         public override async Task WriteDataAsync(string data)
         {
-            if (!_isConnected || _usbDriver == null)
+            if (!IsConnected || _usbDriver == null)
                 throw new InvalidOperationException("Device is not connected");
 
             var buffer = Encoding.ASCII.GetBytes(data);

@@ -6,7 +6,7 @@ using MakerPrompt.Shared.Models;
 
 namespace MakerPrompt.MAUI.Services
 {
-    public class WindowsSerialService : BaseSerialService, ISerialService
+    public class SerialService : BaseSerialService, ISerialService
     {
         private readonly SerialPort _serialPort;
         private readonly BufferBlock<string> _commandQueue = new();
@@ -15,7 +15,7 @@ namespace MakerPrompt.MAUI.Services
         private Task? _receiveTask;
         public bool IsSupported => true;
 
-        public WindowsSerialService()
+        public SerialService()
         {
             _serialPort = new SerialPort
             {
