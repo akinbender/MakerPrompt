@@ -689,4 +689,12 @@
     <value>Refresh</value>
     <comment/>
   </data>
+  <data name="PageTitle_About" xml:space="preserve">
+    <value>About</value>
+    <comment/>
+  </data>
+  <data name="AboutPage_Content" xml:space="preserve">
+    <value>Open-source, cross-platform 3D printer management software powered by Blazor Hybrid. &lt;strong&gt;Still under development—use at your own risk.&lt;/strong&gt;&lt;/br&gt;Special thanks to &lt;a href="https://mrhide.de"&gt;MrHide&lt;/a&gt; for the digital logo and Paleva (@x-hain) for her invaluable support.  The source code is available &lt;a href="https://github.com/akinbender/MakerPrompt"&gt;here&lt;/a&gt;.</value>
+    <comment/>
+  </data>
 </root>

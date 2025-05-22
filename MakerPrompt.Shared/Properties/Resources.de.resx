@@ -689,4 +689,12 @@
     <value>Aktualisieren</value>
     <comment/>
   </data>
+  <data name="PageTitle_About" xml:space="preserve">
+    <value>Über uns</value>
+    <comment/>
+  </data>
+  <data name="AboutPage_Content" xml:space="preserve">
+    <value>Open-Source, plattformübergreifende 3D-Drucker-Verwaltungssoftware, entwickelt mit Blazor Hybrid. &lt;strong&gt;&lt;/br&gt;Noch in Entwicklung—Nutzung auf eigene Gefahr.&lt;/strong&gt;  Besonderer Dank geht an &lt;a href="https://mrhide.de"&gt;MrHide&lt;/a&gt; für das digitale Logo und Paleva (@x-hain) für ihre wertvolle Unterstützung.  Der Quellcode ist &lt;a href="https://github.com/akinbender/MakerPrompt"&gt;hier&lt;/a&gt; verfügbar.</value>
+    <comment/>
+  </data>
 </root>

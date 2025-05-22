@@ -689,4 +689,12 @@
     <value>Yenile</value>
     <comment/>
   </data>
+  <data name="AboutPage_Content" xml:space="preserve">
+    <value>Blazor Hybrid ile geliştirilen, açık kaynaklı ve çapraz platform bir 3D yazıcı yönetim yazılımı. &lt;strong&gt;Hala geliştirme aşamasındadır—kullanım riski size aittir.&lt;/strong&gt;&lt;/br&gt;Dijital logo için &lt;a href="https://mrhide.de"&gt;MrHide&lt;/a&gt;'a ve değerli desteği için Paleva'ya (@x-hain) özel teşekkürler.  Kaynak koduna &lt;a href="https://github.com/akinbender/MakerPrompt"&gt;buradan&lt;/a&gt; ulaşabilirsiniz.</value>
+    <comment/>
+  </data>
+  <data name="PageTitle_About" xml:space="preserve">
+    <value>Hakkımızda</value>
+    <comment/>
+  </data>
 </root>

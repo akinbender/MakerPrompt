@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
         <PropertyGroup>
-        <TargetFrameworks>net8.0-windows10.0.19041.0;net8.0-android;net8.0-maccatalyst</TargetFrameworks>
+        <TargetFrameworks>net8.0-android;net8.0-maccatalyst</TargetFrameworks>
         <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">win-x64</RuntimeIdentifiers>
         <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm64;android-x64</RuntimeIdentifiers>
-        <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">osx-arm64;osx-x64;maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
 
         <OutputType>Exe</OutputType>
         <RootNamespace>MakerPrompt.MAUI</RootNamespace>
@@ -36,11 +36,10 @@
     </ItemGroup>
 
     <!-- Mac Catalyst -->
-    <ItemGroup Condition="$(TargetFramework.StartsWith('net8.0-maccatalyst')) != true">
-        <Compile Remove="**\*.MacCatalyst.cs" />
-        <None Include="**\*.MacCatalyst.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <ItemGroup Condition="$(TargetFramework.StartsWith('net8.0-ios')) != true AND $(TargetFramework.StartsWith('net8.0-maccatalyst')) != true">
+        <Compile Remove="**\*.MaciOS.cs" />
+        <None Include="**\*.MaciOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
-
     <!-- Windows -->
     <ItemGroup Condition="$(TargetFramework.Contains('-windows')) != true">
         <Compile Remove="**\*.Windows.cs" />

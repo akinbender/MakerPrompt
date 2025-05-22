@@ -6,6 +6,7 @@ global using System.Text.Json.Serialization;
 global using System.Reflection;
 global using MakerPrompt.Shared.Infrastructure;
 global using MakerPrompt.Shared.Properties;
+global using MakerPrompt.Shared.Services;
 global using MakerPrompt.Shared.Models;
 global using MakerPrompt.Shared.Utils;
 global using Microsoft.JSInterop;

@@ -1353,5 +1353,23 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("Files_Refresh", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string PageTitle_About {
+            get {
+                return ResourceManager.GetString("PageTitle_About", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string AboutPage_Content {
+            get {
+                return ResourceManager.GetString("AboutPage_Content", resourceCulture);
+            }
+        }
     }
 }
