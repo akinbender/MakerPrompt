@@ -28,7 +28,7 @@
             //_httpClient = new HttpClient(handler) { BaseAddress = _baseUri };
         }
 
-        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             try
             {
@@ -47,7 +47,7 @@
             return IsConnected;
         }
 
-        public override async Task DisconnectAsync()
+        public async Task DisconnectAsync()
         {
             updateTimer?.Stop();
             _httpClient.CancelPendingRequests();
@@ -56,14 +56,14 @@
             await Task.CompletedTask;
         }
 
-        public override async Task WriteDataAsync(string command)
+        public async Task WriteDataAsync(string command)
         {
             // PrusaLink doesn't support direct G-code injection like Moonraker
             // This would need to be implemented differently based on actual capabilities
             throw new NotSupportedException("Direct G-code commands not supported in PrusaLink");
         }
 
-        public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+        public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
             var response = await _httpClient.GetStringAsync("/api/v1/status");
             var status = JsonSerializer.Deserialize<PrusaStatusResponse>(response);
@@ -93,7 +93,7 @@
             return LastTelemetry;
         }
 
-        public override async Task<List<FileEntry>> GetFilesAsync()
+        public async Task<List<FileEntry>> GetFilesAsync()
         {
             return new List<FileEntry>();
             // var response = await _httpClient.GetAsync("/api/v1/storage");
@@ -133,6 +133,51 @@
         {
             Dispose();
             return ValueTask.CompletedTask;
+        }
+
+        public Task SetHotendTemp(int targetTemp = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetBedTemp(int targetTemp = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Home(bool x = true, bool y = true, bool z = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetFanSpeed(int speed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetPrintSpeed(int speed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetPrintFlow(int flow)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SaveEEPROM()
+        {
+            throw new NotImplementedException();
         }
     }
 

@@ -1,8 +1,6 @@
 ﻿@using System.ComponentModel
-@inject PrinterCommunicationServiceFactory PrinterServiceFactory
-@inject PrinterStateService StateService
 @inject IStringLocalizer<Resources> localizer
-@implements IDisposable
+@inherits ConnectionComponentBase
 
 <div class="row">
     <div class="col-lg-6 col-md-12">
@@ -36,30 +34,30 @@
                 <div class="d-flex justify-content-center">
                     <div class="d-flex flex-column align-items-start">
                         <div class="btn-group-vertical z-2" role="group" aria-label="z-axis">
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.Home(false, false, true)"><i class="bi bi-house"></i> Z</button>
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.RelativeMove(zSpeed,0,0,10)">10</button>
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.RelativeMove(zSpeed,0,0,1)">1</button>
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await StateService.RelativeMove(zSpeed,0,0,0.1f)"
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.Home(false, false, true)"><i class="bi bi-house"></i> Z</button>
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(zSpeed,0,0,10)">10</button>
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(zSpeed,0,0,1)">1</button>
+                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(zSpeed,0,0,0.1f)"
                                     style="border-bottom-left-radius:0px;border-bottom-right-radius:0px;">
                                 0.1
                             </button>
                         </div>
                         <div class="btn-group z-2 me-2" role="group" aria-label="x-axis">
                             <button type="button" class="btn btn-warning btn-axis-move"
-                                    style="border-top-left-radius:0px;" @onclick="async () => await StateService.Home()">
+                                    style="border-top-left-radius:0px;" @onclick="async () => await PrinterServiceFactory.Current?.Home()">
                                 <i class="bi bi-houses"></i>
                             </button>
-                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0.1f,0,0)">0.1</button>
-                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,1,0,0)">1</button>
-                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,10,0,0)">10</button>
-                            <button type="button" class="btn btn-danger" @onclick="async () => await StateService.Home(true, false, false)"><i class="bi bi-house"></i> X</button>
+                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed,0.1f,0,0)">0.1</button>
+                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed,1,0,0)">1</button>
+                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed,10,0,0)">10</button>
+                            <button type="button" class="btn btn-danger" @onclick="async () => await PrinterServiceFactory.Current?.Home(true, false, false)"><i class="bi bi-house"></i> X</button>
                         </div>
                         <div class="btn-group me-2 z-1" role="group" aria-label="y-axis" style="transform: translate(0, -120px) rotate(-45deg);">
                             <button type="button" class="btn btn-success"></button>
-                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0,10,0)">10</button>
-                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0,1,0)">1</button>
-                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await StateService.RelativeMove(xySpeed,0,0.1f,0)">0.1</button>
-                            <button type="button" class="btn btn-info" @onclick="async () => await StateService.Home(false, true, false)"><i class="bi bi-house"></i> Y</button>
+                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed,0,10,0)">10</button>
+                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed,0,1,0)">1</button>
+                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed,0,0.1f,0)">0.1</button>
+                            <button type="button" class="btn btn-info" @onclick="async () => await PrinterServiceFactory.Current?.Home(false, true, false)"><i class="bi bi-house"></i> Y</button>
                         </div>
                     </div>
                 </div>
@@ -73,14 +71,14 @@
                 <div class="input-group mb-2">
                     <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.HotendTemp.ToString("F1")</span>
                     <span class="input-group-text" title="@localizer[Resources.ControlPanel_Target]">T: @_state.HotendTarget.ToString("F1")</span>
-                    <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" @bind:after="async () => await StateService.SetHotendTemp(hotendTarget)">
+                    <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" @bind:after="async () => await PrinterServiceFactory.Current?.SetHotendTemp(hotendTarget)">
                     <span class="input-group-text">°C</span>
                     <button class="btn btn-outline-secondary" type="button" title="@localizer[Resources.ControlPanel_SetHotendTemp]">@localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group mb-2">
                     <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.BedTemp.ToString("F1")</span>
                     <span class="input-group-text" title="@localizer[Resources.ControlPanel_Target]">T: @_state.BedTarget.ToString("F1")</span>
-                    <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" @bind:after="async () => await StateService.SetBedTemp(bedTarget)">
+                    <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" @bind:after="async () => await PrinterServiceFactory.Current?.SetBedTemp(bedTarget)">
                     <span class="input-group-text">°C</span>
                     <button class="btn btn-outline-secondary" type="button" title="@localizer[Resources.ControlPanel_SetBedTemp]">@localizer[Resources.ControlPanel_Set]</button>
                 </div>
@@ -90,7 +88,7 @@
                     <input type="text" min="0" max="100" class="form-control" @bind="printSpeed">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" title="@localizer[Resources.ControlPanel_Set_FanSpeed]"
-                            @onclick="async () => await StateService.SetFanSpeed(printSpeed)">@localizer[Resources.ControlPanel_Set]
+                            @onclick="async () => await PrinterServiceFactory.Current?.SetFanSpeed(printSpeed)">@localizer[Resources.ControlPanel_Set]
                     </button>
                 </div>
             </div>
@@ -111,8 +109,8 @@
                 </div>
                 <div class="d-flex align-items-end">
                     <div class="btn-group ms-auto" role="group">
-                        <button type="button" class="btn btn-primary" @onclick="async () => await StateService.RelativeMove(extrudeSpeed,0,0,0,extrudeLength)">@localizer[Resources.ControlPanel_Extrude]</button>
-                        <button type="button" class="btn btn-primary" @onclick="async () => await StateService.RelativeMove(extrudeSpeed,0,0,0,-extrudeLength)">@localizer[Resources.ControlPanel_Reverse]</button>
+                        <button type="button" class="btn btn-primary" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(extrudeSpeed,0,0,0,extrudeLength)">@localizer[Resources.ControlPanel_Extrude]</button>
+                        <button type="button" class="btn btn-primary" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(extrudeSpeed,0,0,0,-extrudeLength)">@localizer[Resources.ControlPanel_Reverse]</button>
                     </div>
                 </div>
             </div>
@@ -131,14 +129,14 @@
                 <div class="input-group mb-2">
                     <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.FeedRate.ToString()</span>
                     <span class="input-group-text">@localizer[Resources.ControlPanel_PrintSpeed]:</span>
-                    <input type="text" class="form-control" @bind="printSpeed" @bind:after="async () => await StateService.SetPrintSpeed(printSpeed)">
+                    <input type="text" class="form-control" @bind="printSpeed" @bind:after="async () => await PrinterServiceFactory.Current?.SetPrintSpeed(printSpeed)">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" disabled="disabled">@localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group">
                     <span class="input-group-text" title="@localizer[Resources.ControlPanel_Current]">C: @_state.FlowRate.ToString()</span>
                     <span class="input-group-text">@localizer[Resources.ControlPanel_PrintFlow]:</span>
-                    <input type="text" class="form-control" @bind="printFlow" @bind:after="async () => await StateService.SetPrintSpeed(printFlow)">
+                    <input type="text" class="form-control" @bind="printFlow" @bind:after="async () => await PrinterServiceFactory.Current?.SetPrintSpeed(printFlow)">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" disabled="disabled">@localizer[Resources.ControlPanel_Set]</button>
                 </div>
@@ -159,10 +157,9 @@
     private int printSpeed = 100;
     private int printFlow = 100;
 
-
     protected override void OnInitialized()
     {
-        _state = StateService.Telemetry;
+        _state = PrinterServiceFactory.Current?.Telemetry;
         _state.PropertyChanged += HandleStateChanged;
     }
 

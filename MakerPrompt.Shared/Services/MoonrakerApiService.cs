@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 
 namespace MakerPrompt.Shared.Services
 {
-    public class MoonrakerApiService : BasePrinterConnectionService, IDisposable
+    public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
         private HttpClient _httpClient;
         private Uri _baseUri;
@@ -11,7 +11,7 @@ namespace MakerPrompt.Shared.Services
         private string _refreshToken = string.Empty;
         public override PrinterConnectionType ConnectionType { get; } = PrinterConnectionType.Moonraker;
 
-        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (IsConnected) return IsConnected;
 
@@ -47,7 +47,7 @@ namespace MakerPrompt.Shared.Services
             return IsConnected;
         }
 
-        public override async Task DisconnectAsync()
+        public async Task DisconnectAsync()
         {
             updateTimer.Stop();
             _httpClient.CancelPendingRequests();
@@ -56,7 +56,7 @@ namespace MakerPrompt.Shared.Services
             await Task.CompletedTask;
         }
 
-        public override async Task WriteDataAsync(string command)
+        public async Task WriteDataAsync(string command)
         {
             if (!IsConnected) return;
 
@@ -69,7 +69,7 @@ namespace MakerPrompt.Shared.Services
             RaiseTelemetryUpdated();
         }
 
-        public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+        public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
             if (!IsConnected) return LastTelemetry;
 
@@ -127,7 +127,7 @@ namespace MakerPrompt.Shared.Services
             return LastTelemetry;
         }
 
-        public override async Task<List<FileEntry>> GetFilesAsync()
+        public async Task<List<FileEntry>> GetFilesAsync()
         {
             if (!IsConnected) return new List<FileEntry>();
 
@@ -238,6 +238,51 @@ namespace MakerPrompt.Shared.Services
 
             [JsonIgnore]
             public bool IsDirectory => Size == 0;
+        }
+
+        public Task SetHotendTemp(int targetTemp = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetBedTemp(int targetTemp = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Home(bool x = true, bool y = true, bool z = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetFanSpeed(int speed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetPrintSpeed(int speed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetPrintFlow(int flow)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SaveEEPROM()
+        {
+            throw new NotImplementedException();
         }
     }
 

@@ -9,7 +9,10 @@ namespace MakerPrompt.Shared.Infrastructure
         public override Enums.PrinterConnectionType ConnectionType => Enums.PrinterConnectionType.Serial;
         
         StringBuilder _receiveBuffer = new();
-        public override async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+
+        public abstract Task WriteDataAsync(string command);
+
+        public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
             await WriteDataAsync(GCodeCommands.GetTemperature.ToString());
             await WriteDataAsync(GCodeCommands.GetCurrentPosition.ToString());
@@ -21,12 +24,105 @@ namespace MakerPrompt.Shared.Infrastructure
             return LastTelemetry;
         }
 
-        public override async Task<List<FileEntry>> GetFilesAsync()
+        public async Task<List<FileEntry>> GetFilesAsync()
         {
             // await WriteDataAsync("M20 L T");
             // await Task.Delay(500); // Wait for response
             
             return new List<FileEntry>();
+        }
+
+        public async Task SetHotendTemp(int targetTemp = 0)
+        {
+            if (!IsConnected || (targetTemp < 0 || targetTemp > 300)) return;
+            var command = GCodeCommands.SetTemp
+                .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
+                .ToString();
+            await WriteDataAsync(command);
+        }
+
+        public async Task SetBedTemp(int targetTemp = 0)
+        {
+            if (!IsConnected || (targetTemp < 0 || targetTemp > 120)) return;
+            var command = GCodeCommands.SetBedTemp
+                .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
+                .ToString();
+            await WriteDataAsync(command);
+        }
+
+        public async Task Home(bool x = true, bool y = true, bool z = true)
+        {
+            if (!IsConnected) return;
+            var command = GCodeCommands.Home;
+            if (!(x && y && z))
+            {
+                if (x) command.SetParameterValue(GCodeParameters.HomeX.Label);
+                if (y) command.SetParameterValue(GCodeParameters.HomeY.Label);
+                if (z) command.SetParameterValue(GCodeParameters.HomeZ.Label);
+            }
+
+            await WriteDataAsync(command.ToString());
+        }
+
+        public async Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            if (!IsConnected) return;
+            var command = GCodeCommands.MoveLinear;
+
+            if (!IsEqual(x, 0.0f)) command.SetParameterValue(GCodeParameters.PositionX.Label, x.ToString("0.0"));
+            if (!IsEqual(y, 0.0f)) command.SetParameterValue(GCodeParameters.PositionY.Label, y.ToString("0.0"));
+            if (!IsEqual(z, 0.0f)) command.SetParameterValue(GCodeParameters.PositionZ.Label, z.ToString("0.0"));
+            if (!IsEqual(e, 0.0f)) command.SetParameterValue(GCodeParameters.PositionE.Label, e.ToString("0.0"));
+            command.SetParameterValue(GCodeParameters.Feedrate.Label, feedRate.ToString());
+
+            await WriteDataAsync(GCodeCommands.RelativePositioning.ToString());
+            await WriteDataAsync(command.ToString());
+            await WriteDataAsync(GCodeCommands.AbsolutePositioning.ToString());
+        }
+
+        public async Task SetFanSpeed(int fanSpeedPercentage = 0)
+        {
+            if (!IsConnected || (fanSpeedPercentage < 0 || fanSpeedPercentage > 100)) return;
+            var command = fanSpeedPercentage == 0 ? GCodeCommands.FanOff
+                :GCodeCommands.SetFanSpeed.SetParameterValue(GCodeParameters.FanSpeed.Label, ((int)(fanSpeedPercentage * 2.55)).ToString());
+            await WriteDataAsync(command.ToString());
+        }
+
+        public async Task SetPrintSpeed(int speed)
+        {
+            if (!IsConnected || (speed < 1 || speed > 200)) return;
+            var command = GCodeCommands.SetFeedratePercentage.SetParameterValue(GCodeParameters.RatePercentage.Label, speed.ToString());
+            await WriteDataAsync(command.ToString());
+        }
+
+        public async Task SetPrintFlow(int flow)
+        {
+            if (!IsConnected || (flow < 1 || flow > 200)) return;
+            var command = GCodeCommands.SetFlowratePercentage.SetParameterValue(GCodeParameters.RatePercentage.Label, flow.ToString());
+            await WriteDataAsync(command.ToString());
+        }
+
+        public async Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            if (!IsConnected) return;
+            var command = GCodeCommands.MoveLinear;
+
+            if (!IsEqual(x, 0.0f)) command.SetParameterValue(GCodeParameters.PositionX.Label, x.ToString("0.0"));
+            if (!IsEqual(y, 0.0f)) command.SetParameterValue(GCodeParameters.PositionY.Label, y.ToString("0.0"));
+            if (!IsEqual(z, 0.0f)) command.SetParameterValue(GCodeParameters.PositionZ.Label, z.ToString("0.0"));
+            if (!IsEqual(e, 0.0f)) command.SetParameterValue(GCodeParameters.PositionE.Label, e.ToString("0.0"));
+            await WriteDataAsync(command.ToString());
+        }
+
+        public async Task SaveEEPROM()
+        {
+            if (!IsConnected) return;
+            await WriteDataAsync(GCodeCommands.StoreEEPROM.ToString());
+        }
+
+        private static bool IsEqual(float a, float b, float tolerance = 0.001f)
+        {
+            return Math.Abs(a - b) < tolerance;
         }
 
         public void ProcessReceivedData(string data)

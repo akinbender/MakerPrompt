@@ -1,7 +1,6 @@
 @using System.IO
-@using MakerPrompt.Shared.Services
 @inject IStringLocalizer<Resources> localizer
-@inject PrinterCommunicationServiceFactory ServiceFactory
+@inherits ConnectionComponentBase
 
 <div class="d-flex flex-row-reverse">
     <div class="btn-group mb-3">
