@@ -22,6 +22,9 @@
         Task SetPrintSpeed(int speed);
         Task SetPrintFlow(int flow);
         Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f);
+        Task RunPidTuning(int cycles, int targetTemp, int extruderIndex);
+        Task RunThermalModelCalibration(int cycles, int targetTemp);
+        Task StartPrint(FileEntry file);
         Task SaveEEPROM();
     }
 }

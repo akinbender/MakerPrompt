@@ -40,7 +40,7 @@ namespace MakerPrompt.Blazor.Services
             return ports.Select(p => $"{p.Name} ({p.Manufacturer})");
         }
 
-        public override async Task DisconnectAsync()
+        public async Task DisconnectAsync()
         {
             if (_portReference != null)
             {
@@ -52,7 +52,7 @@ namespace MakerPrompt.Blazor.Services
             }
         }
 
-        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Serial == null) throw new ArgumentException();
             await OpenPortAsync(connectionSettings.Serial.PortName, connectionSettings.Serial.BaudRate); 

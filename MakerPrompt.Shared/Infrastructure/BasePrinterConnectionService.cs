@@ -6,7 +6,7 @@
         public event EventHandler<PrinterTelemetry>? TelemetryUpdated;
         internal PrinterTelemetry LastTelemetry { get; set; } = new();
 
-        public abstract Enums.PrinterConnectionType ConnectionType { get; }
+        public abstract PrinterConnectionType ConnectionType { get; }
 
         public string ConnectionName { get; set; } = string.Empty;
 

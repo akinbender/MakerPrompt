@@ -30,7 +30,7 @@ namespace MakerPrompt.MAUI.Services
             };
         }
 
-        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (IsConnected) return IsConnected;
 
@@ -59,7 +59,7 @@ namespace MakerPrompt.MAUI.Services
             return IsConnected;
         }
 
-        public override async Task DisconnectAsync()
+        public async Task DisconnectAsync()
         {
             updateTimer.Stop();
             _serialPort.Close();

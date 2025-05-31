@@ -1,15 +1,25 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 
 namespace MakerPrompt.Shared.Infrastructure
 {
-    public class ConnectionComponentBase : ComponentBase, IAsyncDisposable
+    public abstract class ConnectionComponentBase : ComponentBase, IAsyncDisposable
     {
         [Inject]
-        protected PrinterCommunicationServiceFactory PrinterServiceFactory { get; set; }
+        public required MakerPromptJsInterop JS { get; set; }
+
+        [Inject]
+        public required IStringLocalizer<Resources> Localizer { get; set; }
+
+        [Inject]
+        public required PrinterCommunicationServiceFactory PrinterServiceFactory { get; set; }
+
         protected bool IsConnected { get; set; }
+        protected string ConnectionCssClass => IsConnected ? string.Empty : "disabled";
 
         protected override void OnInitialized()
         {
+            IsConnected = PrinterServiceFactory.IsConnected;
             PrinterServiceFactory.ConnectionStateChanged += HandleConnectionChanged;
             if (PrinterServiceFactory.Current != null)
             {
@@ -17,7 +27,9 @@ namespace MakerPrompt.Shared.Infrastructure
             }
         }
 
-        private void HandleConnectionChanged(object sender, bool connected)
+        protected virtual void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry) { }
+
+        protected virtual void HandleConnectionChanged(object? sender, bool connected)
         {
             IsConnected = connected;
             if (PrinterServiceFactory.Current != null)
@@ -31,7 +43,7 @@ namespace MakerPrompt.Shared.Infrastructure
                     PrinterServiceFactory.Current.TelemetryUpdated -= HandleTelemetryUpdated;
                 }
             }
-            InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
 
         public async ValueTask DisposeAsync()

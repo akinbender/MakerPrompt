@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Blazored.Modal;
-using MakerPrompt.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MakerPrompt.Shared.Utils
@@ -17,8 +16,7 @@ namespace MakerPrompt.Shared.Utils
             services.AddScoped<IAppConfigurationService, P>();
             services.AddSingleton<ISerialService, L>();
             services.AddSingleton<PrinterCommunicationServiceFactory>();
-            services.AddScoped<PrinterStateService>();
-
+            services.AddScoped<MakerPromptJsInterop>();
             services.AddScoped<LocalizedTitleService>();
             services.AddScoped<ThemeService>();
             services.AddLocalization(options =>

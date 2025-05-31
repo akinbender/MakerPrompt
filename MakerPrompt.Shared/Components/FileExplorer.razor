@@ -1,14 +1,12 @@
-@using System.IO
-@inject IStringLocalizer<Resources> localizer
 @inherits ConnectionComponentBase
 
 <div class="d-flex flex-row-reverse">
     <div class="btn-group mb-3">
-        <button class="btn btn-sm btn-primary" @onclick="() => StartPrint(selectedFile)" disabled="@(!CanStartPrint)">
-            <i class="bi bi-printer"></i> @localizer[Resources.CalibrationPage_Start]
+        <button class="btn btn-sm btn-primary" @onclick="() => PrinterServiceFactory.Current?.StartPrint(selectedFile)" disabled="@(!CanStartPrint)">
+            <i class="bi bi-printer"></i> @Localizer[Resources.CalibrationPage_Start]
         </button>
-        <button class="btn btn-sm btn-secondary" @onclick="RefreshFiles">
-            <i class="bi bi-arrow-clockwise"></i> @localizer[Resources.Files_Refresh]
+        <button class="btn btn-sm btn-secondary" disabled="@(!IsConnected)" @onclick="RefreshFiles">
+            <i class="bi bi-arrow-clockwise"></i> @Localizer[Resources.Files_Refresh]
         </button>
     </div>
 </div>
@@ -17,32 +15,43 @@
     <table class="table table-striped table-hover">
         <thead>
             <tr>
-                <th>@localizer[Resources.Files_Name]</th>
-                <th>@localizer[Resources.Files_DateModified]</th>
-                <th>@localizer[Resources.Files_Size]</th>
+                <th>@Localizer[Resources.Files_Name]</th>
+                <th>@Localizer[Resources.Files_DateModified]</th>
+                <th>@Localizer[Resources.Files_Size]</th>
             </tr>
         </thead>
         <tbody>
-            @if (_isLoading)
+            @if (IsConnected)
             {
-                <tr>
-                    <td colspan="5" class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </td>
-                </tr>
+                @if (_isLoading)
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in _files)
+                    {
+                        <tr class="@GetRowClass(item)" @onclick="() => SelectFile(item)">
+                            <td>@item.FullPath</td>
+                            <td>@item.ModifiedDate?.ToString("g")</td>
+                            <td>@FormatSize(item.Size)</td>
+                        </tr>
+                    }
+                }
             }
             else
             {
-                @foreach (var item in _files)
-                {
-                    <tr class="@GetRowClass(item)" @onclick="() => SelectFile(item)">
-                        <td>@item.FullPath</td>
-                        <td>@item.ModifiedDate?.ToString("g")</td>
-                        <td>@FormatSize(item.Size)</td>
-                    </tr>
-                }
+                <tr>
+                    <td colspan="5" class="text-center">
+                        @Localizer[Resources.PrinterStatus_Disconnected]
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
@@ -58,48 +67,33 @@
         await RefreshFiles();
     }
 
+    protected override void HandleConnectionChanged(object? sender, bool connected)
+    {
+        base.HandleConnectionChanged(sender, connected);
+        if (connected)
+        {
+            _ = RefreshFiles();
+        }
+        else
+        {
+            _files.Clear();
+            selectedFile = null;
+            StateHasChanged();
+        }
+    }
+
     private async Task RefreshFiles()
     {
         _isLoading = true;
         StateHasChanged();
 
-        try
+        if (PrinterServiceFactory.Current != null)
         {
-// _files = await ServiceFactory.Current.GetFilesAsync();
-            // Sample data initialization
-            _files = new List<FileEntry>
-            {
-                new FileEntry
-                {
-                    FullPath = "/gcodes/Calibration Cube.gcode",
-                    Size = 245_760,
-                    ModifiedDate = DateTime.Now.AddDays(-2)
-                },
-                new FileEntry
-                {
-                    FullPath = "/gcodes/Vase_Mode.gcode",
-                    Size = 1_048_576,
-                    ModifiedDate = DateTime.Now.AddHours(-3)
-                },
-                new FileEntry
-                {
-                    FullPath = "/gcodes/Bed_Level.gcode",
-                    Size = 86_016,
-                    ModifiedDate = DateTime.Now.AddHours(-1)
-                },
-                new FileEntry
-                {
-                    FullPath = "/gcodes/Robot.gcode",
-                    Size = 2_097_152,
-                    ModifiedDate = DateTime.Now.AddDays(-7)
-                }
-            };
+            _files = await PrinterServiceFactory.Current?.GetFilesAsync() ?? new List<FileEntry>();
         }
-        finally
-        {
-            _isLoading = false;
-            StateHasChanged();
-        }
+
+        _isLoading = false;
+        StateHasChanged();
     }
 
     private string FormatSize(long bytes)
@@ -127,23 +121,5 @@
     private string GetRowClass(FileEntry file)
     {
         return selectedFile == file ? "table-active" : string.Empty;
-    }
-
-    private async Task StartPrint(FileEntry? file)
-    {
-        if (file == null || ServiceFactory.Current == null) return;
-
-        var command = ServiceFactory.Current switch
-        {
-            MoonrakerApiService => $"PRINT_START FILENAME={file.FullPath}",
-            PrusaLinkApiService => $"/api/v1/files{file.FullPath}",
-            BaseSerialService => $"M23 {file.FullPath}\nM24",
-            _ => null
-        };
-
-        if (command != null)
-        {
-            await ServiceFactory.Current.WriteDataAsync(command);
-        }
     }
 }

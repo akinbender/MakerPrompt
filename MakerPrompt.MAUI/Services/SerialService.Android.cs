@@ -12,7 +12,7 @@ namespace MakerPrompt.MAUI.Services
         private UsbDriverBase? _usbDriver;
         public bool IsSupported => true;
 
-        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Serial == null)
                 throw new ArgumentException("Invalid connection settings");
@@ -50,7 +50,7 @@ namespace MakerPrompt.MAUI.Services
             return IsConnected;
         }
 
-        public override async Task DisconnectAsync()
+        public async Task DisconnectAsync()
         {
             if (IsConnected && _usbDriver != null)
             {

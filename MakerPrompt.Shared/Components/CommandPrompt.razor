@@ -1,7 +1,4 @@
 ﻿@using System.Collections.Generic
-@using Microsoft.JSInterop
-@inject IJSRuntime JS
-@inject IStringLocalizer<Resources> localizer
 @inherits ConnectionComponentBase
 
 <div class="bg-body-tertiary rounded p-3 mt-md-3" style="height: 70vh;">
@@ -31,12 +28,12 @@
 
     <div class="input-group">
         <input type="text" class="form-control bg-dark-subtle border-light-subtle"
-               placeholder="@localizer[Resources.CommandPrompt_EnterCommand]" @bind="inputCommand"
+               placeholder="@Localizer[Resources.CommandPrompt_EnterCommand]" @bind="inputCommand"
                disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)"
                @onkeypress="HandleKeyPress" />
         <button class="btn btn-outline-secondary" @onclick="SendCommand"
                 disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)">
-            @localizer[Resources.CommandPrompt_Send]
+            @Localizer[Resources.CommandPrompt_Send]
         </button>
     </div>
 </div>
@@ -69,7 +66,7 @@
         }
         catch (Exception ex)
         {
-            AddSystemMessage(string.Format(localizer[Resources.CommandPrompt_ErrorMessage], ex.Message), true);
+            AddSystemMessage(string.Format(Localizer[Resources.CommandPrompt_ErrorMessage], ex.Message), true);
         }
     }
 
@@ -81,7 +78,7 @@
         }
     }
 
-    private void HandleTelemetryUpdated(object sender, PrinterTelemetry printerTelemetry)
+    protected override void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry)
     {
         if (!string.IsNullOrWhiteSpace(printerTelemetry.LastResponse))
         {
@@ -95,22 +92,11 @@
         }
     }
 
-    private void HandleConnectionChanged(object sender, bool connected)
+    protected override void HandleConnectionChanged(object? sender, bool connected)
     {
-        isConnected = connected;
-        if (PrinterServiceFactory.Current != null)
-        {
-            if (isConnected)
-            {
-                PrinterServiceFactory.Current.TelemetryUpdated += HandleTelemetryUpdated;
-            }
-            else
-            {
-                PrinterServiceFactory.Current.TelemetryUpdated -= HandleTelemetryUpdated;
-            }
-        }
-        var message = connected ? string.Format(localizer[Resources.CommandPrompt_ConnectedMessage], PrinterServiceFactory.Current.ConnectionName) 
-                                : string.Format(localizer[Resources.CommandPrompt_DisconnectedMessage], PrinterServiceFactory.Current.ConnectionName);
+        base.HandleConnectionChanged(sender, connected);
+        var message = connected ? string.Format(Localizer[Resources.CommandPrompt_ConnectedMessage], PrinterServiceFactory.Current?.ConnectionName)
+                        : string.Format(Localizer[Resources.CommandPrompt_DisconnectedMessage], PrinterServiceFactory.Current?.ConnectionName);
         AddSystemMessage(message);
         InvokeAsync(StateHasChanged);
     }

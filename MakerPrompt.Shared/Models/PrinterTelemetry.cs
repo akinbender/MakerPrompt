@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Numerics;
 
 namespace MakerPrompt.Shared.Models
 {
@@ -110,12 +111,6 @@ namespace MakerPrompt.Shared.Models
                 return true;
             }
         }
-    }
-
-    // Support classes
-    public record Vector3(double X, double Y, double Z)
-    {
-        public Vector3() : this(0, 0, 0) { }
     }
 
     public class SDCardStatus

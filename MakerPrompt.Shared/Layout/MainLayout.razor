@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@inject IStringLocalizer<Resources> localizer
+@inherits LayoutComponentBase
 @implements IDisposable
 
 <header class="navbar sticky-top bg-body-secondary text-body flex-md-nowrap p-0 shadow">
@@ -24,7 +25,27 @@
                     @Body
                 </div>
                 <div class="col-lg-5 col-md-12">
-                    <CommandPrompt />
+                    <div class="calibration-tabs">
+                        <ul class="nav nav-tabs mb-3">
+                            <li class="nav-item">
+                                <a class="nav-link @(ActiveTab == LayoutTab.CommandPrompt ? "active" : string.Empty)" @onclick="() => ShowTab(LayoutTab.CommandPrompt)">@localizer[Resources.PageTitle_CommandPrompt]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ActiveTab == LayoutTab.GCodeViewer ? "active" : string.Empty)" @onclick="() => ShowTab(LayoutTab.GCodeViewer)">@localizer[Resources.PageTitle_GCodeViewer]</a>
+                            </li>
+                        </ul>
+
+                        @switch (ActiveTab)
+                        {
+                            default:
+                            case LayoutTab.CommandPrompt:
+                                <CommandPrompt />
+                                break;
+                            case LayoutTab.GCodeViewer:
+                                <GCodeViewer />
+                                break;
+                        }
+                    </div>
                 </div>
             </div>
         </main>
@@ -34,7 +55,14 @@
 @code {
     [Inject]
     private LocalizedTitleService TitleService { get; set; } = null!;
+    private LayoutTab ActiveTab = LayoutTab.CommandPrompt;
 
+    private enum LayoutTab { CommandPrompt, GCodeViewer }
+
+    private void ShowTab(LayoutTab tab)
+    {
+        ActiveTab = tab;
+    }
     protected override void OnInitialized()
     {
         base.OnInitialized();

@@ -1,32 +1,33 @@
-﻿@using System.ComponentModel
-@inject IStringLocalizer<Resources> localizer
-@inherits ConnectionComponentBase
+﻿@inherits ConnectionComponentBase
 
 <div class="calibration-section">
     <div class="form-group mb-2">
-        <label>@localizer[Resources.GCodeDescription_S_TargetTemp]:</label>
-        <input type="number" class="form-control" @bind="@Calibration.Temperature" />
+        <label>@Localizer[Resources.GCodeDescription_S_TargetTemp]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Temperature" disabled="@(!IsConnected)" 
+               title="@(IsConnected? Localizer[Resources.GCodeDescription_S_TargetTemp] : Localizer[Resources.PrinterStatus_Disconnected])" />
     </div>
 
     <div class="form-group mb-2">
-        <label>@localizer[Resources.GCodeDescription_C_Cycle]:</label>
-        <input type="number" class="form-control" @bind="@Calibration.Cycles" />
+        <label>@Localizer[Resources.GCodeDescription_C_Cycle]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Cycles" disabled="@(!IsConnected)"
+               title="@(IsConnected? Localizer[Resources.GCodeDescription_C_Cycle] : Localizer[Resources.PrinterStatus_Disconnected])" />
     </div>
 
     <div class="form-group mb-2">
-        <label>@localizer[Resources.CalibrationPage_HeaterIndex]:</label>
-        <input type="number" class="form-control" @bind="@Calibration.Cycles" />
+        <label>@Localizer[Resources.CalibrationPage_HeaterIndex]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Cycles" disabled="@(!IsConnected)"
+               title="@(IsConnected? Localizer[Resources.CalibrationPage_HeaterIndex] : Localizer[Resources.PrinterStatus_Disconnected])" />
         <small>Bed = -1, Hotend = 0</small>
     </div>
 
-    <button class="btn btn-primary" @onclick="RunPidTuning">
-        <i class="fas fa-cog"></i> @localizer[Resources.CalibrationPage_Start]
+    <button class="btn btn-primary" @onclick="RunPidTuning" disabled="@(!IsConnected)">
+        <i class="fas fa-cog"></i> @Localizer[Resources.CalibrationPage_Start]
     </button>
 
     @if (!string.IsNullOrEmpty(calibrationResult))
     {
         <div class="result-box">
-            <h4>@localizer[Resources.CalibrationPage_Result]:</h4>
+            <h4>@Localizer[Resources.CalibrationPage_Result]:</h4>
             <pre>@calibrationResult</pre>
         </div>
     }
@@ -46,29 +47,20 @@
                         .SetParameterValue(GCodeParameters.PositionE.Label, HeaterIndex.ToString())
                     .ToString();
         await PrinterServiceFactory.Current.WriteDataAsync(command);
-        StateService.Telemetry.PropertyChanged += HandlePidResult;
+        //StateService.Telemetry.PropertyChanged += HandlePidResult;
     }
 
-    private void HandlePidResult(object? sender, PropertyChangedEventArgs e)
+    protected override void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry)
     {
-        if (e.PropertyName == nameof(PrinterTelemetry.LastResponse))
-        {
-            var response = StateService.Telemetry.LastResponse;
-            if (response.Contains("Kp") || response.Contains("PID"))
-            {
-                calibrationResult += response + Environment.NewLine;
-                InvokeAsync(StateHasChanged);
-            }
-        }
-    }
-
-    protected override void OnInitialized()
-    {
-        StateService.Telemetry.PropertyChanged += HandlePidResult;
-    }
-
-    public void Dispose()
-    {
-        StateService.Telemetry.PropertyChanged -= HandlePidResult;
+        // printerTelemetry
+        // if (e.PropertyName == nameof(PrinterTelemetry.LastResponse))
+        // {
+        //     var response = printerTelemety.LastResponse;
+        //     if (response.Contains("Kp") || response.Contains("PID"))
+        //     {
+        //         calibrationResult += response + Environment.NewLine;
+        //         InvokeAsync(StateHasChanged);
+        //     }
+        // }
     }
 }

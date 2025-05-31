@@ -4,6 +4,7 @@ global using System.Text.Json;
 global using System.Text.RegularExpressions;
 global using System.Text.Json.Serialization;
 global using System.Reflection;
+global using System.Numerics;
 global using MakerPrompt.Shared.Infrastructure;
 global using MakerPrompt.Shared.Properties;
 global using MakerPrompt.Shared.Services;

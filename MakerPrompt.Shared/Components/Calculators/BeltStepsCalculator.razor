@@ -1,9 +1,9 @@
-﻿@inject IStringLocalizer<Resources> localizer
+﻿@inherits ConnectionComponentBase
 
 <div class="row">
     <div class="col-md-6 col-sm-12">
         <div class="form-group mb-2">
-            <label>@localizer[Resources.Calculators_MotorAngle]</label>
+            <label>@Localizer[Resources.Calculators_MotorAngle]</label>
             <select class="form-control" @bind="SelectedStepAngle">
                 @foreach (var option in EnumExtensions.GetMotorStepAngleOptions())
                 {
@@ -13,7 +13,7 @@
         </div>
 
         <div class="form-group">
-            <label>@localizer[Resources.Calculators_Microstepping]</label>
+            <label>@Localizer[Resources.Calculators_Microstepping]</label>
             <select class="form-control" @bind="SelectedMicrostepping">
                 @foreach (var option in EnumExtensions.GetMicrosteppingOptions())
                 {
@@ -24,7 +24,7 @@
     </div>
     <div class="col-md-6 col-sm-12">
         <div class="form-group mb-2">
-            <label>@localizer[Resources.Calculators_BeltPitch]</label>
+            <label>@Localizer[Resources.Calculators_BeltPitch]</label>
             <select class="form-control" @bind="BeltPitch">
                 <option value="2">2mm (GT2)</option>
                 <option value="3">3mm (GT3)</option>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="form-group">
-            <label>@localizer[Resources.Calculators_PulleyToothCount]</label>
+            <label>@Localizer[Resources.Calculators_PulleyToothCount]</label>
             <input type="number" class="form-control"
                    @bind="BeltPulleyTeeth" min="8" max="100" />
         </div>
@@ -44,16 +44,21 @@
 <div class="row p-2">
     <div class="col-12 bg-secondary-subtle rounded">
         <div class="row">
-            <h4 class="mt-2">@localizer[Resources.CalibrationPage_Result]</h4>
+            <h4 class="mt-2">@Localizer[Resources.CalibrationPage_Result]</h4>
             <div class="col-md-6 col-sm-12">
-                <p><strong>@localizer[Resources.Calculators_Steps]:</strong> @BeltStepsPerMm.ToString("0.00")</p>
-                <p><strong>@localizer[Resources.Calculators_Resolution]:</strong> @BeltResolution.ToString("0.000") microns</p>
+                <p><strong>@Localizer[Resources.Calculators_Steps]:</strong> @BeltStepsPerMm.ToString("0.00")</p>
+                <p><strong>@Localizer[Resources.Calculators_Resolution]:</strong> @BeltResolution.ToString("0.000") microns</p>
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="alert alert-info d-flex justify-content-between align-items-center">
-                    <p class="mb-0"><strong>@localizer[Resources.Calculators_GCodeExample]:</strong> <code>M92 X@(BeltStepsPerMm.ToString("0.00")) Y@(BeltStepsPerMm.ToString("0.00"))</code></p>
-                    <button class="btn btn-sm btn-outline-primary action-button"
-                            @* @onclick="() => ShowCommandDetails(command)" *@>
+                    <p class="mb-0">
+                        <strong>@Localizer[Resources.Calculators_GCodeExample]:</strong> 
+                        <code id="gcode-string" title="@Localizer[Resources.CommandPrompt_CopyCommand]" @onclick="async () => await JS.CopyToClipboard(GCodeString)">
+                            @GCodeString
+                        </code>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary" disabled="@(!IsConnected)" @onclick="async () => await JS.CopyToClipboard(GCodeString)"
+                            title="@(IsConnected? Localizer[Resources.CommandPrompt_RunCommand] : Localizer[Resources.PrinterStatus_Disconnected])">
                         <i class="bi bi-play-fill"></i>
                     </button>
                 </div>
@@ -70,4 +75,6 @@
     private decimal BeltStepsPerRev => 360m / SelectedStepAngle.GetStepAngleValue();
     private decimal BeltStepsPerMm => (BeltStepsPerRev * (int)SelectedMicrostepping) / (BeltPitch * BeltPulleyTeeth);
     private decimal BeltResolution => 1000m / BeltStepsPerMm; // microns
+
+    private string GCodeString => $"M92 X{BeltStepsPerMm:0.00} Y{BeltStepsPerMm:0.00}";
 }

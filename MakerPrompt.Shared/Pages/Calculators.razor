@@ -1,12 +1,12 @@
 ﻿@page "/calculators"
-@inject IStringLocalizer<Resources> localizer
+@inherits ConnectionComponentBase
 
 <LocalizedTitle TitleKey="@Resources.PageTitle_Calculators" />
 
 <div class="alert alert-info d-flex justify-content-between align-items-center">
-    <p class="mb-0">@localizer[Resources.Calculators_RememberSave]: </p><code>M500</code>
-    <button class="btn btn-sm btn-outline-primary action-button"
-@*             @onclick="() => ShowCommandDetails(command)" *@>
+    <p class="mb-0">@Localizer[Resources.Calculators_RememberSave]: <code title="@Localizer[Resources.CommandPrompt_CopyCommand]" @onclick="async () => await CopyM500()">M500</code></p>
+    <button class="btn btn-sm btn-outline-primary" disabled="@(!IsConnected)"
+            title="@(IsConnected? Localizer[Resources.CommandPrompt_RunCommand] : Localizer[Resources.PrinterStatus_Disconnected])">
         <i class="bi bi-play-fill"></i>
     </button>
 </div>
@@ -63,7 +63,7 @@
 </div>
 
 @code {
-	enum CalculatorTabs { 
+    enum CalculatorTabs { 
         [Display(Name = nameof(Resources.Calculators_PrintPrice), ResourceType = typeof(Resources))]
         PrintPrice,
         [Display(Name = nameof(Resources.Calculators_BeltSteps), ResourceType = typeof(Resources))]
@@ -74,11 +74,13 @@
         ExtruderSteps
     }
 
-	private CalculatorTabs ActiveTab = CalculatorTabs.BeltSteps;
+    private CalculatorTabs ActiveTab = CalculatorTabs.BeltSteps;
 
 
     private void ShowTab(CalculatorTabs tab)
     {
         ActiveTab = tab;
     }
+
+    public async Task CopyM500() => await JS.CopyToClipboard("M500");
 }

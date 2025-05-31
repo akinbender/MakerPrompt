@@ -20,6 +20,7 @@
 
             IPrinterCommunicationService service = connectionSettings.ConnectionType switch
             {
+                PrinterConnectionType.Demo => new DemoPrinterService(),
                 PrinterConnectionType.Serial => serialService,
                 PrinterConnectionType.PrusaLink => prusaLinkApiService,
                 PrinterConnectionType.Moonraker => moonrakerApiService,

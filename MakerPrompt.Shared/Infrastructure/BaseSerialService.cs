@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace MakerPrompt.Shared.Infrastructure
+﻿namespace MakerPrompt.Shared.Infrastructure
 {
     public abstract class BaseSerialService : BasePrinterConnectionService
     {
@@ -114,6 +112,32 @@ namespace MakerPrompt.Shared.Infrastructure
             await WriteDataAsync(command.ToString());
         }
 
+        public async Task RunPidTuning(int cycles, int targetTemp, int extruderIndex)
+        {
+            if (!IsConnected) return;
+            var command = GCodeCommands.PidAutotune
+                .SetParameterValue(GCodeParameters.CalibrationCycle.Label, cycles.ToString())
+                .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
+                .SetParameterValue(GCodeParameters.PositionE.Label, extruderIndex.ToString())
+            .ToString();
+            await WriteDataAsync(command);
+        }
+
+        public async Task RunThermalModelCalibration(int cycles, int targetTemp)
+        {
+            if (!IsConnected) return;
+            var command = GCodeCommands.ThermalModelCalibration
+                .SetParameterValue(GCodeParameters.CalibrationCycle.Label, cycles.ToString())
+                .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
+            .ToString();
+            await WriteDataAsync(command);
+        }
+
+        public Task StartPrint(FileEntry file)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task SaveEEPROM()
         {
             if (!IsConnected) return;
@@ -158,10 +182,10 @@ namespace MakerPrompt.Shared.Infrastructure
                     var match = _tempRegex.Match(data);
                     if (match.Success)
                     {
-                        LastTelemetry.HotendTemp = double.Parse(match.Groups[1].Value);
-                        LastTelemetry.HotendTarget = double.Parse(match.Groups[2].Value);
-                        LastTelemetry.BedTemp = double.Parse(match.Groups[3].Value);
-                        LastTelemetry.BedTarget = double.Parse(match.Groups[4].Value);
+                        LastTelemetry.HotendTemp = float.Parse(match.Groups[1].Value);
+                        LastTelemetry.HotendTarget = float.Parse(match.Groups[2].Value);
+                        LastTelemetry.BedTemp = float.Parse(match.Groups[3].Value);
+                        LastTelemetry.BedTarget = float.Parse(match.Groups[4].Value);
                     }
                 }
                 else if (data.StartsWith("X:"))
@@ -170,10 +194,9 @@ namespace MakerPrompt.Shared.Infrastructure
                     if (match.Success)
                     {
                         LastTelemetry.Position = new Vector3(
-                            double.Parse(match.Groups[1].Value),
-                            double.Parse(match.Groups[2].Value),
-                            double.Parse(match.Groups[3].Value)
-                        );
+                            float.Parse(match.Groups[1].Value),
+                            float.Parse(match.Groups[2].Value),
+                            float.Parse(match.Groups[3].Value));
                     }
                 }
                 else if (data.Contains("SD printing byte"))

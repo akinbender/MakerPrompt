@@ -18,8 +18,22 @@
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                             @NavButtonText
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end p-3" style="width:max-content;">
+                        <div class="dropdown-menu dropdown-menu-end p-3" style="width:30vh;">
                             <div class="accordion mb-2">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button @(ActiveTab == PrinterConnectionType.Demo ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.Demo)">
+                                            @PrinterConnectionType.Demo.GetDisplayName()
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse @(ActiveTab == PrinterConnectionType.Demo ? "show" : "collapse")">
+                                        <div class="accordion-body">
+                                            <div class="alert alert-info mb-0">
+                                                <p class="mb-0">@localizer[Resources.NavConnection_DemoServiceDescription]</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
                                         <button class="accordion-button @(ActiveTab == PrinterConnectionType.Serial ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.Serial)">
@@ -123,7 +137,7 @@
         9600, 19200, 38400, 57600, 115200, 250000 
     };
 
-    private bool HasValidSelection => !string.IsNullOrEmpty(SerialConnectionSettings.PortName) || !string.IsNullOrEmpty(ApiConnectionSettings.Url);
+    private bool HasValidSelection => ActiveTab == PrinterConnectionType.Demo || !string.IsNullOrEmpty(SerialConnectionSettings.PortName) || !string.IsNullOrEmpty(ApiConnectionSettings.Url);
     private string ConnectButtonClass => IsConnected ? "btn-danger" : "btn-success";
     private string ConnectButtonText => IsConnected ? localizer[Resources.NavConnection_Disconnect] : localizer[Resources.NavConnection_Connect];
     private string NavButtonText => IsConnected ? ServiceFactory.Current.ConnectionName : localizer[Resources.NavConnection_Connect];
@@ -163,6 +177,7 @@
 
                 var connectionSettings = ActiveTab switch
                 {
+                    PrinterConnectionType.Demo => new PrinterConnectionSettings(),
                     PrinterConnectionType.Serial => new PrinterConnectionSettings(SerialConnectionSettings),
                     PrinterConnectionType.Moonraker => new PrinterConnectionSettings(ApiConnectionSettings, ActiveTab),
                     PrinterConnectionType.PrusaLink => new PrinterConnectionSettings(ApiConnectionSettings, ActiveTab)

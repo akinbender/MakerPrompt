@@ -61,6 +61,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open-source, cross-platform 3D printer management software powered by Blazor Hybrid. &lt;strong&gt;Still under development—use at your own risk.&lt;/strong&gt;&lt;/br&gt;Special thanks to &lt;a href=&quot;https://mrhide.de&quot;&gt;MrHide&lt;/a&gt; for the digital logo and Paleva (@x-hain) for her invaluable support.  The source code is available &lt;a href=&quot;https://github.com/akinbender/MakerPrompt&quot;&gt;here&lt;/a&gt;..
+        /// </summary>
+        public static string AboutPage_Content {
+            get {
+                return ResourceManager.GetString("AboutPage_Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Actual Extrusion Length (mm).
         /// </summary>
         public static string Calculators_ActualExtrusionLength {
@@ -97,14 +106,7 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to         &lt;h5&gt;How to use:&lt;/h5&gt;
-        ///        &lt;ol&gt;
-        ///            &lt;li&gt;Mark 120mm from your extruder entrance&lt;/li&gt;
-        ///            &lt;li&gt;Heat up your hotend&lt;/li&gt;
-        ///            &lt;li&gt;Extrude 100mm (use &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;
-        ///            &lt;li&gt;Measure remaining filament to extruder&lt;/li&gt;
-        ///            &lt;li&gt;Enter values above (actual = 120 - remaining)&lt;/li&gt;
-        ///        &lt;/ol&gt;.
+        ///   Looks up a localized string similar to         &lt;h5&gt;How to use:&lt;/h5&gt;        &lt;ol&gt;            &lt;li&gt;Mark 120mm from your extruder entrance&lt;/li&gt;            &lt;li&gt;Heat up your hotend&lt;/li&gt;            &lt;li&gt;Extrude 100mm (use &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;            &lt;li&gt;Measure remaining filament to extruder&lt;/li&gt;            &lt;li&gt;Enter values above (actual = 120 - remaining)&lt;/li&gt;        &lt;/ol&gt;.
         /// </summary>
         public static string Calculators_Esteps_HowTo {
             get {
@@ -311,6 +313,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy command.
+        /// </summary>
+        public static string CommandPrompt_CopyCommand {
+            get {
+                return ResourceManager.GetString("CommandPrompt_CopyCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection terminated..
         /// </summary>
         public static string CommandPrompt_DisconnectedMessage {
@@ -334,6 +345,15 @@ namespace MakerPrompt.Shared.Properties {
         public static string CommandPrompt_ErrorMessage {
             get {
                 return ResourceManager.GetString("CommandPrompt_ErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run command.
+        /// </summary>
+        public static string CommandPrompt_RunCommand {
+            get {
+                return ResourceManager.GetString("CommandPrompt_RunCommand", resourceCulture);
             }
         }
         
@@ -541,6 +561,51 @@ namespace MakerPrompt.Shared.Properties {
         public static string Dashboard_ControlPanel {
             get {
                 return ResourceManager.GetString("Dashboard_ControlPanel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files.
+        /// </summary>
+        public static string Dashboard_FileExplorer {
+            get {
+                return ResourceManager.GetString("Dashboard_FileExplorer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date Modified.
+        /// </summary>
+        public static string Files_DateModified {
+            get {
+                return ResourceManager.GetString("Files_DateModified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Files_Name {
+            get {
+                return ResourceManager.GetString("Files_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string Files_Refresh {
+            get {
+                return ResourceManager.GetString("Files_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        public static string Files_Size {
+            get {
+                return ResourceManager.GetString("Files_Size", resourceCulture);
             }
         }
         
@@ -1166,6 +1231,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A service that simulates a functioning 3D printer for demonstration purposes..
+        /// </summary>
+        public static string NavConnection_DemoServiceDescription {
+            get {
+                return ResourceManager.GetString("NavConnection_DemoServiceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disconnect.
         /// </summary>
         public static string NavConnection_Disconnect {
@@ -1193,6 +1267,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string PageTitle_About {
+            get {
+                return ResourceManager.GetString("PageTitle_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Calculators.
         /// </summary>
         public static string PageTitle_Calculators {
@@ -1202,11 +1285,29 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Terminal.
+        /// </summary>
+        public static string PageTitle_CommandPrompt {
+            get {
+                return ResourceManager.GetString("PageTitle_CommandPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to G-Code Cheat Sheet.
         /// </summary>
         public static string PageTitle_GCodeList {
             get {
                 return ResourceManager.GetString("PageTitle_GCodeList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to G-Code Viewer.
+        /// </summary>
+        public static string PageTitle_GCodeViewer {
+            get {
+                return ResourceManager.GetString("PageTitle_GCodeViewer", resourceCulture);
             }
         }
         
@@ -1306,69 +1407,6 @@ namespace MakerPrompt.Shared.Properties {
         public static string Theme_Light {
             get {
                 return ResourceManager.GetString("Theme_Light", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Files.
-        /// </summary>
-        public static string Dashboard_FileExplorer {
-            get {
-                return ResourceManager.GetString("Dashboard_FileExplorer", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Name.
-        /// </summary>
-        public static string Files_Name {
-            get {
-                return ResourceManager.GetString("Files_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Date modified.
-        /// </summary>
-        public static string Files_DateModified {
-            get {
-                return ResourceManager.GetString("Files_DateModified", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Size.
-        /// </summary>
-        public static string Files_Size {
-            get {
-                return ResourceManager.GetString("Files_Size", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Refresh.
-        /// </summary>
-        public static string Files_Refresh {
-            get {
-                return ResourceManager.GetString("Files_Refresh", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to About.
-        /// </summary>
-        public static string PageTitle_About {
-            get {
-                return ResourceManager.GetString("PageTitle_About", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to About.
-        /// </summary>
-        public static string AboutPage_Content {
-            get {
-                return ResourceManager.GetString("AboutPage_Content", resourceCulture);
             }
         }
     }

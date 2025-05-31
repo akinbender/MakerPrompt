@@ -97,11 +97,10 @@ namespace MakerPrompt.Shared.Services
                 // Position data
                 var position = status.GetProperty("gcode_move").GetProperty("position");
                 LastTelemetry.Position = new Vector3(
-                    (double)position[0].GetDecimal(),
-                    (double)position[1].GetDecimal(),
-                    (double)position[2].GetDecimal()
+                    (float)position[0].GetDecimal(),
+                    (float)position[1].GetDecimal(),
+                    (float)position[2].GetDecimal()
                 );
-
                 // Speed and flow data
                 LastTelemetry.FeedRate = (int)status.GetProperty("gcode_move")
                     .GetProperty("speed").GetDecimal();
@@ -276,6 +275,21 @@ namespace MakerPrompt.Shared.Services
         }
 
         public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RunPidTuning(int cycles, int targetTemp, int extruderIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RunThermalModelCalibration(int cycles, int targetTemp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StartPrint(FileEntry file)
         {
             throw new NotImplementedException();
         }

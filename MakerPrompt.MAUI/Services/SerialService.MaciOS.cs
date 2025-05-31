@@ -15,9 +15,8 @@ namespace MakerPrompt.MAUI.Services
 
         }
 
-        public override async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings) => throw new NotSupportedException();
-
-        public override async Task DisconnectAsync() => throw new NotSupportedException();
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings) => throw new NotSupportedException();
+        public async Task DisconnectAsync() => throw new NotSupportedException();
         public override async Task WriteDataAsync(string data) => throw new NotSupportedException();
         public async Task<IEnumerable<string>> GetAvailablePortsAsync() => throw new NotSupportedException();
 

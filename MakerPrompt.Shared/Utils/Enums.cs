@@ -39,6 +39,8 @@ namespace MakerPrompt.Shared.Utils
 
         public enum PrinterConnectionType
         {
+            [Display(Name = "Demo")]
+            Demo,
             [Display(Name = "Serial")]
             Serial,
             [Display(Name = "Moonraker")]

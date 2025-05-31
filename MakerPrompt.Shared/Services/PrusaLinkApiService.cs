@@ -175,6 +175,21 @@
             throw new NotImplementedException();
         }
 
+        public Task RunPidTuning(int cycles, int targetTemp, int extruderIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RunThermalModelCalibration(int cycles, int targetTemp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StartPrint(FileEntry file)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SaveEEPROM()
         {
             throw new NotImplementedException();
@@ -205,9 +220,9 @@
         public double? TargetNozzle { get; set; }
         public double? TempBed { get; set; }
         public double? TargetBed { get; set; }
-        public double? AxisX { get; set; }
-        public double? AxisY { get; set; }
-        public double? AxisZ { get; set; }
+        public float? AxisX { get; set; }
+        public float? AxisY { get; set; }
+        public float? AxisZ { get; set; }
         public int? FanPrint { get; set; }
     }
 

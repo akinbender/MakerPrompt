@@ -1,20 +1,18 @@
-﻿@using System.ComponentModel
-@inject IStringLocalizer<Resources> localizer
-@inherits ConnectionComponentBase
+﻿@inherits ConnectionComponentBase
 
 <div class="calibration-section">
     <div class="form-group mb-2">
-        <label>@localizer[Resources.GCodeDescription_S_TargetTemp]:</label>
-        <input type="number" class="form-control" @bind="@Calibration.Temperature" />
+        <label>@Localizer[Resources.GCodeDescription_S_TargetTemp]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Temperature" disabled="@(!IsConnected)" />
     </div>
 
     <div class="form-group mb-2">
-        <label>@localizer[Resources.GCodeDescription_C_Cycle]:</label>
-        <input type="number" class="form-control" @bind="@Calibration.Cycles" />
+        <label>@Localizer[Resources.GCodeDescription_C_Cycle]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Cycles" disabled="@(!IsConnected)" />
     </div>
 
-    <button class="btn btn-primary" @onclick="RunThermalCalibration">
-        <i class="fas fa-fire"></i> @localizer[Resources.CalibrationPage_Start]
+    <button class="btn btn-primary" @onclick="RunThermalModelCalibration" disabled="@(!IsConnected)">
+        <i class="fas fa-fire"></i> @Localizer[Resources.CalibrationPage_Start]
     </button>
 </div>
 
@@ -22,7 +20,7 @@
     private CalibrationParameters Calibration { get; set; } = new();
     private string calibrationResult = "";
 
-    private async Task RunThermalCalibration()
+    private async Task RunThermalModelCalibration()
     {
         if (PrinterServiceFactory.Current == null) return;
         var command = GCodeCommands.ThermalModelCalibration

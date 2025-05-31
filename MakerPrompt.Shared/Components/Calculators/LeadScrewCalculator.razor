@@ -1,9 +1,9 @@
-﻿@inject IStringLocalizer<Resources> localizer
+﻿@inherits ConnectionComponentBase
 
 <div class="row">
     <div class="col-md-6 col-sm-12">
         <div class="form-group mb-2">
-            <label>@localizer[Resources.Calculators_MotorAngle]</label>
+            <label>@Localizer[Resources.Calculators_MotorAngle]</label>
             <select class="form-control" @bind="SelectedStepAngle">
                 @foreach (var option in EnumExtensions.GetMotorStepAngleOptions())
                 {
@@ -13,7 +13,7 @@
         </div>
 
         <div class="form-group">
-            <label>@localizer[Resources.Calculators_Microstepping]</label>
+            <label>@Localizer[Resources.Calculators_Microstepping]</label>
             <select class="form-control" @bind="SelectedMicrostepping">
                 @foreach (var option in EnumExtensions.GetMicrosteppingOptions())
                 {
@@ -24,7 +24,7 @@
     </div>
     <div class="col-md-6 col-sm-12">
         <div class="form-group mb-2">
-            <label>@localizer[Resources.Calculators_LeadscrewPitch]</label>
+            <label>@Localizer[Resources.Calculators_LeadscrewPitch]</label>
             <select class="form-control" @bind="ScrewPitch">
                 <option value="0.635">1/16" (0.635mm)</option>
                 <option value="0.8">M8 (0.8mm)</option>
@@ -38,7 +38,7 @@
         </div>
 
         <div class="form-group">
-            <label>@localizer[Resources.Calculators_GearRatio]</label>
+            <label>@Localizer[Resources.Calculators_GearRatio]</label>
             <div class="input-group">
                 <input type="number" class="form-control" @bind="GearRatioA" min="1" max="100" />
                 <span class="input-group-text">:</span>
@@ -50,15 +50,21 @@
 <div class="row p-2">
     <div class="col-12 bg-secondary-subtle rounded">
         <div class="row">
-            <h4 class="mt-2">@localizer[Resources.CalibrationPage_Result]</h4>
+            <h4 class="mt-2">@Localizer[Resources.CalibrationPage_Result]</h4>
             <div class="col-md-6 col-sm-12">
-                <p><strong>@localizer[Resources.Calculators_Steps]:</strong> @ScrewStepsPerMm.ToString("0.00")</p>
-                <p><strong>@localizer[Resources.Calculators_Resolution]:</strong> @ScrewResolution.ToString("0.000") microns</p>
+                <p><strong>@Localizer[Resources.Calculators_Steps]:</strong> @ScrewStepsPerMm.ToString("0.00")</p>
+                <p><strong>@Localizer[Resources.Calculators_Resolution]:</strong> @ScrewResolution.ToString("0.000") microns</p>
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="alert alert-info d-flex justify-content-between align-items-center">
-                    <p class="mb-0"><strong>@localizer[Resources.Calculators_GCodeExample]:</strong> <code>M92 Z@(ScrewStepsPerMm.ToString("0.00"))</code></p>
-                    <button class="btn btn-sm btn-outline-primary action-button">
+                    <p class="mb-0">
+                        <strong>@Localizer[Resources.Calculators_GCodeExample]:</strong>
+                        <code id="gcode-string" title="@Localizer[Resources.CommandPrompt_CopyCommand]" @onclick="async () => await JS.CopyToClipboard(GCodeString)">
+                            @GCodeString
+                        </code>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary" disabled="@(!IsConnected)" @onclick="async () => await JS.CopyToClipboard(GCodeString)"
+                            title="@(IsConnected? Localizer[Resources.CommandPrompt_RunCommand] : Localizer[Resources.PrinterStatus_Disconnected])">
                         <i class="bi bi-play-fill"></i>
                     </button>
                 </div>
@@ -77,4 +83,6 @@
     private decimal ScrewStepsPerRev => 360m / SelectedStepAngle.GetStepAngleValue();
     private decimal ScrewStepsPerMm => (ScrewStepsPerRev * (int)SelectedMicrostepping * GearRatioA) / (ScrewPitch * GearRatioB);
     private decimal ScrewResolution => 1000m / ScrewStepsPerMm; // microns
+
+    private string GCodeString => $"M92 Z{ScrewStepsPerMm:0.00}";
 }

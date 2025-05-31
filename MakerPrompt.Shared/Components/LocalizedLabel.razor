@@ -6,7 +6,7 @@
 
 @code {
 
-    [Parameter] public Expression<Func<object>> For { get; set; }
+    [Parameter] public required Expression<Func<object>> For { get; set; }
     [Inject] IStringLocalizer<Resources> Localizer { get; set; }
 
     protected override void OnParametersSet()

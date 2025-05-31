@@ -8,6 +8,11 @@
 
         public ApiConnectionSettings? Api { get; set; }
 
+        public PrinterConnectionSettings()
+        {
+            ConnectionType = PrinterConnectionType.Demo;
+        }
+
         public PrinterConnectionSettings(SerialConnectionSettings serialConnectionSettings)
         {
             ConnectionType = PrinterConnectionType.Serial;
