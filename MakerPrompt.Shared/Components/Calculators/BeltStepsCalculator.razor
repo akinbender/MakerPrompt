@@ -1,0 +1,80 @@
+﻿@inherits ConnectionComponentBase
+
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        <div class="form-group mb-2">
+            <label>@Localizer[Resources.Calculators_MotorAngle]</label>
+            <select class="form-control" @bind="SelectedStepAngle">
+                @foreach (var option in EnumExtensions.GetMotorStepAngleOptions())
+                {
+                    <option value="@option.Key">@option.Value</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>@Localizer[Resources.Calculators_Microstepping]</label>
+            <select class="form-control" @bind="SelectedMicrostepping">
+                @foreach (var option in EnumExtensions.GetMicrosteppingOptions())
+                {
+                    <option value="@option.Key">@option.Value</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <div class="form-group mb-2">
+            <label>@Localizer[Resources.Calculators_BeltPitch]</label>
+            <select class="form-control" @bind="BeltPitch">
+                <option value="2">2mm (GT2)</option>
+                <option value="3">3mm (GT3)</option>
+                <option value="5">5mm (HTD5)</option>
+                <option value="8">8mm (T8)</option>
+                <option value="10">10mm (T10)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>@Localizer[Resources.Calculators_PulleyToothCount]</label>
+            <input type="number" class="form-control"
+                   @bind="BeltPulleyTeeth" min="8" max="100" />
+        </div>
+    </div>
+</div>
+<div class="row p-2">
+    <div class="col-12 bg-secondary-subtle rounded">
+        <div class="row">
+            <h4 class="mt-2">@Localizer[Resources.CalibrationPage_Result]</h4>
+            <div class="col-md-6 col-sm-12">
+                <p><strong>@Localizer[Resources.Calculators_Steps]:</strong> @BeltStepsPerMm.ToString("0.00")</p>
+                <p><strong>@Localizer[Resources.Calculators_Resolution]:</strong> @BeltResolution.ToString("0.000") microns</p>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                    <p class="mb-0">
+                        <strong>@Localizer[Resources.Calculators_GCodeExample]:</strong> 
+                        <code id="gcode-string" title="@Localizer[Resources.CommandPrompt_CopyCommand]" @onclick="async () => await JS.CopyToClipboard(GCodeString)">
+                            @GCodeString
+                        </code>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary" disabled="@(!IsConnected)" @onclick="async () => await JS.CopyToClipboard(GCodeString)"
+                            title="@(IsConnected? Localizer[Resources.CommandPrompt_RunCommand] : Localizer[Resources.PrinterStatus_Disconnected])">
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private MotorStepAngle SelectedStepAngle = MotorStepAngle.Step1_8;
+    private MicrosteppingMode SelectedMicrostepping = MicrosteppingMode.SixteenthStep;
+    private decimal BeltPitch = 2;
+    private int BeltPulleyTeeth = 8;
+    private decimal BeltStepsPerRev => 360m / SelectedStepAngle.GetStepAngleValue();
+    private decimal BeltStepsPerMm => (BeltStepsPerRev * (int)SelectedMicrostepping) / (BeltPitch * BeltPulleyTeeth);
+    private decimal BeltResolution => 1000m / BeltStepsPerMm; // microns
+
+    private string GCodeString => $"M92 X{BeltStepsPerMm:0.00} Y{BeltStepsPerMm:0.00}";
+}

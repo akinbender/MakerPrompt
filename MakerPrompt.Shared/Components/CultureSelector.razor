@@ -1,0 +1,47 @@
+﻿@using System.Globalization
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject IAppConfigurationService AppConfigurationService
+@inject NavigationManager Navigation
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        @selectedCulture?.TwoLetterISOLanguageName
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+        @foreach (var culture in supportedCultures)
+        {
+            <li><a class="dropdown-item" @onclick="() => ApplySelectedCultureAsync(culture)">@culture.DisplayName</a></li>
+        }
+    </ul>
+</li>
+
+@code
+{
+    private List<CultureInfo> supportedCultures = new();
+
+    private CultureInfo? selectedCulture;
+
+    protected override void OnInitialized()
+    {
+        supportedCultures = AppConfigurationService.Configuration.SupportedCultures.Select((s) => new CultureInfo(s)).ToList();
+        selectedCulture = CultureInfo.CurrentCulture;
+    }
+
+    private async Task ApplySelectedCultureAsync(CultureInfo culture)
+    {
+        selectedCulture = culture;
+        if (CultureInfo.CurrentCulture != selectedCulture)
+        {
+            await JS.InvokeVoidAsync("blazorCulture.set", selectedCulture!.Name);
+            AppConfigurationService.Configuration.Language = selectedCulture.Name;
+            Thread.CurrentThread.CurrentCulture = selectedCulture;
+            Thread.CurrentThread.CurrentUICulture = selectedCulture;
+            CultureInfo.DefaultThreadCurrentCulture = selectedCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = selectedCulture;
+            await AppConfigurationService.SaveConfigurationAsync();
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+        StateHasChanged();
+    }
+}

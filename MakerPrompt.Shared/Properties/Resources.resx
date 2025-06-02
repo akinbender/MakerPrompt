@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GCodeCategory_Calibration" xml:space="preserve">
+    <value>Calibration</value>
+  </data>
+  <data name="GCodeCategory_Fan" xml:space="preserve">
+    <value>Fan</value>
+  </data>
+  <data name="GCodeCategory_Reporting" xml:space="preserve">
+    <value>Reporting</value>
+  </data>
+  <data name="GCodeCategory_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="GCodeCategory_Temperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="GCodeDescription_G0" xml:space="preserve">
+    <value>Rapid linear movement (non-printing)</value>
+  </data>
+  <data name="GCodeDescription_G1" xml:space="preserve">
+    <value>Controlled linear movement (printing)</value>
+  </data>
+  <data name="GCodeDescription_G28" xml:space="preserve">
+    <value>Home all or specified axes</value>
+  </data>
+  <data name="GCodeDescription_G29" xml:space="preserve">
+    <value>Auto bed leveling</value>
+  </data>
+  <data name="GCodeDescription_G90" xml:space="preserve">
+    <value>Set absolute positioning mode</value>
+  </data>
+  <data name="GCodeDescription_G91" xml:space="preserve">
+    <value>Set relative positioning mode</value>
+  </data>
+  <data name="GCodeDescription_G92" xml:space="preserve">
+    <value>Set current position (reset coordinates)</value>
+  </data>
+  <data name="GCodeDescription_M104" xml:space="preserve">
+    <value>Set hotend temperature (non-blocking)</value>
+  </data>
+  <data name="GCodeDescription_M105" xml:space="preserve">
+    <value>Report current temperatures</value>
+  </data>
+  <data name="GCodeDescription_M106" xml:space="preserve">
+    <value>Set fan speed (S: 0-255)</value>
+  </data>
+  <data name="GCodeDescription_M107" xml:space="preserve">
+    <value>Turn fan off</value>
+  </data>
+  <data name="GCodeDescription_M109" xml:space="preserve">
+    <value>Set hotend temp &amp; wait (blocking)</value>
+  </data>
+  <data name="GCodeDescription_M112" xml:space="preserve">
+    <value>Emergency stop</value>
+  </data>
+  <data name="GCodeDescription_M114" xml:space="preserve">
+    <value>Get current position</value>
+  </data>
+  <data name="GCodeDescription_M115" xml:space="preserve">
+    <value>Get firmware info</value>
+  </data>
+  <data name="GCodeDescription_M140" xml:space="preserve">
+    <value>Set bed temperature (non-blocking)</value>
+  </data>
+  <data name="GCodeDescription_M190" xml:space="preserve">
+    <value>Set bed temp &amp; wait (blocking)</value>
+  </data>
+  <data name="PageTitle_GCodeList" xml:space="preserve">
+    <value>G-Code Cheat Sheet</value>
+  </data>
+  <data name="PageTitle_Homepage" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="GCodeCategory_Movement" xml:space="preserve">
+    <value>Movement</value>
+  </data>
+  <data name="GCodeDescription_M303" xml:space="preserve">
+    <value>PID autotune</value>
+  </data>
+  <data name="GCodeDescription_M306" xml:space="preserve">
+    <value>Thermal model calibration</value>
+  </data>
+  <data name="GCodeCategory_SdCard" xml:space="preserve">
+    <value>Sd Card</value>
+  </data>
+  <data name="Theme_Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="GCodeDescription_M20" xml:space="preserve">
+    <value>List SD card contents</value>
+  </data>
+  <data name="GCodeDescription_M21" xml:space="preserve">
+    <value>Initialize SD card</value>
+  </data>
+  <data name="GCodeDescription_M22" xml:space="preserve">
+    <value>Release SD card</value>
+  </data>
+  <data name="GCodeDescription_M23" xml:space="preserve">
+    <value>Select SD file</value>
+  </data>
+  <data name="GCodeDescription_M24" xml:space="preserve">
+    <value>Start/resume SD print</value>
+  </data>
+  <data name="GCodeDescription_M25" xml:space="preserve">
+    <value>Pause SD print</value>
+  </data>
+  <data name="GCodeDescription_M26" xml:space="preserve">
+    <value>Set SD read position</value>
+  </data>
+  <data name="GCodeDescription_M27" xml:space="preserve">
+    <value>Report SD print status</value>
+  </data>
+  <data name="GCodeDescription_M28" xml:space="preserve">
+    <value>Start writing to SD card</value>
+  </data>
+  <data name="GCodeDescription_M29" xml:space="preserve">
+    <value>Stop writing to SD card</value>
+  </data>
+  <data name="GCodeDescription_M30" xml:space="preserve">
+    <value>Delete SD file</value>
+  </data>
+  <data name="GCodeDescription_M32" xml:space="preserve">
+    <value>Select file and start print</value>
+  </data>
+  <data name="GCodeCommand_Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="GCodeCommand_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="GCodeCommand_Category" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="GCodeCommand_Parameter" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="CheatSheetPage_SearchCommands" xml:space="preserve">
+    <value>Search commands..</value>
+  </data>
+  <data name="GCodeDescription_S_TargetTemp" xml:space="preserve">
+    <value>Target temperature</value>
+  </data>
+  <data name="GCodeDescription_C_Cycle" xml:space="preserve">
+    <value>Cycles (3-20)</value>
+  </data>
+  <data name="GCodeDescription_X_Position" xml:space="preserve">
+    <value>X position</value>
+  </data>
+  <data name="GCodeDescription_Y_Position" xml:space="preserve">
+    <value>Y position</value>
+  </data>
+  <data name="GCodeDescription_Z_Position" xml:space="preserve">
+    <value>Z position</value>
+  </data>
+  <data name="GCodeDescription_F_Feedrate" xml:space="preserve">
+    <value>Feedrate</value>
+  </data>
+  <data name="GCodeDescription_F_File" xml:space="preserve">
+    <value>File path</value>
+  </data>
+  <data name="GCodeDescription_E_Amount" xml:space="preserve">
+    <value>Extrude amount</value>
+  </data>
+  <data name="GCodeDescription_M17" xml:space="preserve">
+    <value>Enable Steppers</value>
+  </data>
+  <data name="GCodeDescription_M18" xml:space="preserve">
+    <value>Disable Steppers</value>
+  </data>
+  <data name="GCodeDescription_M117" xml:space="preserve">
+    <value>Set LCD Message</value>
+  </data>
+  <data name="NavConnection_Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="NavConnection_Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="GCodeDescription_E_Position" xml:space="preserve">
+    <value>E Position</value>
+  </data>
+  <data name="NavConnection_RefreshPorts" xml:space="preserve">
+    <value>Refresh ports</value>
+  </data>
+  <data name="CheatSheetPage_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="NavConnection_SelectPort" xml:space="preserve">
+    <value>Select port</value>
+  </data>
+  <data name="CalibrationPage_PidTuning" xml:space="preserve">
+    <value>PID Tuning</value>
+  </data>
+  <data name="CalibrationPage_ThermalModel" xml:space="preserve">
+    <value>Thermal Model</value>
+  </data>
+  <data name="GCodeDescription_M500" xml:space="preserve">
+    <value>Store settings in EEPROM</value>
+  </data>
+  <data name="GCodeDescription_M501" xml:space="preserve">
+    <value>Read settings from EEPROM</value>
+  </data>
+  <data name="GCodeDescription_M502" xml:space="preserve">
+    <value>Reset all settings in memory to their factory defaults</value>
+  </data>
+  <data name="GCodeDescription_M503" xml:space="preserve">
+    <value>Report current settings from EEPROM</value>
+  </data>
+  <data name="GCodeDescription_M504" xml:space="preserve">
+    <value>Validate the contents of the EEPROM</value>
+  </data>
+  <data name="GCodeDescription_P_Proportional" xml:space="preserve">
+    <value>Proportional Value</value>
+  </data>
+  <data name="GCodeDescription_I_Integral" xml:space="preserve">
+    <value>Integral Value</value>
+  </data>
+  <data name="GCodeDescription_D_Derivative" xml:space="preserve">
+    <value>Derivative Value</value>
+  </data>
+  <data name="GCodeDescription_M304" xml:space="preserve">
+    <value>Set bed PID</value>
+  </data>
+  <data name="GCodeDescription_M301" xml:space="preserve">
+    <value>Set hotend PID</value>
+  </data>
+  <data name="CommandPrompt_ConnectedMessage" xml:space="preserve">
+    <value>Connection established.</value>
+  </data>
+  <data name="CommandPrompt_ErrorMessage" xml:space="preserve">
+    <value>Error sending command: {0}.</value>
+  </data>
+  <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve">
+    <value>Connection terminated.</value>
+  </data>
+  <data name="CommandPrompt_Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="CommandPrompt_EnterCommand" xml:space="preserve">
+    <value>Enter command..</value>
+  </data>
+  <data name="CalibrationPage_Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="PrinterComponent_Hotend" xml:space="preserve">
+    <value>Hotend</value>
+  </data>
+  <data name="PrinterComponent_Heatbed" xml:space="preserve">
+    <value>Heatbed</value>
+  </data>
+  <data name="Dashboard_ControlPanel" xml:space="preserve">
+    <value>Control Panel</value>
+  </data>
+  <data name="CalibrationPage_HeaterIndex" xml:space="preserve">
+    <value>Heater Index</value>
+  </data>
+  <data name="CalibrationPage_Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="ControlPanel_Position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="ControlPanel_Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="ControlPanel_Set" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="ControlPanel_Extrude" xml:space="preserve">
+    <value>Extrude</value>
+  </data>
+  <data name="ControlPanel_Reverse" xml:space="preserve">
+    <value>Reverse</value>
+  </data>
+  <data name="ControlPanel_PrintFlow" xml:space="preserve">
+    <value>Print flow</value>
+  </data>
+  <data name="ControlPanel_Heating" xml:space="preserve">
+    <value>Heating</value>
+  </data>
+  <data name="ControlPanel_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ControlPanel_SetHotendTemp" xml:space="preserve">
+    <value>Set hotend temperature</value>
+  </data>
+  <data name="ControlPanel_SetBedTemp" xml:space="preserve">
+    <value>Set bed temperature</value>
+  </data>
+  <data name="ControlPanel_MotorsOff" xml:space="preserve">
+    <value>Motors off</value>
+  </data>
+  <data name="ControlPanel_SdCard_Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve">
+    <value>Not present</value>
+  </data>
+  <data name="ControlPanel_Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="ControlPanel_Current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="ControlPanel_Target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="ControlPanel_Set_XYSpeed" xml:space="preserve">
+    <value>Set speed for X &amp; Y axes (mm/min)</value>
+  </data>
+  <data name="ControlPanel_Set_ZSpeed" xml:space="preserve">
+    <value>Set speed for Z axis (mm/min)</value>
+  </data>
+  <data name="ControlPanel_PrintSpeed" xml:space="preserve">
+    <value>Print speed</value>
+  </data>
+  <data name="GCodeDescription_M220" xml:space="preserve">
+    <value>Set or report the feed rate percentage for all G-code moves (X, Y, Z, E axes)</value>
+  </data>
+  <data name="GCodeDescription_M221" xml:space="preserve">
+    <value>Set or report the flow rate percentage for E-axis extrusion moves</value>
+  </data>
+  <data name="PrinterStatus_Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="PrinterStatus_Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="PrinterStatus_Printing" xml:space="preserve">
+    <value>Printing</value>
+  </data>
+  <data name="PrinterStatus_Paused" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="PrinterStatus_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ControlPanel_Set_FanSpeed" xml:space="preserve">
+    <value>Set fan speed</value>
+  </data>
+  <data name="ControlPanel_FanSpeed" xml:space="preserve">
+    <value>Fan speed</value>
+  </data>
+  <data name="Calculators_LeadScrewSteps" xml:space="preserve">
+    <value>Leadscrew Steps per Millimeter Calculator</value>
+  </data>
+  <data name="Calculators_ExtruderSteps" xml:space="preserve">
+    <value>E-Steps Calculator</value>
+  </data>
+  <data name="PageTitle_Calculators" xml:space="preserve">
+    <value>Calculators</value>
+  </data>
+  <data name="Calculators_MotorAngle" xml:space="preserve">
+    <value>Motor Step Angle</value>
+  </data>
+  <data name="Calculators_Microstepping" xml:space="preserve">
+    <value>Driver Microsteppin</value>
+  </data>
+  <data name="Calculators_BeltSteps" xml:space="preserve">
+    <value>Belt Steps per Millimeter Calculator</value>
+  </data>
+  <data name="Calculators_PrintPrice" xml:space="preserve">
+    <value>Print price Calculator</value>
+  </data>
+  <data name="Calculators_BeltPitch" xml:space="preserve">
+    <value>Belt Pitch (mm)</value>
+  </data>
+  <data name="Calculators_PulleyToothCount" xml:space="preserve">
+    <value>Pulley Tooth Count</value>
+  </data>
+  <data name="Calculators_LeadscrewPitch" xml:space="preserve">
+    <value>Leadscrew Pitch (mm/revolution)</value>
+  </data>
+  <data name="Calculators_GearRatio" xml:space="preserve">
+    <value>Gear Ratio</value>
+  </data>
+  <data name="Calculators_Steps" xml:space="preserve">
+    <value>Steps per mm</value>
+  </data>
+  <data name="Calculators_Resolution" xml:space="preserve">
+    <value>Resolution</value>
+  </data>
+  <data name="Calculators_GCodeExample" xml:space="preserve">
+    <value>G-code Example</value>
+  </data>
+  <data name="Calculators_RequestedExtrusionLength" xml:space="preserve">
+    <value>Requested Extrusion Length (mm)</value>
+  </data>
+  <data name="Calculators_CurrentEsteps" xml:space="preserve">
+    <value>Current E-steps (steps/mm)</value>
+  </data>
+  <data name="Calculators_ActualExtrusionLength" xml:space="preserve">
+    <value>Actual Extrusion Length (mm)</value>
+  </data>
+  <data name="Calculators_MeasureCaliper" xml:space="preserve">
+    <value>Measure with a caliper</value>
+  </data>
+  <data name="Calculators_Esteps_HowTo" xml:space="preserve">
+    <value>        &lt;h5&gt;How to use:&lt;/h5&gt;        &lt;ol&gt;            &lt;li&gt;Mark 120mm from your extruder entrance&lt;/li&gt;            &lt;li&gt;Heat up your hotend&lt;/li&gt;            &lt;li&gt;Extrude 100mm (use &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;            &lt;li&gt;Measure remaining filament to extruder&lt;/li&gt;            &lt;li&gt;Enter values above (actual = 120 - remaining)&lt;/li&gt;        &lt;/ol&gt;</value>
+  </data>
+  <data name="GCodeDescription_M92" xml:space="preserve">
+    <value>Get or set the steps-per-unit for one or more axes</value>
+  </data>
+  <data name="NavConnection_BrowserNotSupported" xml:space="preserve">
+    <value>Browser not supported.</value>
+  </data>
+  <data name="Calculators_RememberSave" xml:space="preserve">
+    <value>Remember to save after testing</value>
+  </data>
+  <data name="Dashboard_FileExplorer" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="Files_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Files_DateModified" xml:space="preserve">
+    <value>Date Modified</value>
+  </data>
+  <data name="Files_Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Files_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="PageTitle_About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AboutPage_Content" xml:space="preserve">
+    <value>Open-source, cross-platform 3D printer management software powered by Blazor Hybrid. &lt;strong&gt;Still under development—use at your own risk.&lt;/strong&gt;&lt;/br&gt;Special thanks to &lt;a href="https://mrhide.de"&gt;MrHide&lt;/a&gt; for the digital logo and Paleva (@x-hain) for her invaluable support.  The source code is available &lt;a href="https://github.com/akinbender/MakerPrompt"&gt;here&lt;/a&gt;.</value>
+  </data>
+  <data name="CommandPrompt_RunCommand" xml:space="preserve">
+    <value>Run command</value>
+  </data>
+  <data name="CommandPrompt_CopyCommand" xml:space="preserve">
+    <value>Copy command</value>
+  </data>
+  <data name="NavConnection_DemoServiceDescription" xml:space="preserve">
+    <value>A service that simulates a functioning 3D printer for demonstration purposes.</value>
+  </data>
+  <data name="PageTitle_CommandPrompt" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="PageTitle_GCodeViewer" xml:space="preserve">
+    <value>G-Code Viewer</value>
+  </data>
+</root>

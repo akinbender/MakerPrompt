@@ -1,0 +1,125 @@
+@inherits ConnectionComponentBase
+
+<div class="d-flex flex-row-reverse">
+    <div class="btn-group mb-3">
+        <button class="btn btn-sm btn-primary" @onclick="() => PrinterServiceFactory.Current?.StartPrint(selectedFile)" disabled="@(!CanStartPrint)">
+            <i class="bi bi-printer"></i> @Localizer[Resources.CalibrationPage_Start]
+        </button>
+        <button class="btn btn-sm btn-secondary" disabled="@(!IsConnected)" @onclick="RefreshFiles">
+            <i class="bi bi-arrow-clockwise"></i> @Localizer[Resources.Files_Refresh]
+        </button>
+    </div>
+</div>
+
+<div class="table-responsive" style="max-height: 65vh;">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@Localizer[Resources.Files_Name]</th>
+                <th>@Localizer[Resources.Files_DateModified]</th>
+                <th>@Localizer[Resources.Files_Size]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (IsConnected)
+            {
+                @if (_isLoading)
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in _files)
+                    {
+                        <tr class="@GetRowClass(item)" @onclick="() => SelectFile(item)">
+                            <td>@item.FullPath</td>
+                            <td>@item.ModifiedDate?.ToString("g")</td>
+                            <td>@FormatSize(item.Size)</td>
+                        </tr>
+                    }
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">
+                        @Localizer[Resources.PrinterStatus_Disconnected]
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private List<FileEntry> _files = new();
+    private bool _isLoading;
+    private FileEntry? selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshFiles();
+    }
+
+    protected override void HandleConnectionChanged(object? sender, bool connected)
+    {
+        base.HandleConnectionChanged(sender, connected);
+        if (connected)
+        {
+            _ = RefreshFiles();
+        }
+        else
+        {
+            _files.Clear();
+            selectedFile = null;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshFiles()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        if (PrinterServiceFactory.Current != null)
+        {
+            _files = await PrinterServiceFactory.Current?.GetFilesAsync() ?? new List<FileEntry>();
+        }
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    private string FormatSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double len = bytes;
+
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private void SelectFile(FileEntry file)
+    {
+        selectedFile = file;
+    }
+
+    private bool CanStartPrint => selectedFile != null && selectedFile.Size > 0;
+
+    private string GetRowClass(FileEntry file)
+    {
+        return selectedFile == file ? "table-active" : string.Empty;
+    }
+}

@@ -1,0 +1,81 @@
+﻿@inject IStringLocalizer<Resources> localizer
+@inherits LayoutComponentBase
+@implements IDisposable
+
+<header class="navbar sticky-top bg-body-secondary text-body flex-md-nowrap p-0 shadow">
+    <a href="/" class="navbar-brand bg-body-tertiary col-md-3 col-lg-2 d-flex align-items-center me-0 px-2">
+            <img class="ms-2" width="40" height="32" aria-hidden="true" src="_content/MakerPrompt.Shared/logo.svg" onerror="this.src='_content/MakerPrompt.Shared/favicon.png'" />
+            <span>MakerPrompt</span>
+        </a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <NavConnection />
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <NavMenu />
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">@TitleService.CurrentTitle</h1>
+            </div>
+            <div class="row">
+                <div class="col-lg-7 col-md-12">
+                    @Body
+                </div>
+                <div class="col-lg-5 col-md-12">
+                    <div class="calibration-tabs">
+                        <ul class="nav nav-tabs mb-3">
+                            <li class="nav-item">
+                                <a class="nav-link @(ActiveTab == LayoutTab.CommandPrompt ? "active" : string.Empty)" @onclick="() => ShowTab(LayoutTab.CommandPrompt)">@localizer[Resources.PageTitle_CommandPrompt]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ActiveTab == LayoutTab.GCodeViewer ? "active" : string.Empty)" @onclick="() => ShowTab(LayoutTab.GCodeViewer)">@localizer[Resources.PageTitle_GCodeViewer]</a>
+                            </li>
+                        </ul>
+
+                        @switch (ActiveTab)
+                        {
+                            default:
+                            case LayoutTab.CommandPrompt:
+                                <CommandPrompt />
+                                break;
+                            case LayoutTab.GCodeViewer:
+                                <GCodeViewer />
+                                break;
+                        }
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    private LocalizedTitleService TitleService { get; set; } = null!;
+    private LayoutTab ActiveTab = LayoutTab.CommandPrompt;
+
+    private enum LayoutTab { CommandPrompt, GCodeViewer }
+
+    private void ShowTab(LayoutTab tab)
+    {
+        ActiveTab = tab;
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        TitleService.OnTitleChanged += HandleTitleChanged;
+    }
+
+    private void HandleTitleChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        TitleService.OnTitleChanged -= HandleTitleChanged;
+    }
+}

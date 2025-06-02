@@ -1,0 +1,61 @@
+name: Publish MAUI Apps
+
+on:
+  push:
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]'
+
+env:
+  MAUI_PROJECT: 'MakerPrompt.MAUI/MakerPrompt.MAUI.csproj'
+  OUTPUT_DIR: 'publish'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install MAUI workloads
+      run: |
+        dotnet workload install maui
+        dotnet workload install maui-desktop
+        dotnet workload install maui-android
+        dotnet workload install maui-maccatalyst
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.MAUI_PROJECT }}
+
+    - name: Publish MAUI Windows
+      continue-on-error: true
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-windows10.0.19041.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows
+
+    - name: Publish MAUI Android
+      continue-on-error: true
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-android -o ${{ env.OUTPUT_DIR }}/android
+
+    - name: Publish MAUI MacCatalyst
+      continue-on-error: true
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-maccatalyst -o ${{ env.OUTPUT_DIR }}/maccatalyst -p:CreatePackage=false
+
+    - name: Zip Releases
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: ${{ env.OUTPUT_DIR }}
+        dest: release.zip
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
+      with:
+         body_path: ${{ github.workspace }}/CHANGELOG.md
+         make_latest: true
+         files: release.zip

@@ -1,0 +1,49 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MakerPrompt</title>
+    <meta name="title" content="MakerPrompt - Open Source 3D Printer Management">
+    <meta name="description" content="Cross-platform interface for 3D printer management. Supports Prusalink, Moonraker, and direct serial control. Developed at x-hain hackspace using Blazor Hybrid.">
+    <meta name="keywords" content="3D printer management, 3D printer maintenance, Blazor Hybrid, open source 3D printing, Pronterface alternative, Prusalink, Moonraker, Web Serial control" />
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Akın Bender"/>
+    <base href="/" />
+    <link rel="stylesheet" href="MakerPrompt.Blazor.styles.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.Shared/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.Shared/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.Shared/css/app.css" />
+    <link rel="icon" type="image/png" href="_content/MakerPrompt.Shared/favicon.png" />
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="favicon.png" />
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_content/MakerPrompt.Shared/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="_content/MakerPrompt.Shared/lib/gcode-viewer/_bundles/gcode-viewer.min.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+        window.blazorCulture = {
+            get: () => window.localStorage['BlazorCulture'],
+            set: (value) => window.localStorage['BlazorCulture'] = value
+        };
+    </script>
+</body>
+
+</html>

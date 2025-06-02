@@ -1,0 +1,17 @@
+{
+  "name": "MakerPrompt.Blazor",
+  "short_name": "MakerPrompt.Blazor",
+  "id": "./",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#151E3F",
+  "theme_color": "#85D4FF",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "_content/MakerPrompt.Shared/favicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+﻿@inherits ConnectionComponentBase
+
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        @howTo
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <div class="form-group mb-2">
+            <label>@Localizer[Resources.Calculators_CurrentEsteps]</label>
+            <input type="number" class="form-control" @bind="CurrentESteps"
+            min="0" step="0.01" placeholder="93.0" />
+        </div>
+
+        <div class="form-group mb-2">
+            <label>@Localizer[Resources.Calculators_RequestedExtrusionLength]</label>
+            <input type="number" class="form-control" @bind="RequestedLength"
+            min="1" step="1" placeholder="100" />
+        </div>
+
+        <div class="form-group">
+            <label>@Localizer[Resources.Calculators_ActualExtrusionLength]</label>
+            <input type="number" class="form-control" @bind="ActualLength"
+            min="1" step="0.1" />
+            <small>@Localizer[Resources.Calculators_MeasureCaliper]</small>
+        </div>
+    </div>
+</div>
+
+<div class="row p-2">
+    <div class="col-12 bg-secondary-subtle rounded">
+        <div class="row">
+            <h4 class="mt-2">@Localizer[Resources.CalibrationPage_Result]</h4>
+            <div class="col-md-6 col-sm-12">
+                <p><strong>@Localizer[Resources.Calculators_Steps]:</strong> @CalculatedESteps.ToString("0.00")</p>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                    <p class="mb-0">
+                        <strong>@Localizer[Resources.Calculators_GCodeExample]:</strong>
+                        <code id="gcode-string" title="@Localizer[Resources.CommandPrompt_CopyCommand]" @onclick="async () => await JS.CopyToClipboard(GCodeString)">
+                            @GCodeString
+                        </code>
+                    </p>
+                    <button class="btn btn-sm btn-outline-primary" disabled="@(!IsConnected)" @onclick="async () => await JS.CopyToClipboard(GCodeString)"
+                            title="@(IsConnected? Localizer[Resources.CommandPrompt_RunCommand] : Localizer[Resources.PrinterStatus_Disconnected])">
+                        <i class="bi bi-play-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private decimal CurrentESteps = 93.0m;
+    private decimal RequestedLength = 100m;
+    private decimal ActualLength = 100m;
+
+    private decimal CalculatedESteps =>
+        (ActualLength / RequestedLength) * CurrentESteps;
+
+    private MarkupString howTo;
+    private string GCodeString => $"M92 E{CalculatedESteps:0.00}";
+    
+    protected override void OnInitialized()
+    {
+        howTo = new MarkupString(Localizer[Resources.Calculators_Esteps_HowTo]);
+        base.OnInitialized();
+    }
+}

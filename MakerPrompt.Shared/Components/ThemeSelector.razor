@@ -1,0 +1,33 @@
+﻿@using static MakerPrompt.Shared.Utils.Enums
+@inject ThemeService ThemeService
+@inject IStringLocalizer<Resources> localizer
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        @(selectedTheme.GetLocalizedDisplayName())
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" @onclick="() => UpdateTheme(Theme.Auto)">@localizer[Resources.Theme_Auto]</a></li>
+        <li><a class="dropdown-item" @onclick="() => UpdateTheme(Theme.Light)">@localizer[Resources.Theme_Light]</a></li>
+        <li><a class="dropdown-item" @onclick="() => UpdateTheme(Theme.Dark)">@localizer[Resources.Theme_Dark]</a></li>
+        <li><a class="dropdown-item" @onclick="() => UpdateTheme(Theme.MpDark)">@Theme.MpDark.GetDisplayName()</a></li>
+    </ul>
+</li>
+
+
+@code {
+    private Theme selectedTheme;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+        selectedTheme = ThemeService.CurrentTheme;
+    }
+
+    private async Task UpdateTheme(Theme theme)
+    {
+        selectedTheme = theme;
+        await ThemeService.SetThemeAsync(selectedTheme);
+        StateHasChanged();
+    }
+}

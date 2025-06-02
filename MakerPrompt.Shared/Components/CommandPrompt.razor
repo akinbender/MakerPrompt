@@ -1,0 +1,147 @@
+﻿@using System.Collections.Generic
+@inherits ConnectionComponentBase
+
+<div class="bg-body-tertiary rounded p-3 mt-md-3" style="height: 70vh;">
+    <div class="overflow-auto mb-2" style="height: 90%;" @ref="historyContainer">
+        @foreach (var entry in GetHistorySnapshot())
+        {
+            <div class="terminal-line">
+                @if (entry.Type == TerminalEntryType.Sent)
+                {
+                    <span class="text-primary">&gt;&gt;</span>
+                    <span class="text-muted">@DateTime.Now.ToString("HH:mm:ss")</span>
+                    <span class="text-white">@entry.Text</span>
+                }
+                else if (entry.Type == TerminalEntryType.Received)
+                {
+                    <span class="text-success">&lt;&lt;</span>
+                    <span class="text-muted">@DateTime.Now.ToString("HH:mm:ss")</span>
+                    <span class="text-white">@entry.Text</span>
+                }
+                else
+                {
+                    <span class="text-warning">@entry.Text</span>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="input-group">
+        <input type="text" class="form-control bg-dark-subtle border-light-subtle"
+               placeholder="@Localizer[Resources.CommandPrompt_EnterCommand]" @bind="inputCommand"
+               disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)"
+               @onkeypress="HandleKeyPress" />
+        <button class="btn btn-outline-secondary" @onclick="SendCommand"
+                disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)">
+            @Localizer[Resources.CommandPrompt_Send]
+        </button>
+    </div>
+</div>
+@code {
+    private enum TerminalEntryType { Sent, Received, System }
+    private class TerminalEntry
+    {
+        public string Text { get; set; } = string.Empty;
+        public TerminalEntryType Type { get; set; }
+    }
+
+    private readonly object _historyLock = new();
+    private List<TerminalEntry> history = new();
+    private string inputCommand = string.Empty;
+    private bool isConnected = false;
+    private ElementReference historyContainer;
+
+    private async Task SendCommand()
+    {
+        if (string.IsNullOrWhiteSpace(inputCommand) || PrinterServiceFactory.Current == null) return;
+
+        var command = inputCommand.Trim();
+        AddEntryToHistory(new TerminalEntry { Text = command, Type = TerminalEntryType.Sent });
+        inputCommand = string.Empty;
+
+        try
+        {
+            await PrinterServiceFactory.Current.WriteDataAsync(command);
+            await ScrollToBottom();
+        }
+        catch (Exception ex)
+        {
+            AddSystemMessage(string.Format(Localizer[Resources.CommandPrompt_ErrorMessage], ex.Message), true);
+        }
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            SendCommand().ConfigureAwait(false);
+        }
+    }
+
+    protected override void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry)
+    {
+        if (!string.IsNullOrWhiteSpace(printerTelemetry.LastResponse))
+        {
+            AddEntryToHistory(new TerminalEntry
+                {
+                    Text = printerTelemetry.LastResponse.Trim(),
+                    Type = TerminalEntryType.Received
+                });
+            InvokeAsync(StateHasChanged);
+            InvokeAsync(ScrollToBottom);
+        }
+    }
+
+    protected override void HandleConnectionChanged(object? sender, bool connected)
+    {
+        base.HandleConnectionChanged(sender, connected);
+        var message = connected ? string.Format(Localizer[Resources.CommandPrompt_ConnectedMessage], PrinterServiceFactory.Current?.ConnectionName)
+                        : string.Format(Localizer[Resources.CommandPrompt_DisconnectedMessage], PrinterServiceFactory.Current?.ConnectionName);
+        AddSystemMessage(message);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void AddSystemMessage(string message, bool isError = false)
+    {
+        AddEntryToHistory(new TerminalEntry
+            {
+                Text = message,
+                Type = isError ? TerminalEntryType.System : TerminalEntryType.System
+            });
+        InvokeAsync(StateHasChanged);
+        InvokeAsync(ScrollToBottom);
+    }
+
+    private async Task ScrollToBottom()
+    {
+        try
+        {
+            // await JS.InvokeVoidAsync("scrollToBottom", historyContainer);
+        }
+        catch
+        {
+            // Ignore JS interop errors
+        }
+    }
+
+    private void AddEntryToHistory(TerminalEntry entry)
+    {
+        lock (_historyLock)
+        {
+            history.Add(entry);
+            // Limit history size to prevent memory issues
+            if (history.Count > 1000)
+            {
+                history.RemoveAt(0);
+            }
+        }
+    }
+
+    private List<TerminalEntry> GetHistorySnapshot()
+    {
+        lock (_historyLock)
+        {
+            return new List<TerminalEntry>(history);
+        }
+    }
+}

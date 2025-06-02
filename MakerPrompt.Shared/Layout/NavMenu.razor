@@ -1,0 +1,46 @@
+﻿<nav id="sidebarMenu" class="col-md-3 col-lg-2 bg-body-secondary d-flex flex-column flex-shrink-0 sidebar collapse">
+<ul class="nav flex-column mb-auto pt-3">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @Resources.PageTitle_Homepage
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="cheatsheet">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> @Resources.PageTitle_GCodeList
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="calculators">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> @Resources.PageTitle_Calculators
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="about">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> @Resources.PageTitle_About
+                </NavLink>
+            </li>
+        </ul>
+        <hr/>
+        <div class="nav-item px-3">
+            <p class="text-break">@($"v{Version}")</p>
+        </div>
+</nav>
+
+@code {
+    private string Version = "v0.0.0-alpha";
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override void OnInitialized()
+    {
+        var assembly = Assembly.GetEntryAssembly();
+        Version = assembly?.GetName()?.Version?.ToString(3) ?? Version;
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
