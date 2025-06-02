@@ -11,7 +11,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: '0'
-
+        token: ${{ secrets.PAT }}
+        persist-credentials: false
+        
     - name: Install Versionize
       run: dotnet tool install --global Versionize
 

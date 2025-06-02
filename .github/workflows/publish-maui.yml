@@ -44,13 +44,25 @@ jobs:
 
     - name: Publish MAUI MacCatalyst
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-maccatalyst -o ${{ env.OUTPUT_DIR }}/maccatalyst -p:CreatePackage=false
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-maccatalyst -p:CreatePackage=false
 
-    - name: Zip Releases
+    - name: Zip Windows Release
       uses: vimtor/action-zip@v1.2
       with:
-        files: ${{ env.OUTPUT_DIR }}
-        dest: release.zip
+        files: ${{ env.OUTPUT_DIR }}/windows
+        dest: windows-release.zip
+
+    - name: Zip Android Release
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: ${{ env.OUTPUT_DIR }}/android
+        dest: android-release.zip
+
+    - name: Zip MacCatalyst Release
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: ${{ env.MAUI_PROJECT }}/bin/Release/net8.0-maccatalyst
+        dest: maccatalyst-release.zip
 
     - name: Release
       uses: softprops/action-gh-release@v2
@@ -58,4 +70,7 @@ jobs:
       with:
          body_path: ${{ github.workspace }}/CHANGELOG.md
          make_latest: true
-         files: release.zip
+         files: |
+           windows-release.zip
+           android-release.zip
+           maccatalyst-release.zip
