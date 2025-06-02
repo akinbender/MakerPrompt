@@ -3,7 +3,7 @@ name: Publish MAUI Apps
 on:
   push:
     tags:
-    - 'v[0-9]+.[0-9]+.[0-9]'
+    - 'v*'
 
 env:
   MAUI_PROJECT: 'MakerPrompt.MAUI/MakerPrompt.MAUI.csproj'
