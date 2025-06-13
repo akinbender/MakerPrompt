@@ -19,7 +19,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+        contents: read
+        pages: write
+        id-token: write
     environment: github-pages
     steps:
       - name: Checkout code
@@ -52,7 +54,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.OUTPUT_DIR }}
+          path: ${{ env.OUTPUT_DIR }}/wwwroot
 
       - name: Deploy to GitHub Pages
         id: deployment
