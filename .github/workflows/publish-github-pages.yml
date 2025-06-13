@@ -19,7 +19,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+        contents: read
+        pages: write
+        id-token: write
     environment: github-pages
     steps:
       - name: Checkout code
