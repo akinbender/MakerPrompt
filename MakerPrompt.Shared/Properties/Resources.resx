@@ -465,6 +465,12 @@
   <data name="ControlPanel_FanSpeed" xml:space="preserve">
     <value>Fan speed</value>
   </data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve">
+    <value>Home all</value>
+  </data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve">
+    <value>Home selected axis</value>
+  </data>
   <data name="Calculators_LeadScrewSteps" xml:space="preserve">
     <value>Leadscrew Steps per Millimeter Calculator</value>
   </data>

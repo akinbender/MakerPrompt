@@ -567,4 +567,10 @@
   <data name="PageTitle_GCodeViewer" xml:space="preserve">
     <value>G-Code-Viewer</value>
   </data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve">
+    <value>Alle achsen referenzieren</value>
+  </data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve">
+    <value>Ausgewählte Achse referenzieren</value>
+  </data>
 </root>

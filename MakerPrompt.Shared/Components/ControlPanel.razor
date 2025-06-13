@@ -26,38 +26,28 @@
                            disabled="@(!IsConnected)">
                     <span class="input-group-text">mm/min</span>
                 </div>
-                <style>
-                    .btn-axis-move {
-                        width: 50px;
-                    }
-                </style>
-                <div class="d-flex justify-content-center">
-                    <div class="d-flex flex-column align-items-start">
-                        <div class="btn-group-vertical z-2" role="group" aria-label="z-axis">
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.Home(false, false, true)" disabled="@(!IsConnected)"><i class="bi bi-house"></i> Z</button>
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(zSpeed, 0, 0, 10)" disabled="@(!IsConnected)">10</button>
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(zSpeed, 0, 0, 1)" disabled="@(!IsConnected)">1</button>
-                            <button type="button" class="btn btn-primary btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(zSpeed, 0, 0, 0.1f)"
-                                    style="border-bottom-left-radius:0px;border-bottom-right-radius:0px;" disabled="@(!IsConnected)">
-                                0.1
-                            </button>
+                <div class="d-flex justify-content-center" disabled="@(!IsConnected)">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex flex-row">
+                            <div class="input-group justify-content-center">
+                                <button type="button" class="btn btn-secondary" style="border-bottom-left-radius: 0;" title="@Localizer[Resources.ControlPanel_HomeAll]" @onclick="async () => await PrinterServiceFactory.Current?.Home()" disabled="@(!IsConnected)"><i class="bi bi-houses"></i></button>
+                                <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.X ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.X)">X</button>
+                                <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Y ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.Y)">Y</button>
+                                <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Z ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.Z)">Z</button>
+                                <button type="button" class="btn btn-secondary" style="border-bottom-right-radius: 0;" title="@Localizer[Resources.ControlPanel_HomeSelected]" @onclick="async () => await HomeSelectedAxis()" disabled="@(!IsConnected)"><i class=" bi bi-house"></i></button>
+                            </div>
                         </div>
-                        <div class="btn-group z-2 me-2" role="group" aria-label="x-axis">
-                            <button type="button" class="btn btn-warning btn-axis-move"
-                                    style="border-top-left-radius:0px;" @onclick="async () => await PrinterServiceFactory.Current?.Home()" disabled="@(!IsConnected)">
-                                <i class="bi bi-houses"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 0.1f, 0, 0)" disabled="@(!IsConnected)">0.1</button>
-                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 1, 0, 0)" disabled="@(!IsConnected)">1</button>
-                            <button type="button" class="btn btn-danger btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 10, 0, 0)" disabled="@(!IsConnected)">10</button>
-                            <button type="button" class="btn btn-danger" @onclick="async () => await PrinterServiceFactory.Current?.Home(true, false, false)" disabled="@(!IsConnected)"><i class="bi bi-house"></i> X</button>
-                        </div>
-                        <div class="btn-group me-2 z-1" role="group" aria-label="y-axis" style="transform: translate(0, -120px) rotate(-45deg);">
-                            <button type="button" class="btn btn-success" disabled></button>
-                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 0, 10, 0)" disabled="@(!IsConnected)">10</button>
-                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 0, 1, 0)" disabled="@(!IsConnected)">1</button>
-                            <button type="button" class="btn btn-info btn-axis-move" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 0, 0.1f, 0)" disabled="@(!IsConnected)">0.1</button>
-                            <button type="button" class="btn btn-info" @onclick="async () => await PrinterServiceFactory.Current?.Home(false, true, false)" disabled="@(!IsConnected)"><i class="bi bi-house"></i> Y</button>
+                        <div class="input-group mb-2" role="group" aria-label="relative-move">
+                            @foreach (var length in moveLenghts)
+                            {
+                                <button type="button" class="btn btn-outline-secondary" @onclick="async () => await MoveSelectedAxis(length)" disabled="@(!IsConnected)">@(isInverse ? $"-{length}" : $" {length}")</button>
+                            }
+                            <div class="input-group-text">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="switchReverse" checked="@(isInverse)" @onchange="MotionReversed">
+                                    <label class="form-check-label" for="switchReverse">@Localizer[Resources.ControlPanel_Reverse]</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -157,4 +147,57 @@
     private int zSpeed = 100;
     private int printSpeed = 100;
     private int printFlow = 100;
+
+
+    private bool isInverse;
+    private int[] moveLenghts = { 1, 10, 100, 500 };
+    private AxisTab ActiveTab = AxisTab.Y;
+    private enum AxisTab { X, Y, Z }
+
+    private void MotionReversed(ChangeEventArgs e)
+    {
+        // get the checkbox state
+        isInverse = (bool)e.Value;
+    }
+
+    private void SetAxis(AxisTab tab)
+    {
+        ActiveTab = tab;
+    }
+
+    private async Task HomeSelectedAxis()
+    {
+        switch (ActiveTab)
+        {
+            case AxisTab.X:
+                await PrinterServiceFactory.Current?.Home(true,false, false);
+                break;
+            case AxisTab.Y:
+                await PrinterServiceFactory.Current?.Home(false, true, false);
+                break;
+            case AxisTab.Z:
+                await PrinterServiceFactory.Current?.Home(false, false, true);
+                break;
+            default:
+                return;
+        }
+    }
+
+    private async Task MoveSelectedAxis(int length)
+    {
+        switch (ActiveTab)
+        {
+            case AxisTab.X:
+                await PrinterServiceFactory.Current?.RelativeMove(xySpeed, length, 0, 0);
+                break;
+            case AxisTab.Y:
+                await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 0, length, 0);
+                break;
+            case AxisTab.Z:
+                await PrinterServiceFactory.Current?.RelativeMove(zSpeed, 0, 0, length);
+                break;
+            default:
+                return;
+        }
+    }
 }
