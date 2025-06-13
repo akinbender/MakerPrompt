@@ -15,7 +15,7 @@ namespace MakerPrompt.Blazor.Services
         public WebSerialService(IJSRuntime jsRuntime)
         {
             _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "/serialJsInterop.js").AsTask());
+                "import", "./serialJsInterop.js").AsTask());
             _dotNetRef = DotNetObjectReference.Create(this);
         }
 
