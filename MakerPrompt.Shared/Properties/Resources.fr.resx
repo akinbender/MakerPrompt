@@ -567,4 +567,10 @@
   <data name="PageTitle_GCodeViewer" xml:space="preserve">
     <value>Visionneuse G-Code</value>
   </data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve">
+    <value>Rentrer toutes les axes</value>
+  </data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve">
+    <value>Rentrer l’axe sélectionné</value>
+  </data>
 </root>

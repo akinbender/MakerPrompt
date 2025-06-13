@@ -568,4 +568,10 @@
   <data name="PageTitle_GCodeViewer" xml:space="preserve">
     <value>Visor de G-Code</value>
   </data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve">
+    <value>Hogar todos los ejes</value>
+  </data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve">
+    <value>Hogar eje seleccionado</value>
+  </data>
 </root>

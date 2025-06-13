@@ -568,4 +568,10 @@
   <data name="PageTitle_GCodeViewer" xml:space="preserve">
     <value>G-Code Görüntüleyici</value>
   </data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve">
+    <value>Tüm eksenleri referansa gönder</value>
+  </data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve">
+    <value>Seçili ekseni referansa gönder</value>
+  </data>
 </root>

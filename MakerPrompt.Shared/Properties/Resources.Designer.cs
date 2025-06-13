@@ -403,6 +403,24 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Home all.
+        /// </summary>
+        public static string ControlPanel_HomeAll {
+            get {
+                return ResourceManager.GetString("ControlPanel_HomeAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Home selected axis.
+        /// </summary>
+        public static string ControlPanel_HomeSelected {
+            get {
+                return ResourceManager.GetString("ControlPanel_HomeSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Length.
         /// </summary>
         public static string ControlPanel_Length {
