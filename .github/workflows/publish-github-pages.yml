@@ -1,0 +1,59 @@
+name: Deploy Blazor WASM to GitHub Pages
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+  workflow_dispatch:
+
+env:
+  WASM_PROJECT: 'MakerPrompt.Blazor/MakerPrompt.Blazor.csproj'
+  OUTPUT_DIR: 'publish_wasm'
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    environment: github-pages
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish Blazor App
+        run: dotnet publish ${{ env.WASM_PROJECT }} -c Release -o ${{ env.OUTPUT_DIR }}
+
+      - name: Add GitHub Pages artifacts
+        run: |
+          touch ${{ env.OUTPUT_DIR }}/wwwroot/.nojekyll
+          cp .github/workflows/gh-pages/404.html ${{ env.OUTPUT_DIR }}/wwwroot/404.html
+          cp .github/workflows/gh-pages/decode.js ${{ env.OUTPUT_DIR }}/wwwroot/decode.js
+          cp .github/workflows/gh-pages/index.html ${{ env.OUTPUT_DIR }}/wwwroot/index.html
+
+      - name: Rewrite Base Href
+        uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+        with:
+          html_path: ${{ env.OUTPUT_DIR }}/wwwroot/index.html
+          base_href: /MakerPrompt/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.OUTPUT_DIR }}
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
