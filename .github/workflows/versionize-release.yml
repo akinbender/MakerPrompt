@@ -27,14 +27,10 @@ jobs:
       run: versionize
       continue-on-error: true
 
-    - name: Create Pull Request for version bump
+    - name: Push changes to GitHub
       if: steps.versionize.outcome == 'success'
-      uses: peter-evans/create-pull-request@v6
+      uses: ad-m/github-push-action@master
       with:
-        token: ${{ secrets.PAT }}
-        commit-message: "chore: version bump via versionize"
-        branch: versionize/bump
-        title: "chore: version bump via versionize"
-        body: "Automated version bump and changelog update via versionize."
-        base: main
-        delete-branch: true
+        github_token: ${{ secrets.PAT }}
+        branch: ${{ github.ref }}
+        tags: true
