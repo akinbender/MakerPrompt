@@ -4,7 +4,7 @@
     {
         public event EventHandler<bool>? ConnectionStateChanged;
         public event EventHandler<PrinterTelemetry>? TelemetryUpdated;
-        internal PrinterTelemetry LastTelemetry { get; set; } = new();
+        public PrinterTelemetry LastTelemetry { get; set; } = new();
 
         public abstract PrinterConnectionType ConnectionType { get; }
 
