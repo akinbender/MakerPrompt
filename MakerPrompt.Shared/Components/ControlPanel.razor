@@ -11,9 +11,9 @@
                             disabled="@(!IsConnected)">
                         <i class="bi bi-stop-btn-fill"></i>
                     </button>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">X: @_state.Position.X.ToString("F2")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Y: @_state.Position.Y.ToString("F2")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Z: @_state.Position.Z.ToString("F2")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">X: @PrinterServiceFactory.Current?.LastTelemetry.Position.X.ToString("F2")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Y: @PrinterServiceFactory.Current?.LastTelemetry.Position.Y.ToString("F2")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Z: @PrinterServiceFactory.Current?.LastTelemetry.Position.Z.ToString("F2")</span>
                 </div>
                 <div class="input-group mb-2">
                     <span class="input-group-text">XY:</span>
@@ -59,21 +59,21 @@
             <h4 class="card-header">@Localizer[Resources.ControlPanel_Heating]</h4>
             <div class="card-body">
                 <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @_state.HotendTemp.ToString("F1")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @_state.HotendTarget.ToString("F1")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.HotendTemp.ToString("F1")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @PrinterServiceFactory.Current?.LastTelemetry.HotendTarget.ToString("F1")</span>
                     <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" @bind:after="async () => await PrinterServiceFactory.Current?.SetHotendTemp(hotendTarget)" disabled="@(!IsConnected)">
                     <span class="input-group-text">°C</span>
                     <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetHotendTemp]" @onclick="async () => await PrinterServiceFactory.Current?.SetHotendTemp(hotendTarget)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @_state.BedTemp.ToString("F1")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @_state.BedTarget.ToString("F1")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.BedTemp.ToString("F1")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @PrinterServiceFactory.Current?.LastTelemetry.BedTarget.ToString("F1")</span>
                     <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" @bind:after="async () => await PrinterServiceFactory.Current?.SetBedTemp(bedTarget)" disabled="@(!IsConnected)">
                     <span class="input-group-text">°C</span>
                     <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetBedTemp]" @onclick="async () => await PrinterServiceFactory.Current?.SetBedTemp(bedTarget)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @_state.FanSpeed.ToString()</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.FanSpeed.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_FanSpeed]:</span>
                     <input type="text" min="0" max="100" class="form-control" @bind="printSpeed" disabled="@(!IsConnected)">
                     <span class="input-group-text">%</span>
@@ -112,20 +112,20 @@
             <div class="card-body">
                 <div class="mb-2">
                     <label>@Localizer[Resources.GCodeCategory_SdCard]:</label>
-                    <span>
+@*                     <span>
                         @(_state.SDCard.Printing ? $"{_state.SDCard.Progress:F1}%" :
                                                 _state.SDCard.Present ? Localizer[Resources.ControlPanel_SdCard_Ready] : Localizer[Resources.ControlPanel_SdCard_NotPresent])
-                    </span>
+                    </span> *@
                 </div>
                 <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @_state.FeedRate.ToString()</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.FeedRate.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintSpeed]:</span>
                     <input type="text" class="form-control" @bind="printSpeed" @bind:after="async () => await PrinterServiceFactory.Current?.SetPrintSpeed(printSpeed)" disabled="@(!IsConnected)">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" disabled>@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @_state.FlowRate.ToString()</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.FlowRate.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintFlow]:</span>
                     <input type="text" class="form-control" @bind="printFlow" @bind:after="async () => await PrinterServiceFactory.Current?.SetPrintSpeed(printFlow)" disabled="@(!IsConnected)">
                     <span class="input-group-text">%</span>
@@ -137,7 +137,6 @@
 </div>
 
 @code {
-    private PrinterTelemetry _state = new();
     private int hotendTarget = 0;
     private int bedTarget = 0;
     private int fanSpeed = 0;

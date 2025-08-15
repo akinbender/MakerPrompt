@@ -6,6 +6,7 @@
         event EventHandler<PrinterTelemetry> TelemetryUpdated;
 
         PrinterConnectionType ConnectionType { get; }
+        PrinterTelemetry LastTelemetry { get; }
         string ConnectionName { get; }
         bool IsConnected { get; }
 

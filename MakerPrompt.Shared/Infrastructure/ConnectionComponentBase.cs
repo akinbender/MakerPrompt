@@ -1,3 +1,4 @@
+using MakerPrompt.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
@@ -14,17 +15,22 @@ namespace MakerPrompt.Shared.Infrastructure
         [Inject]
         public required PrinterCommunicationServiceFactory PrinterServiceFactory { get; set; }
 
+        public PrinterTelemetry LastTelemetry { get; private set; } = new();
+
         protected bool IsConnected { get; set; }
         protected string ConnectionCssClass => IsConnected ? string.Empty : "disabled";
 
-        protected override void OnInitialized()
+        protected override Task OnInitializedAsync()
         {
             IsConnected = PrinterServiceFactory.IsConnected;
             PrinterServiceFactory.ConnectionStateChanged += HandleConnectionChanged;
             if (PrinterServiceFactory.Current != null)
             {
                 PrinterServiceFactory.Current.TelemetryUpdated += HandleTelemetryUpdated;
+                PrinterServiceFactory.Current.TelemetryUpdated += async (sender, e) => { await InvokeAsync(StateHasChanged); };
             }
+
+            return base.OnInitializedAsync();
         }
 
         protected virtual void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry) { }
@@ -34,6 +40,8 @@ namespace MakerPrompt.Shared.Infrastructure
             IsConnected = connected;
             if (PrinterServiceFactory.Current != null)
             {
+                PrinterServiceFactory.Current.TelemetryUpdated += async (sender, e) => { await InvokeAsync(StateHasChanged); };
+
                 if (IsConnected)
                 {
                     PrinterServiceFactory.Current.TelemetryUpdated += HandleTelemetryUpdated;
