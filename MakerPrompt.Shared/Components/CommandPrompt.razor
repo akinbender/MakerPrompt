@@ -29,10 +29,10 @@
     <div class="input-group">
         <input type="text" class="form-control bg-dark-subtle border-light-subtle"
                placeholder="@Localizer[Resources.CommandPrompt_EnterCommand]" @bind="inputCommand"
-               disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)"
+               disabled="@(!IsConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)"
                @onkeypress="HandleKeyPress" />
         <button class="btn btn-outline-secondary" @onclick="SendCommand"
-                disabled="@(!isConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)">
+                disabled="@(!IsConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)">
             @Localizer[Resources.CommandPrompt_Send]
         </button>
     </div>
@@ -48,7 +48,6 @@
     private readonly object _historyLock = new();
     private List<TerminalEntry> history = new();
     private string inputCommand = string.Empty;
-    private bool isConnected = false;
     private ElementReference historyContainer;
 
     private async Task SendCommand()
