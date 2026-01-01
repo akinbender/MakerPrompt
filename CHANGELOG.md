@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.1.14"></a>
+## [0.1.14](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.1.14) (2026-01-01)
+
+### Bug Fixes
+
+* commandprompt send command ([70b6e6d](https://www.github.com/akinbender/MakerPrompt/commit/70b6e6d1c9d371a308cc0fbe55462a3b5c7f2cd0))
+* commandprompt send command ([37f4a0c](https://www.github.com/akinbender/MakerPrompt/commit/37f4a0c09df3cc6f73847c2050c33f6b1c69a9e2))
+* dont remember ([d707649](https://www.github.com/akinbender/MakerPrompt/commit/d707649e8f78893076014243d6b43501634035ab))
+* dont remember ([2b457e0](https://www.github.com/akinbender/MakerPrompt/commit/2b457e04e8afd8e7155240de0073b1af15cd9d40))
+* sidebar responsiveness & mac serial support ([91a70ba](https://www.github.com/akinbender/MakerPrompt/commit/91a70ba918d2b4edbe97cba210ba5ea9a6764058))
+* sidebar responsiveness & mac serial support ([65e4214](https://www.github.com/akinbender/MakerPrompt/commit/65e421403014e7254f4195fc7485a4f4a0acdb4e))
+* Telemetry Display ([e11382a](https://www.github.com/akinbender/MakerPrompt/commit/e11382a24bf8a726b0ac8a2ea978a46a5260d8a3))
+* Telemetry Display ([d20a356](https://www.github.com/akinbender/MakerPrompt/commit/d20a356be090382c1fdf96d7a6bb53ffa788479e))
+
 <a name="0.1.13"></a>
 ## [0.1.13](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.1.13) (2025-08-18)
 

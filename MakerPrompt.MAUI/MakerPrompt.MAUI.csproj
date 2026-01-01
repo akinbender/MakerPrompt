@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
         <PropertyGroup>
         <TargetFrameworks>net10.0-android;net10.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0;net10.0-windows10.0.22000.0</TargetFrameworks>
@@ -16,7 +16,7 @@
         <ApplicationId>com.makerprompt.maui</ApplicationId>
 		<ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(Version)</ApplicationVersion>
-		<Version>0.1.13</Version>
+		<Version>0.1.14</Version>
 
 			<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
