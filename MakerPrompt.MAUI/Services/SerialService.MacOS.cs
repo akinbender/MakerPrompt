@@ -131,7 +131,10 @@ namespace MakerPrompt.MAUI.Services
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Receive error: {ex.Message}");
+                    // Mark as disconnected before disposing to avoid race conditions with the receive loop.
+                    IsConnected = false;
                     await DisposeAsync();
+                    break;
                 }
             }
         }
