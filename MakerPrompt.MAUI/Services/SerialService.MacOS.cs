@@ -67,7 +67,7 @@ namespace MakerPrompt.MAUI.Services
             finally
             {
                 _manager?.Close();
-                _manager = null;
+                _manager = new UsbSerialManager();
                 IsConnected = false;
                 RaiseConnectionChanged();
             }
