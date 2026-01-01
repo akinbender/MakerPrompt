@@ -71,8 +71,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.20" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.3.0" />
-		<PackageReference Include="System.IO.Ports" Version="10.0.1" />
-        <PackageReference Include="UsbSerialForAndroid.Net" Version="1.0.4" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
+		<PackageReference Include="System.IO.Ports" Version="8.0.0" />
+        <PackageReference Include="UsbSerialForAndroid.Net" Version="1.0.3" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
         <PackageReference Include="UsbSerialForMacOS" Version="0.9.3" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'" />
 	</ItemGroup>
 
