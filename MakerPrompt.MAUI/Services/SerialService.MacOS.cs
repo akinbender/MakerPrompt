@@ -1,20 +1,16 @@
 ﻿using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Utils;
 using System.Text;
 using System.Threading.Tasks.Dataflow;
 using UsbSerialForMacOS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-
 namespace MakerPrompt.MAUI.Services
 {
     public class SerialService : BaseSerialService, ISerialService
     {
         private UsbSerialManager? _manager = new();
         private readonly BufferBlock<string> _commandQueue = new();
-        private CancellationTokenSource _cts = new();
+        private readonly CancellationTokenSource _cts = new();
         private Task? _sendTask;
         private Task? _receiveTask;
         private bool _disposed = false;
@@ -82,7 +78,7 @@ namespace MakerPrompt.MAUI.Services
         public async Task<IEnumerable<string>> GetAvailablePortsAsync()
         {
             // Use the UsbSerialManager instance to list available ports
-            return _manager?.AvailablePorts().OrderBy(p => p).ToList() ?? new List<string>();
+            return _manager?.AvailablePorts().OrderBy(p => p).ToList() ?? [];
         }
 
         private async Task SendLoopAsync(CancellationToken ct)
@@ -160,11 +156,5 @@ namespace MakerPrompt.MAUI.Services
         public Task<bool> CheckSupportedAsync() => Task.FromResult(true);
 
         public Task RequestPortAsync() => Task.CompletedTask;
-    }
-
-    public class SerialException : Exception
-    {
-        public SerialException(string message, Exception inner)
-            : base(message, inner) { }
     }
 }

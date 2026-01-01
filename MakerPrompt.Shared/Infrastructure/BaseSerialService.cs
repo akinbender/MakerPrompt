@@ -27,7 +27,7 @@
             // await WriteDataAsync("M20 L T");
             // await Task.Delay(500); // Wait for response
             
-            return new List<FileEntry>();
+            return [];
         }
 
         public async Task SetHotendTemp(int targetTemp = 0)
@@ -233,7 +233,7 @@
                 try
                 {
                     // Split into parts - format: "filename size timestamp longname"
-                    var parts = line.Split(new[] {' '}, 4, StringSplitOptions.RemoveEmptyEntries);
+                    var parts = line.Split([' '], 4, StringSplitOptions.RemoveEmptyEntries);
                     
                     if (parts.Length < 2) // Need at least filename and size
                         continue;

@@ -1,8 +1,9 @@
-﻿using System.IO.Ports;
+﻿using System.Text;
+using System.IO.Ports;
 using System.Threading.Tasks.Dataflow;
 using MakerPrompt.Shared.Infrastructure;
-using System.Text;
 using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Utils;
 
 namespace MakerPrompt.MAUI.Services
 {
@@ -171,11 +172,5 @@ namespace MakerPrompt.MAUI.Services
         public Task<bool> CheckSupportedAsync() => Task.FromResult(true);
 
         public Task RequestPortAsync() => Task.CompletedTask;
-    }
-
-    public class SerialException : Exception
-    {
-        public SerialException(string message, Exception inner)
-            : base(message, inner) { }
     }
 }

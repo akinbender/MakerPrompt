@@ -128,7 +128,7 @@ namespace MakerPrompt.Shared.Services
 
         public async Task<List<FileEntry>> GetFilesAsync()
         {
-            if (!IsConnected) return new List<FileEntry>();
+            if (!IsConnected) return [];
 
             var response = await _httpClient.GetAsync(
                 $"/server/files/list?root=gcodes");
@@ -140,7 +140,7 @@ namespace MakerPrompt.Shared.Services
                     Size = f.Size,
                     ModifiedDate = f.ModifiedDate,
                     IsAvailable = f.Permissions.Contains("rw"),
-                }).ToList() ?? new List<FileEntry>();
+                }).ToList() ?? [];
         }
 
         public async Task<bool> AuthenticateAsync(string username, string password)
@@ -214,7 +214,7 @@ namespace MakerPrompt.Shared.Services
         private record FileListResponse
         {
             [JsonPropertyName("result")]
-            public List<FileItem> Files { get; set; } = new List<FileItem>();
+            public List<FileItem> Files { get; set; } = [];
         }
 
         private record FileItem
