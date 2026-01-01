@@ -7,16 +7,13 @@
             <img class="ms-2" width="40" height="32" aria-hidden="true" src="_content/MakerPrompt.Shared/logo.svg" onerror="this.src='_content/MakerPrompt.Shared/favicon.png'" />
             <span>MakerPrompt</span>
         </a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
     <NavConnection />
 </header>
 
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid" style="height: 93%;">
+    <div class="row h-100">
         <NavMenu />
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 overflow-y-auto h-100">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">@TitleService.CurrentTitle</h1>
             </div>

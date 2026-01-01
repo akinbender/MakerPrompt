@@ -28,10 +28,4 @@ namespace MakerPrompt.MAUI.Services
 
         public Task RequestPortAsync()  => throw new NotSupportedException();
     }
-
-    public class SerialException : Exception
-    {
-        public SerialException(string message, Exception inner)
-            : base(message, inner) { }
-    }
 }

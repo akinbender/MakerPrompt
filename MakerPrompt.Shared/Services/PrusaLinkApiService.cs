@@ -95,7 +95,7 @@
 
         public async Task<List<FileEntry>> GetFilesAsync()
         {
-            return new List<FileEntry>();
+            return [];
             // var response = await _httpClient.GetAsync("/api/v1/storage");
             // response.EnsureSuccessStatusCode();
             // var content = JsonSerializer.Deserialize<PrusaFile‚Item>(await response.Content.ReadAsStringAsync());

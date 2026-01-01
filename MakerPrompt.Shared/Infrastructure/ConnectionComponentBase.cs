@@ -1,3 +1,4 @@
+using MakerPrompt.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
@@ -17,14 +18,22 @@ namespace MakerPrompt.Shared.Infrastructure
         protected bool IsConnected { get; set; }
         protected string ConnectionCssClass => IsConnected ? string.Empty : "disabled";
 
+        private void OnTelemetryUpdated(object? sender, PrinterTelemetry e)
+        {
+            HandleTelemetryUpdated(sender, e);
+            InvokeAsync(StateHasChanged);
+        }
+
         protected override void OnInitialized()
         {
             IsConnected = PrinterServiceFactory.IsConnected;
             PrinterServiceFactory.ConnectionStateChanged += HandleConnectionChanged;
             if (PrinterServiceFactory.Current != null)
             {
-                PrinterServiceFactory.Current.TelemetryUpdated += HandleTelemetryUpdated;
+                PrinterServiceFactory.Current.TelemetryUpdated += OnTelemetryUpdated;
             }
+
+            base.OnInitialized();
         }
 
         protected virtual void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry) { }
@@ -36,11 +45,11 @@ namespace MakerPrompt.Shared.Infrastructure
             {
                 if (IsConnected)
                 {
-                    PrinterServiceFactory.Current.TelemetryUpdated += HandleTelemetryUpdated;
+                    PrinterServiceFactory.Current.TelemetryUpdated += OnTelemetryUpdated;
                 }
                 else
                 {
-                    PrinterServiceFactory.Current.TelemetryUpdated -= HandleTelemetryUpdated;
+                    PrinterServiceFactory.Current.TelemetryUpdated -= OnTelemetryUpdated;
                 }
             }
             StateHasChanged();
@@ -51,8 +60,9 @@ namespace MakerPrompt.Shared.Infrastructure
             PrinterServiceFactory.ConnectionStateChanged -= HandleConnectionChanged;
             if (PrinterServiceFactory.Current != null)
             {
-                PrinterServiceFactory.Current.TelemetryUpdated -= HandleTelemetryUpdated;
+                PrinterServiceFactory.Current.TelemetryUpdated -= OnTelemetryUpdated;
             }
+            GC.SuppressFinalize(this);
         }
     }
 }

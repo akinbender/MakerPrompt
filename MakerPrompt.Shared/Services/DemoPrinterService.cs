@@ -70,11 +70,11 @@ namespace MakerPrompt.Shared.Services
         public async Task<List<FileEntry>> GetFilesAsync()
         {
             await Task.Delay(100);
-            return new List<FileEntry>
-            {
+            return
+            [
                 new() { FullPath = "/gcodes/DemoCube.gcode", Size = 123456, ModifiedDate = DateTime.Now.AddDays(-1), IsAvailable = true },
                 new() { FullPath = "/gcodes/Benchy.gcode", Size = 654321, ModifiedDate = DateTime.Now.AddDays(-2), IsAvailable = true }
-            };
+            ];
         }
 
         public async Task SetHotendTemp(int targetTemp = 0)
