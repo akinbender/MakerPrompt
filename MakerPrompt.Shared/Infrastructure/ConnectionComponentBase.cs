@@ -15,12 +15,10 @@ namespace MakerPrompt.Shared.Infrastructure
         [Inject]
         public required PrinterCommunicationServiceFactory PrinterServiceFactory { get; set; }
 
-        public PrinterTelemetry LastTelemetry { get; private set; } = new();
-
         protected bool IsConnected { get; set; }
         protected string ConnectionCssClass => IsConnected ? string.Empty : "disabled";
 
-        protected override Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             IsConnected = PrinterServiceFactory.IsConnected;
             PrinterServiceFactory.ConnectionStateChanged += HandleConnectionChanged;
@@ -30,7 +28,7 @@ namespace MakerPrompt.Shared.Infrastructure
                 PrinterServiceFactory.Current.TelemetryUpdated += async (sender, e) => { await InvokeAsync(StateHasChanged); };
             }
 
-            return base.OnInitializedAsync();
+            base.OnInitialized();
         }
 
         protected virtual void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry) { }
