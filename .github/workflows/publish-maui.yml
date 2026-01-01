@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '10.0.x'
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
@@ -34,23 +34,35 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.MAUI_PROJECT }}
 
-    - name: Publish MAUI Windows
+
+    - name: Publish MAUI Windows 10
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-windows10.0.19041.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-windows10.0.19041.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows10
+
+    - name: Publish MAUI Windows 11
+      continue-on-error: true
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-windows10.0.22000.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows11
 
     - name: Publish MAUI Android
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-android -o ${{ env.OUTPUT_DIR }}/android
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-android -o ${{ env.OUTPUT_DIR }}/android
 
     - name: Publish MAUI MacCatalyst
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net8.0-maccatalyst -p:CreatePackage=false
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -p:CreatePackage=false
 
-    - name: Zip Windows Release
+
+    - name: Zip Windows 10 Release
       uses: vimtor/action-zip@v1.2
       with:
-        files: ${{ env.OUTPUT_DIR }}/windows
-        dest: windows-release.zip
+        files: ${{ env.OUTPUT_DIR }}/windows10
+        dest: windows10-release.zip
+
+    - name: Zip Windows 11 Release
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: ${{ env.OUTPUT_DIR }}/windows11
+        dest: windows11-release.zip
 
     - name: Zip Android Release
       uses: vimtor/action-zip@v1.2
@@ -71,6 +83,7 @@ jobs:
          body_path: ${{ github.workspace }}/CHANGELOG.md
          make_latest: true
          files: |
-           windows-release.zip
+           windows10-release.zip
+           windows11-release.zip
            android-release.zip
            maccatalyst-release.zip
