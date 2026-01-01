@@ -89,7 +89,7 @@ namespace MakerPrompt.MAUI.Services
                 {
                     var command = await _commandQueue.ReceiveAsync(ct);
                     var manager = _manager;
-                    if (!IsConnected || manager == null || ct.IsCancellationRequested)
+                    if (manager == null || ct.IsCancellationRequested)
                     {
                         // Connection was closed or manager disposed; exit send loop.
                         break;
@@ -111,7 +111,7 @@ namespace MakerPrompt.MAUI.Services
                 try
                 {
                     var manager = _manager;
-                    if (!IsConnected || manager == null || ct.IsCancellationRequested)
+                    if (manager == null || ct.IsCancellationRequested)
                     {
                         // Connection was closed or manager disposed; exit receive loop.
                         break;

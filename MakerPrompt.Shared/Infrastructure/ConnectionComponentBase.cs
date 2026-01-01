@@ -20,6 +20,7 @@ namespace MakerPrompt.Shared.Infrastructure
 
         private void OnTelemetryUpdated(object? sender, PrinterTelemetry e)
         {
+            HandleTelemetryUpdated(sender, e);
             InvokeAsync(StateHasChanged);
         }
 
@@ -29,7 +30,6 @@ namespace MakerPrompt.Shared.Infrastructure
             PrinterServiceFactory.ConnectionStateChanged += HandleConnectionChanged;
             if (PrinterServiceFactory.Current != null)
             {
-                PrinterServiceFactory.Current.TelemetryUpdated += HandleTelemetryUpdated;
                 PrinterServiceFactory.Current.TelemetryUpdated += OnTelemetryUpdated;
             }
 
@@ -45,12 +45,10 @@ namespace MakerPrompt.Shared.Infrastructure
             {
                 if (IsConnected)
                 {
-                    PrinterServiceFactory.Current.TelemetryUpdated += HandleTelemetryUpdated;
                     PrinterServiceFactory.Current.TelemetryUpdated += OnTelemetryUpdated;
                 }
                 else
                 {
-                    PrinterServiceFactory.Current.TelemetryUpdated -= HandleTelemetryUpdated;
                     PrinterServiceFactory.Current.TelemetryUpdated -= OnTelemetryUpdated;
                 }
             }
@@ -62,9 +60,9 @@ namespace MakerPrompt.Shared.Infrastructure
             PrinterServiceFactory.ConnectionStateChanged -= HandleConnectionChanged;
             if (PrinterServiceFactory.Current != null)
             {
-                PrinterServiceFactory.Current.TelemetryUpdated -= HandleTelemetryUpdated;
                 PrinterServiceFactory.Current.TelemetryUpdated -= OnTelemetryUpdated;
             }
+            GC.SuppressFinalize(this);
         }
     }
 }
