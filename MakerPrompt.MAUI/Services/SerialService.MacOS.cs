@@ -139,7 +139,6 @@ namespace MakerPrompt.MAUI.Services
                     Console.WriteLine($"Receive error: {ex.Message}");
                     IsConnected = false;
                     await DisposeAsync();
-                    break;
                 }
             }
         }
