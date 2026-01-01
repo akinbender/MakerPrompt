@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
         <PropertyGroup>
         <TargetFrameworks>net10.0-android;net10.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0;net10.0-windows10.0.22000.0</TargetFrameworks>
@@ -29,19 +29,19 @@
     </PropertyGroup>
 
     <!-- Android -->
-    <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0-android')) != true">
+    <ItemGroup Condition="$(TargetFramework.Contains('-android')) != true">
         <Compile Remove="**\*.Android.cs" />
         <None Include="**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
 
     <!-- IOS for future -->
-    <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0-ios')) != true">
+    <ItemGroup Condition="$(TargetFramework.Contains('-ios')) != true">
         <Compile Remove="**\*.iOS.cs" />
         <None Include="**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
 
     <!-- Mac Catalyst -->
-    <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0-maccatalyst')) != true">
+    <ItemGroup Condition="$(TargetFramework.Contains('-maccatalyst')) != true">
         <Compile Remove="**\*.MacOS.cs" />
         <None Include="**\*.MacOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
@@ -73,7 +73,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.3.0" />
 		<PackageReference Include="System.IO.Ports" Version="10.0.1" />
         <PackageReference Include="UsbSerialForAndroid.Net" Version="1.0.4" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
-        <PackageReference Include="UsbSerialForMacOS" Version="0.9.3" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'" />
+        <PackageReference Include="UsbSerialForMacOS" Version="0.9.4" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'" />
 	</ItemGroup>
 
     <ItemGroup>

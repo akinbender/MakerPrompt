@@ -29,13 +29,10 @@ namespace MakerPrompt.MAUI.Services
 
             try
             {
-                if (_manager == null)
-                    throw new InvalidOperationException("Manager is not initialized");
-                
-                // Recreate the CancellationTokenSource for this connection
+                _manager ??= new UsbSerialManager();
                 _cts?.Dispose();
                 _cts = new CancellationTokenSource();
-                    
+
                 IsConnected = _manager.Open(portName, baudRate);
                 ConnectionName = portName;
 
@@ -66,8 +63,16 @@ namespace MakerPrompt.MAUI.Services
             }
             finally
             {
-                _manager?.Close();
-                _manager = new UsbSerialManager();
+                try
+                {
+                    _manager?.Close();
+                }
+                catch
+                {
+                    // swallow close exceptions on shutdown
+                }
+
+                _manager = null;
                 IsConnected = false;
                 RaiseConnectionChanged();
             }
@@ -81,7 +86,6 @@ namespace MakerPrompt.MAUI.Services
 
         public async Task<IEnumerable<string>> GetAvailablePortsAsync()
         {
-            // Use the UsbSerialManager instance to list available ports
             return _manager?.AvailablePorts().OrderBy(p => p).ToList() ?? [];
         }
 
@@ -95,11 +99,10 @@ namespace MakerPrompt.MAUI.Services
                     var manager = _manager;
                     if (manager == null || ct.IsCancellationRequested)
                     {
-                        // Connection was closed or manager disposed; exit send loop.
                         break;
                     }
                     manager.Write(command);
-                    await Task.Delay(10, ct); // Flow control delay
+                    await Task.Delay(10, ct);
                 }
             }
             catch (OperationCanceledException)
@@ -117,7 +120,6 @@ namespace MakerPrompt.MAUI.Services
                     var manager = _manager;
                     if (manager == null || ct.IsCancellationRequested)
                     {
-                        // Connection was closed or manager disposed; exit receive loop.
                         break;
                     }
                     var bytesRead = manager.Read(4096);
@@ -135,7 +137,6 @@ namespace MakerPrompt.MAUI.Services
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Receive error: {ex.Message}");
-                    // Mark as disconnected before disposing to avoid race conditions with the receive loop.
                     IsConnected = false;
                     await DisposeAsync();
                     break;
@@ -148,10 +149,9 @@ namespace MakerPrompt.MAUI.Services
             if (_disposed) return;
             _disposed = true;
 
-            await DisconnectAsync();
-            
             try
             {
+                await DisconnectAsync();
                 _cts?.Dispose();
             }
             catch (ObjectDisposedException)
