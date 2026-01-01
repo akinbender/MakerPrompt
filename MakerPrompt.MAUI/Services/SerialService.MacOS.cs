@@ -33,6 +33,9 @@ namespace MakerPrompt.MAUI.Services
 
             try
             {
+                if (_manager == null)
+                    throw new InvalidOperationException("Manager is not initialized");
+                    
                 IsConnected = _manager.Open(portName, baudRate);
                 ConnectionName = portName;
 
