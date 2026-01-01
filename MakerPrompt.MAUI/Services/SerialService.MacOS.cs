@@ -10,7 +10,7 @@ namespace MakerPrompt.MAUI.Services
     {
         private UsbSerialManager? _manager = new();
         private readonly BufferBlock<string> _commandQueue = new();
-        private readonly CancellationTokenSource _cts = new();
+        private CancellationTokenSource? _cts;
         private Task? _sendTask;
         private Task? _receiveTask;
         private bool _disposed = false;
@@ -31,6 +31,10 @@ namespace MakerPrompt.MAUI.Services
             {
                 if (_manager == null)
                     throw new InvalidOperationException("Manager is not initialized");
+                
+                // Recreate the CancellationTokenSource for this connection
+                _cts?.Dispose();
+                _cts = new CancellationTokenSource();
                     
                 IsConnected = _manager.Open(portName, baudRate);
                 ConnectionName = portName;
@@ -51,7 +55,7 @@ namespace MakerPrompt.MAUI.Services
         public async Task DisconnectAsync()
         {
             if (!IsConnected) return;
-            _cts.Cancel();
+            _cts?.Cancel();
 
             try
             {
@@ -148,7 +152,7 @@ namespace MakerPrompt.MAUI.Services
             
             try
             {
-                _cts.Dispose();
+                _cts?.Dispose();
             }
             catch (ObjectDisposedException)
             {
