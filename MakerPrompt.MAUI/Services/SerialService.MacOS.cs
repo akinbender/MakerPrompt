@@ -12,11 +12,12 @@ namespace MakerPrompt.MAUI.Services
 {
     public class SerialService : BaseSerialService, ISerialService
     {
-        private UsbSerialManager _manager = new();
+        private UsbSerialManager? _manager = new();
         private readonly BufferBlock<string> _commandQueue = new();
-        private readonly CancellationTokenSource _cts = new();
+        private CancellationTokenSource _cts = new();
         private Task? _sendTask;
         private Task? _receiveTask;
+        private bool _disposed = false;
         public bool IsSupported => true;
 
         public SerialService() { }
@@ -32,6 +33,9 @@ namespace MakerPrompt.MAUI.Services
 
             try
             {
+                if (_manager == null)
+                    throw new InvalidOperationException("Manager is not initialized");
+                    
                 IsConnected = _manager.Open(portName, baudRate);
                 ConnectionName = portName;
 
@@ -56,14 +60,13 @@ namespace MakerPrompt.MAUI.Services
             try
             {
                 if (_sendTask != null)
-                    await _sendTask.ContinueWith(_ => { });
+                    await _sendTask.ConfigureAwait(false);
                 if (_receiveTask != null)
-                    await _receiveTask.ContinueWith(_ => { });
+                    await _receiveTask.ConfigureAwait(false);
             }
             finally
             {
-                _manager.Close();
-                //_serialPort?.Dispose();
+                _manager?.Close();
                 _manager = null;
                 IsConnected = false;
                 RaiseConnectionChanged();
@@ -78,8 +81,8 @@ namespace MakerPrompt.MAUI.Services
 
         public async Task<IEnumerable<string>> GetAvailablePortsAsync()
         {
-            // UsbSerialForMacOS provides a static method for listing ports
-            return _manager.AvailablePorts().OrderBy(p => p).ToList();
+            // Use the UsbSerialManager instance to list available ports
+            return _manager?.AvailablePorts().OrderBy(p => p).ToList() ?? new List<string>();
         }
 
         private async Task SendLoopAsync(CancellationToken ct)
@@ -89,7 +92,13 @@ namespace MakerPrompt.MAUI.Services
                 while (IsConnected && !ct.IsCancellationRequested)
                 {
                     var command = await _commandQueue.ReceiveAsync(ct);
-                    _manager.Write(command);
+                    var manager = _manager;
+                    if (!IsConnected || manager == null || ct.IsCancellationRequested)
+                    {
+                        // Connection was closed or manager disposed; exit send loop.
+                        break;
+                    }
+                    manager.Write(command);
                     await Task.Delay(10, ct); // Flow control delay
                 }
             }
@@ -101,12 +110,17 @@ namespace MakerPrompt.MAUI.Services
 
         private async Task ReceiveLoopAsync(CancellationToken ct)
         {
-            var buffer = new byte[4096];
             while (!ct.IsCancellationRequested && IsConnected)
             {
                 try
                 {
-                    var bytesRead = _manager.Read(4096);
+                    var manager = _manager;
+                    if (!IsConnected || manager == null || ct.IsCancellationRequested)
+                    {
+                        // Connection was closed or manager disposed; exit receive loop.
+                        break;
+                    }
+                    var bytesRead = manager.Read(4096);
                     if (bytesRead.Length > 0)
                     {
                         var received = Encoding.UTF8.GetString(bytesRead.ToArray());
@@ -128,8 +142,19 @@ namespace MakerPrompt.MAUI.Services
 
         public override async ValueTask DisposeAsync()
         {
+            if (_disposed) return;
+            _disposed = true;
+
             await DisconnectAsync();
-            _cts.Dispose();
+            
+            try
+            {
+                _cts.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+                // Ignore if already disposed to ensure idempotent disposal
+            }
         }
 
         public Task<bool> CheckSupportedAsync() => Task.FromResult(true);

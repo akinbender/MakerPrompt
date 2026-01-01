@@ -110,13 +110,6 @@
         <div class="card">
             <h4 class="card-header">@Localizer[Resources.ControlPanel_Status]</h4>
             <div class="card-body">
-                <div class="mb-2">
-                    <label>@Localizer[Resources.GCodeCategory_SdCard]:</label>
-@*                     <span>
-                        @(_state.SDCard.Printing ? $"{_state.SDCard.Progress:F1}%" :
-                                                _state.SDCard.Present ? Localizer[Resources.ControlPanel_SdCard_Ready] : Localizer[Resources.ControlPanel_SdCard_NotPresent])
-                    </span> *@
-                </div>
                 <div class="input-group mb-2">
                     <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.FeedRate.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintSpeed]:</span>
