@@ -1,6 +1,7 @@
 using System.Globalization;
 using MakerPrompt.Blazor;
 using MakerPrompt.Blazor.Services;
+using MakerPrompt.Shared.ShapeIt;
 using MakerPrompt.Shared.Utils;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -11,6 +12,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, WebSerialService>();
+builder.Services.AddShapeItForMakerPrompt();
 
 var host = builder.Build();
 const string defaultCulture = "en-US";
