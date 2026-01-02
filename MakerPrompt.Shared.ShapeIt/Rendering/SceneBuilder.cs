@@ -9,6 +9,12 @@ namespace MakerPrompt.Shared.ShapeIt.Rendering;
 public static class SceneBuilder
 {
     /// <summary>
+    /// Default tessellation tolerance for mesh generation.
+    /// Lower values produce higher quality meshes but with more triangles.
+    /// </summary>
+    private const double DefaultTessellationTolerance = 0.01;
+
+    /// <summary>
     /// Builds a scene snapshot from a CADability Model.
     /// </summary>
     public static SceneSnapshot BuildSceneFromModel(Model model, SceneDetailLevel detail)
@@ -55,7 +61,7 @@ public static class SceneBuilder
                 int[] triangleIndices;
                 BoundingCube extent;
                 
-                face.GetTriangulation(0.01, out vertices, out uvVertices, out triangleIndices, out extent);
+                face.GetTriangulation(DefaultTessellationTolerance, out vertices, out uvVertices, out triangleIndices, out extent);
                 if (vertices == null || triangleIndices == null)
                     continue;
 
@@ -68,7 +74,9 @@ public static class SceneBuilder
                     positions.Add((float)point.y);
                     positions.Add((float)point.z);
 
-                    // For now, use face normal for all vertices (could be improved)
+                    // Note: Using face normal at center for all vertices.
+                    // For higher quality rendering, proper per-vertex normals should be computed
+                    // based on adjacent faces or from the UV coordinates of each vertex.
                     try
                     {
                         var normal = face.Surface.GetNormal(new CADability.GeoPoint2D(0.5, 0.5));

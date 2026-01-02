@@ -135,7 +135,15 @@
 
     private async void OnDocumentChanged(object? sender, EventArgs e)
     {
-        await UpdateScene();
+        try
+        {
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error updating scene: {ex.Message}";
+            StateHasChanged();
+        }
     }
 
     private async Task UpdateScene()

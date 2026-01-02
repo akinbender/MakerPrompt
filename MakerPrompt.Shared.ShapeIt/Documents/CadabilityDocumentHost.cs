@@ -9,12 +9,13 @@ namespace MakerPrompt.Shared.ShapeIt.Documents;
 /// CADability-based implementation of ICadDocumentHost.
 /// Wraps a CADability Project and Model to provide a UI-agnostic CAD document interface.
 /// </summary>
-public class CadabilityDocumentHost : ICadDocumentHost
+public class CadabilityDocumentHost : ICadDocumentHost, IDisposable
 {
     private Project? _project;
     private Model? _activeModel;
     private readonly Guid _id = Guid.NewGuid();
     private string? _name;
+    private bool _disposed;
 
     /// <inheritdoc />
     public Guid Id => _id;
@@ -52,7 +53,6 @@ public class CadabilityDocumentHost : ICadDocumentHost
                 await fileStream.CopyToAsync(fs, ct);
             }
 
-            _project = Project.Construct();
             _project = Project.ReadFromFile(tempFile);
             _activeModel = _project.GetActiveModel();
             _name = fileName ?? "Document";
@@ -156,5 +156,27 @@ public class CadabilityDocumentHost : ICadDocumentHost
         _activeModel.GeoObjectAddedEvent += (go) => Changed?.Invoke(this, EventArgs.Empty);
         _activeModel.GeoObjectRemovedEvent += (go) => Changed?.Invoke(this, EventArgs.Empty);
         _activeModel.GeoObjectDidChangeEvent += (sender, change) => Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void UnwireModelEvents()
+    {
+        if (_activeModel == null)
+            return;
+
+        // Remove event handlers to prevent memory leaks
+        _activeModel.GeoObjectAddedEvent -= (go) => Changed?.Invoke(this, EventArgs.Empty);
+        _activeModel.GeoObjectRemovedEvent -= (go) => Changed?.Invoke(this, EventArgs.Empty);
+        _activeModel.GeoObjectDidChangeEvent -= (sender, change) => Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        UnwireModelEvents();
+        _activeModel = null;
+        _project = null;
+        _disposed = true;
     }
 }
