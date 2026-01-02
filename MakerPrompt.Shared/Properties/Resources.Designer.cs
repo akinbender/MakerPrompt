@@ -1427,5 +1427,32 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("Theme_Light", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CAD Designer.
+        /// </summary>
+        public static string PageTitle_CAD {
+            get {
+                return ResourceManager.GetString("PageTitle_CAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create and edit 3D models for 3D printing. Design custom parts, modify existing models, and export to STL format.
+        /// </summary>
+        public static string CAD_Description {
+            get {
+                return ResourceManager.GetString("CAD_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CAD functionality is currently only available in the web version. MAUI support coming soon.
+        /// </summary>
+        public static string CAD_MAUINotImplemented {
+            get {
+                return ResourceManager.GetString("CAD_MAUINotImplemented", resourceCulture);
+            }
+        }
     }
 }

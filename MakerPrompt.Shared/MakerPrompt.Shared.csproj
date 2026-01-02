@@ -35,4 +35,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MakerPrompt.Shared.ShapeIt\MakerPrompt.Shared.ShapeIt.csproj" />
+  </ItemGroup>
+
 </Project>

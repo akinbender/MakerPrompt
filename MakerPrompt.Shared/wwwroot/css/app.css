@@ -180,4 +180,58 @@ tr:hover .action-button {
     --bs-form-valid-border-color: #CEFF1F;
     --bs-form-invalid-color: #EE4266;
     --bs-form-invalid-border-color: #EE4266;
+}
+
+/* CAD Document Host Styles */
+.cad-document-host {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cad-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.cad-viewport {
+    position: relative;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    overflow: hidden;
+}
+
+.cad-viewport canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.375rem;
+}
+
+.cad-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem 2rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+[data-bs-theme="dark"] .cad-viewport {
+    background: #212529;
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .cad-loading {
+    background: rgba(33, 37, 41, 0.9);
+    color: #f8f9fa;
+}
   }
