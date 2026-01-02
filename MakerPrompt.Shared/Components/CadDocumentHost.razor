@@ -70,6 +70,9 @@
                     
                     // Wire up document change events
                     DocumentHost.Changed += OnDocumentChanged;
+                    
+                    // Initialize a new document automatically
+                    await DocumentHost.InitializeNewAsync();
                 }
                 else
                 {
