@@ -1,0 +1,167 @@
+@using MakerPrompt.Shared.ShapeIt.Documents
+@using MakerPrompt.Shared.ShapeIt.Rendering
+@inject ICadDocumentHost DocumentHost
+@inject ISceneRenderer SceneRenderer
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="cad-document-host">
+    <div class="cad-toolbar">
+        <button class="btn btn-sm btn-primary" @onclick="CreateNewDocument">New</button>
+        <button class="btn btn-sm btn-secondary" @onclick="RegenerateScene">Regenerate</button>
+        <button class="btn btn-sm btn-success" @onclick="ExportStl">Export STL</button>
+    </div>
+    
+    <div class="cad-viewport">
+        <canvas id="cadCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    @if (_isLoading)
+    {
+        <div class="cad-loading">Loading...</div>
+    }
+    
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger">@_errorMessage</div>
+    }
+</div>
+
+@code {
+    private bool _isLoading;
+    private string? _errorMessage;
+    private bool _rendererInitialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Initialize the renderer with the canvas
+                var success = await JS.InvokeAsync<bool>("cadRenderer.initialize", "cadCanvas");
+                if (success)
+                {
+                    await SceneRenderer.InitializeAsync();
+                    _rendererInitialized = true;
+                    
+                    // Wire up document change events
+                    DocumentHost.Changed += OnDocumentChanged;
+                }
+                else
+                {
+                    _errorMessage = "Failed to initialize CAD renderer";
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = $"Error initializing renderer: {ex.Message}";
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateNewDocument()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            await DocumentHost.InitializeNewAsync();
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating document: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RegenerateScene()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            await DocumentHost.RegenerateAsync();
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error regenerating: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ExportStl()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            var options = new MeshExportOptions("stl-binary", 0.01);
+            var result = await DocumentHost.ExportMeshAsync(options);
+
+            // Trigger download via JS
+            await JS.InvokeVoidAsync("downloadFile", 
+                result.SuggestedFileName, 
+                Convert.ToBase64String(result.Content), 
+                result.MimeType);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error exporting: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void OnDocumentChanged(object? sender, EventArgs e)
+    {
+        await UpdateScene();
+    }
+
+    private async Task UpdateScene()
+    {
+        if (!_rendererInitialized)
+            return;
+
+        try
+        {
+            var scene = await DocumentHost.GetSceneAsync(SceneDetailLevel.ShadedMeshes);
+            await SceneRenderer.RenderAsync(scene);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error rendering scene: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        DocumentHost.Changed -= OnDocumentChanged;
+        
+        if (_rendererInitialized)
+        {
+            await SceneRenderer.DisposeAsync();
+        }
+    }
+}

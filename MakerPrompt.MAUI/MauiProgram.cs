@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MakerPrompt.Shared.Utils;
+using MakerPrompt.Shared.ShapeIt;
+using MakerPrompt.Shared.ShapeIt.Rendering;
 using Microsoft.AspNetCore.Builder;
 using MakerPrompt.MAUI.Services;
 
@@ -35,6 +37,12 @@ namespace MakerPrompt.MAUI
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
             builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, SerialService>();
+            
+            // Register ShapeIt CAD services
+            builder.Services.AddShapeItForMakerPrompt();
+            // Override with MAUI-specific renderer
+            builder.Services.AddScoped<ISceneRenderer, MauiCadSceneRenderer>();
+            
             return builder.Build();
         }
     }
