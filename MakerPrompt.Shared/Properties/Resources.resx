@@ -573,4 +573,97 @@
   <data name="PageTitle_GCodeViewer" xml:space="preserve">
     <value>G-Code Viewer</value>
   </data>
+  <data name="PageTitle_BrailleRAP" xml:space="preserve">
+    <value>BrailleRAP</value>
+  </data>
+  <data name="BrailleRAP_Description" xml:space="preserve">
+    <value>Convert text to Braille and generate G-code for BrailleRAP embossing.</value>
+  </data>
+  <data name="BrailleRAP_TextInput" xml:space="preserve">
+    <value>Text Input</value>
+  </data>
+  <data name="BrailleRAP_EnterText" xml:space="preserve">
+    <value>Enter text to convert to Braille</value>
+  </data>
+  <data name="BrailleRAP_TextPlaceholder" xml:space="preserve">
+    <value>Type or paste your text here...</value>
+  </data>
+  <data name="BrailleRAP_Pages" xml:space="preserve">
+    <value>Pages</value>
+  </data>
+  <data name="BrailleRAP_Lines" xml:space="preserve">
+    <value>Lines</value>
+  </data>
+  <data name="BrailleRAP_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="BrailleRAP_Configuration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
+  <data name="BrailleRAP_PageSettings" xml:space="preserve">
+    <value>Page Settings</value>
+  </data>
+  <data name="BrailleRAP_Language" xml:space="preserve">
+    <value>Translation Language</value>
+  </data>
+  <data name="BrailleRAP_Columns" xml:space="preserve">
+    <value>Columns per line</value>
+  </data>
+  <data name="BrailleRAP_Rows" xml:space="preserve">
+    <value>Rows per page</value>
+  </data>
+  <data name="BrailleRAP_LineSpacing" xml:space="preserve">
+    <value>Line spacing</value>
+  </data>
+  <data name="BrailleRAP_MachineSettings" xml:space="preserve">
+    <value>Machine Settings</value>
+  </data>
+  <data name="BrailleRAP_FeedRate" xml:space="preserve">
+    <value>Feed rate</value>
+  </data>
+  <data name="BrailleRAP_OffsetX" xml:space="preserve">
+    <value>X offset</value>
+  </data>
+  <data name="BrailleRAP_OffsetY" xml:space="preserve">
+    <value>Y offset</value>
+  </data>
+  <data name="BrailleRAP_Preview" xml:space="preserve">
+    <value>Braille Preview</value>
+  </data>
+  <data name="BrailleRAP_PageNavigation" xml:space="preserve">
+    <value>Page navigation</value>
+  </data>
+  <data name="BrailleRAP_Page" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="BrailleRAP_NoPreview" xml:space="preserve">
+    <value>Enter text to see Braille preview</value>
+  </data>
+  <data name="BrailleRAP_GenerateGCode" xml:space="preserve">
+    <value>Generate G-code</value>
+  </data>
+  <data name="BrailleRAP_SendToPrinter" xml:space="preserve">
+    <value>Send to Printer</value>
+  </data>
+  <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
+    <value>Generated G-code</value>
+  </data>
+  <data name="BrailleRAP_Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="BrailleRAP_GCodeGenerated" xml:space="preserve">
+    <value>G-code generated successfully</value>
+  </data>
+  <data name="BrailleRAP_NotConnected" xml:space="preserve">
+    <value>Please connect to a printer first</value>
+  </data>
+  <data name="BrailleRAP_GenerateFirst" xml:space="preserve">
+    <value>Please generate G-code first</value>
+  </data>
+  <data name="BrailleRAP_SentSuccessfully" xml:space="preserve">
+    <value>G-code sent to printer successfully</value>
+  </data>
+  <data name="BrailleRAP_CopiedToClipboard" xml:space="preserve">
+    <value>Copied to clipboard</value>
+  </data>
 </root>

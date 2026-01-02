@@ -27,3 +27,28 @@ I dont have access to any machines atm, so cannot do much bugfixing..
 - [x] Add Android&Macos support
 - [ ] Moonraker GCode list
 - [x] Expand language support? (es, pl, fr)
+
+## Features
+
+### BrailleRAP Integration
+MakerPrompt now includes integrated support for BrailleRAP Braille embossers. Convert text to Braille and generate G-code for embossing directly through the application.
+
+**Key Features:**
+- Text-to-Braille translation (English Grade 1 supported)
+- Configurable page layout (columns, rows, line spacing)
+- Adjustable machine settings (feed rate, offsets)
+- Real-time Braille preview
+- Multi-page support with navigation
+- Direct G-code generation for BrailleRAP hardware
+- Send G-code to printer via existing communication pipelines (serial, Moonraker, etc.)
+
+**Usage:**
+1. Navigate to the BrailleRAP page in the application
+2. Enter your text in the input area
+3. Adjust page and machine settings as needed
+4. Preview the Braille output
+5. Generate G-code
+6. Send directly to your connected BrailleRAP printer
+
+The BrailleRAP integration is based on logic from [AccessBrailleRAP](https://github.com/braillerap/AccessBrailleRAP) and adapted for the MakerPrompt architecture.
+
