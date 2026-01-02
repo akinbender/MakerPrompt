@@ -14,6 +14,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, WebSerialService>();
 builder.Services.AddShapeItForMakerPrompt();
 
+// Override the default NullSceneRenderer with the web-based renderer for Blazor
+builder.Services.AddScoped<MakerPrompt.Shared.ShapeIt.Rendering.ISceneRenderer, WebCadSceneRenderer>();
+
 var host = builder.Build();
 const string defaultCulture = "en-US";
 
