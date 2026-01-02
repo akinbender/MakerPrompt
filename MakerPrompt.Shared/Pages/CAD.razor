@@ -1,0 +1,21 @@
+@page "/cad"
+
+<LocalizedTitle TitleKey="@Resources.PageTitle_CAD" />
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> @Localizer[Resources.CAD_Description]
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <CadDocumentHost />
+    </div>
+</div>
+
+@code {
+    [Inject] private IStringLocalizer<Resources> Localizer { get; set; } = default!;
+}
