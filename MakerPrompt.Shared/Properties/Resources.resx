@@ -666,4 +666,13 @@
   <data name="BrailleRAP_CopiedToClipboard" xml:space="preserve">
     <value>Copied to clipboard</value>
   </data>
+    <data name="PageTitle_CAD" xml:space="preserve">
+    <value>CAD Designer</value>
+  </data>
+  <data name="CAD_Description" xml:space="preserve">
+    <value>Create and edit 3D models for 3D printing. Design custom parts, modify existing models, and export to STL format.</value>
+  </data>
+  <data name="CAD_MAUINotImplemented" xml:space="preserve">
+    <value>CAD functionality is currently only available in the web version. MAUI support coming soon.</value>
+  </data>
 </root>

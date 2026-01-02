@@ -36,12 +36,27 @@
     </div>
     <script src="_content/MakerPrompt.Shared/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="_content/MakerPrompt.Shared/lib/gcode-viewer/_bundles/gcode-viewer.min.js"></script>
+    <script src="cadRendererInterop.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script>
         window.blazorCulture = {
             get: () => window.localStorage['BlazorCulture'],
             set: (value) => window.localStorage['BlazorCulture'] = value
+        };
+        
+        // Helper function for downloading files
+        window.downloadFile = function(filename, base64Content, mimeType) {
+            const bytes = Uint8Array.from(atob(base64Content), c => c.charCodeAt(0));
+            const blob = new Blob([bytes], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         };
     </script>
 </body>

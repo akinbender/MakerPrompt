@@ -1,0 +1,293 @@
+@using MakerPrompt.Shared.ShapeIt.Documents
+@using MakerPrompt.Shared.ShapeIt.Rendering
+@inject ICadDocumentHost DocumentHost
+@inject ISceneRenderer SceneRenderer
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="cad-document-host">
+    <div class="cad-toolbar">
+        <div class="btn-group me-2" role="group">
+            <button class="btn btn-sm btn-primary" @onclick="CreateNewDocument">
+                <i class="bi bi-file-plus"></i> New
+            </button>
+            <button class="btn btn-sm btn-secondary" @onclick="RegenerateScene">
+                <i class="bi bi-arrow-clockwise"></i> Regenerate
+            </button>
+            <button class="btn btn-sm btn-success" @onclick="ExportStl">
+                <i class="bi bi-download"></i> Export STL
+            </button>
+        </div>
+        
+        <div class="btn-group" role="group">
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateBox" title="Create Box">
+                <i class="bi bi-box"></i> Box
+            </button>
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateSphere" title="Create Sphere">
+                <i class="bi bi-circle"></i> Sphere
+            </button>
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateCylinder" title="Create Cylinder">
+                <i class="bi bi-cylinder"></i> Cylinder
+            </button>
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateCone" title="Create Cone">
+                <i class="bi bi-triangle"></i> Cone
+            </button>
+        </div>
+    </div>
+    
+    <div class="cad-viewport">
+        <canvas id="cadCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    @if (_isLoading)
+    {
+        <div class="cad-loading">Loading...</div>
+    }
+    
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger">@_errorMessage</div>
+    }
+</div>
+
+@code {
+    private bool _isLoading;
+    private string? _errorMessage;
+    private bool _rendererInitialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Initialize the renderer with the canvas
+                var success = await JS.InvokeAsync<bool>("cadRenderer.initialize", "cadCanvas");
+                if (success)
+                {
+                    await SceneRenderer.InitializeAsync();
+                    _rendererInitialized = true;
+                    
+                    // Wire up document change events
+                    DocumentHost.Changed += OnDocumentChanged;
+                    
+                    // Initialize a new document automatically
+                    await DocumentHost.InitializeNewAsync();
+                }
+                else
+                {
+                    _errorMessage = "Failed to initialize CAD renderer";
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = $"Error initializing renderer: {ex.Message}";
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateNewDocument()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            await DocumentHost.InitializeNewAsync();
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating document: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RegenerateScene()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            await DocumentHost.RegenerateAsync();
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error regenerating: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ExportStl()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            var options = new MeshExportOptions("stl-binary", 0.01);
+            var result = await DocumentHost.ExportMeshAsync(options);
+
+            // Trigger download via JS
+            await JS.InvokeVoidAsync("downloadFile", 
+                result.SuggestedFileName, 
+                Convert.ToBase64String(result.Content), 
+                result.MimeType);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error exporting: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateBox()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a box at origin with default size (20x20x20)
+            await DocumentHost.CreateBoxAsync(0, 0, 0, 20, 20, 20);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating box: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateSphere()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a sphere at origin with default radius (10)
+            await DocumentHost.CreateSphereAsync(0, 0, 10, 10);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating sphere: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateCylinder()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a cylinder at origin with default size (radius 10, height 20)
+            await DocumentHost.CreateCylinderAsync(0, 0, 0, 10, 20);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating cylinder: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateCone()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a cone at origin with default size (base radius 10, height 20, sharp tip)
+            await DocumentHost.CreateConeAsync(0, 0, 0, 10, 20, 0);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating cone: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void OnDocumentChanged(object? sender, EventArgs e)
+    {
+        try
+        {
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error updating scene: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateScene()
+    {
+        if (!_rendererInitialized)
+            return;
+
+        try
+        {
+            var scene = await DocumentHost.GetSceneAsync(SceneDetailLevel.ShadedMeshes);
+            await SceneRenderer.RenderAsync(scene);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error rendering scene: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        DocumentHost.Changed -= OnDocumentChanged;
+        
+        if (_rendererInitialized)
+        {
+            await SceneRenderer.DisposeAsync();
+        }
+    }
+}
