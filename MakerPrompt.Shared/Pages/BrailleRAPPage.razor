@@ -1,0 +1,366 @@
+@page "/braillerap"
+@inherits ConnectionComponentBase
+@using MakerPrompt.Shared.BrailleRAP.Models
+@using MakerPrompt.Shared.BrailleRAP.Services
+
+<LocalizedTitle TitleKey="@Resources.PageTitle_BrailleRAP" />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> @Localizer[Resources.BrailleRAP_Description]
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Text Input Section -->
+        <div class="col-lg-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">@Localizer[Resources.BrailleRAP_TextInput]</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="brailleText" class="form-label">@Localizer[Resources.BrailleRAP_EnterText]</label>
+                        <textarea id="brailleText" 
+                                  class="form-control" 
+                                  rows="10" 
+                                  @bind="inputText"
+                                  @bind:event="oninput"
+                                  placeholder="@Localizer[Resources.BrailleRAP_TextPlaceholder]"
+                                  aria-label="@Localizer[Resources.BrailleRAP_EnterText]"></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            @if (statistics.PageCount > 0)
+                            {
+                                <span>@Localizer[Resources.BrailleRAP_Pages]: @statistics.PageCount | @Localizer[Resources.BrailleRAP_Lines]: @statistics.TotalLines</span>
+                            }
+                        </small>
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="ClearText" disabled="@(string.IsNullOrEmpty(inputText))">
+                            <i class="bi bi-x-circle"></i> @Localizer[Resources.BrailleRAP_Clear]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="col-lg-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">@Localizer[Resources.BrailleRAP_Configuration]</h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="configAccordion">
+                        <!-- Page Settings -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#pageSettings" aria-expanded="true">
+                                    @Localizer[Resources.BrailleRAP_PageSettings]
+                                </button>
+                            </h2>
+                            <div id="pageSettings" class="accordion-collapse collapse show">
+                                <div class="accordion-body">
+                                    <div class="mb-3">
+                                        <label for="columns" class="form-label">@Localizer[Resources.BrailleRAP_Columns]</label>
+                                        <input type="number" id="columns" class="form-control" 
+                                               @bind="pageConfig.Columns" 
+                                               @bind:event="oninput"
+                                               min="1" max="50" 
+                                               aria-label="@Localizer[Resources.BrailleRAP_Columns]" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="rows" class="form-label">@Localizer[Resources.BrailleRAP_Rows]</label>
+                                        <input type="number" id="rows" class="form-control" 
+                                               @bind="pageConfig.Rows" 
+                                               @bind:event="oninput"
+                                               min="1" max="50" 
+                                               aria-label="@Localizer[Resources.BrailleRAP_Rows]" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lineSpacing" class="form-label">@Localizer[Resources.BrailleRAP_LineSpacing]</label>
+                                        <input type="number" id="lineSpacing" class="form-control" 
+                                               @bind="pageConfig.LineSpacing" 
+                                               @bind:event="oninput"
+                                               min="0" max="3" 
+                                               aria-label="@Localizer[Resources.BrailleRAP_LineSpacing]" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Machine Settings -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#machineSettings">
+                                    @Localizer[Resources.BrailleRAP_MachineSettings]
+                                </button>
+                            </h2>
+                            <div id="machineSettings" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="mb-3">
+                                        <label for="feedRate" class="form-label">@Localizer[Resources.BrailleRAP_FeedRate] (mm/min)</label>
+                                        <input type="number" id="feedRate" class="form-control" 
+                                               @bind="machineConfig.FeedRate" 
+                                               min="100" max="12000" 
+                                               aria-label="@Localizer[Resources.BrailleRAP_FeedRate]" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="offsetX" class="form-label">@Localizer[Resources.BrailleRAP_OffsetX] (mm)</label>
+                                        <input type="number" id="offsetX" class="form-control" 
+                                               @bind="machineConfig.OffsetX" 
+                                               step="0.1" 
+                                               aria-label="@Localizer[Resources.BrailleRAP_OffsetX]" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="offsetY" class="form-label">@Localizer[Resources.BrailleRAP_OffsetY] (mm)</label>
+                                        <input type="number" id="offsetY" class="form-control" 
+                                               @bind="machineConfig.OffsetY" 
+                                               step="0.1" 
+                                               aria-label="@Localizer[Resources.BrailleRAP_OffsetY]" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview and Actions Section -->
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Localizer[Resources.BrailleRAP_Preview]</h5>
+                    @if (statistics.PageCount > 1)
+                    {
+                        <div class="btn-group" role="group" aria-label="@Localizer[Resources.BrailleRAP_PageNavigation]">
+                            <button class="btn btn-sm btn-outline-secondary" 
+                                    @onclick="PreviousPage" 
+                                    disabled="@(currentPage <= 0)">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" disabled>
+                                @Localizer[Resources.BrailleRAP_Page] @(currentPage + 1) / @statistics.PageCount
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" 
+                                    @onclick="NextPage" 
+                                    disabled="@(currentPage >= statistics.PageCount - 1)">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(inputText))
+                    {
+                        <div class="braille-preview p-3 bg-light rounded" style="font-family: 'Courier New', monospace; font-size: 1.2rem; line-height: 1.5; white-space: pre-wrap; overflow-x: auto;">
+                            @foreach (var line in preview)
+                            {
+                                <div>@line</div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-4">@Localizer[Resources.BrailleRAP_NoPreview]</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-primary" 
+                        @onclick="GenerateGCodeAction" 
+                        disabled="@(string.IsNullOrEmpty(inputText))">
+                    <i class="bi bi-file-earmark-code"></i> @Localizer[Resources.BrailleRAP_GenerateGCode]
+                </button>
+                <button class="btn btn-success" 
+                        @onclick="SendToPrinterAction" 
+                        disabled="@(!IsConnected || string.IsNullOrEmpty(generatedGCode))">
+                    <i class="bi bi-printer"></i> @Localizer[Resources.BrailleRAP_SendToPrinter]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- G-code Display -->
+    @if (!string.IsNullOrEmpty(generatedGCode))
+    {
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">@Localizer[Resources.BrailleRAP_GeneratedGCode]</h5>
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="CopyGCode">
+                            <i class="bi bi-clipboard"></i> @Localizer[Resources.BrailleRAP_Copy]
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <pre class="mb-0" style="max-height: 300px; overflow-y: auto;"><code>@generatedGCode</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Status Messages -->
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="row">
+            <div class="col-12 mb-3">
+                <div class="alert @statusAlertClass alert-dismissible fade show" role="alert">
+                    @statusMessage
+                    <button type="button" class="btn-close" @onclick="ClearStatus" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private BrailleRAPService brailleService = new();
+    private PageConfig pageConfig = new();
+    private MachineConfig machineConfig = new();
+    
+    private string inputText = string.Empty;
+    private List<string> preview = new();
+    private string generatedGCode = string.Empty;
+    private int currentPage = 0;
+    private (int PageCount, int TotalLines, int TotalCharacters) statistics = (0, 0, 0);
+    
+    private string statusMessage = string.Empty;
+    private string statusAlertClass = "alert-info";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        brailleService.SetPageConfig(pageConfig);
+        brailleService.SetMachineConfig(machineConfig);
+        UpdatePreview();
+    }
+
+    private void UpdatePreview()
+    {
+        if (string.IsNullOrEmpty(inputText))
+        {
+            preview = new List<string>();
+            statistics = (0, 0, 0);
+            return;
+        }
+
+        try
+        {
+            brailleService.SetPageConfig(pageConfig);
+            brailleService.SetMachineConfig(machineConfig);
+            
+            preview = brailleService.GetBraillePreview(inputText, currentPage);
+            statistics = brailleService.GetStatistics(inputText);
+            
+            if (currentPage >= statistics.PageCount)
+            {
+                currentPage = Math.Max(0, statistics.PageCount - 1);
+                preview = brailleService.GetBraillePreview(inputText, currentPage);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Error updating preview: {ex.Message}", "alert-danger");
+        }
+    }
+
+    private void ClearText()
+    {
+        inputText = string.Empty;
+        generatedGCode = string.Empty;
+        currentPage = 0;
+        UpdatePreview();
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 0)
+        {
+            currentPage--;
+            UpdatePreview();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < statistics.PageCount - 1)
+        {
+            currentPage++;
+            UpdatePreview();
+        }
+    }
+
+    private void GenerateGCodeAction()
+    {
+        try
+        {
+            generatedGCode = brailleService.GenerateGCode(inputText, currentPage);
+            ShowStatus(Localizer[Resources.BrailleRAP_GCodeGenerated], "alert-success");
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Error generating G-code: {ex.Message}", "alert-danger");
+        }
+    }
+
+    private async Task SendToPrinterAction()
+    {
+        if (!IsConnected)
+        {
+            ShowStatus(Localizer[Resources.BrailleRAP_NotConnected], "alert-warning");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(generatedGCode))
+        {
+            ShowStatus(Localizer[Resources.BrailleRAP_GenerateFirst], "alert-warning");
+            return;
+        }
+
+        try
+        {
+            if (PrinterServiceFactory.Current != null)
+            {
+                await PrinterServiceFactory.Current.WriteDataAsync(generatedGCode);
+                ShowStatus(Localizer[Resources.BrailleRAP_SentSuccessfully], "alert-success");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowStatus($"Error sending to printer: {ex.Message}", "alert-danger");
+        }
+    }
+
+    private async Task CopyGCode()
+    {
+        await JS.CopyToClipboard(generatedGCode);
+        ShowStatus(Localizer[Resources.BrailleRAP_CopiedToClipboard], "alert-success");
+    }
+
+    private void ShowStatus(string message, string alertClass)
+    {
+        statusMessage = message;
+        statusAlertClass = alertClass;
+        StateHasChanged();
+    }
+
+    private void ClearStatus()
+    {
+        statusMessage = string.Empty;
+    }
+}
