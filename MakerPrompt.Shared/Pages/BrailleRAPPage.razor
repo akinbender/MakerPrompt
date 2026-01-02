@@ -27,8 +27,8 @@
                         <textarea id="brailleText" 
                                   class="form-control" 
                                   rows="10" 
-                                  @bind="inputText"
-                                  @bind:event="oninput"
+                                  value="@inputText"
+                                  @oninput="OnInputTextChanged"
                                   placeholder="@Localizer[Resources.BrailleRAP_TextPlaceholder]"
                                   aria-label="@Localizer[Resources.BrailleRAP_EnterText]"></textarea>
                     </div>
@@ -68,8 +68,8 @@
                                     <div class="mb-3">
                                         <label for="brailleLanguage" class="form-label">@Localizer[Resources.BrailleRAP_Language]</label>
                                         <select id="brailleLanguage" class="form-select" 
-                                                @bind="selectedLanguage" 
-                                                @bind:event="onchange"
+                                                value="@selectedLanguage" 
+                                                @onchange="OnLanguageChanged"
                                                 aria-label="@Localizer[Resources.BrailleRAP_Language]">
                                             <option value="0">English (Grade 1)</option>
                                             <option value="1">Français (Intégral)</option>
@@ -80,24 +80,24 @@
                                     <div class="mb-3">
                                         <label for="columns" class="form-label">@Localizer[Resources.BrailleRAP_Columns]</label>
                                         <input type="number" id="columns" class="form-control" 
-                                               @bind="pageConfig.Columns" 
-                                               @bind:event="oninput"
+                                               value="@pageConfig.Columns"
+                                               @onchange="OnColumnsChanged"
                                                min="1" max="50" 
                                                aria-label="@Localizer[Resources.BrailleRAP_Columns]" />
                                     </div>
                                     <div class="mb-3">
                                         <label for="rows" class="form-label">@Localizer[Resources.BrailleRAP_Rows]</label>
                                         <input type="number" id="rows" class="form-control" 
-                                               @bind="pageConfig.Rows" 
-                                               @bind:event="oninput"
+                                               value="@pageConfig.Rows"
+                                               @onchange="OnRowsChanged"
                                                min="1" max="50" 
                                                aria-label="@Localizer[Resources.BrailleRAP_Rows]" />
                                     </div>
                                     <div class="mb-3">
                                         <label for="lineSpacing" class="form-label">@Localizer[Resources.BrailleRAP_LineSpacing]</label>
                                         <input type="number" id="lineSpacing" class="form-control" 
-                                               @bind="pageConfig.LineSpacing" 
-                                               @bind:event="oninput"
+                                               value="@pageConfig.LineSpacing"
+                                               @onchange="OnLineSpacingChanged"
                                                min="0" max="3" 
                                                aria-label="@Localizer[Resources.BrailleRAP_LineSpacing]" />
                                     </div>
@@ -117,21 +117,24 @@
                                     <div class="mb-3">
                                         <label for="feedRate" class="form-label">@Localizer[Resources.BrailleRAP_FeedRate] (mm/min)</label>
                                         <input type="number" id="feedRate" class="form-control" 
-                                               @bind="machineConfig.FeedRate" 
+                                               value="@machineConfig.FeedRate"
+                                               @onchange="OnFeedRateChanged"
                                                min="100" max="12000" 
                                                aria-label="@Localizer[Resources.BrailleRAP_FeedRate]" />
                                     </div>
                                     <div class="mb-3">
                                         <label for="offsetX" class="form-label">@Localizer[Resources.BrailleRAP_OffsetX] (mm)</label>
                                         <input type="number" id="offsetX" class="form-control" 
-                                               @bind="machineConfig.OffsetX" 
+                                               value="@machineConfig.OffsetX"
+                                               @onchange="OnOffsetXChanged"
                                                step="0.1" 
                                                aria-label="@Localizer[Resources.BrailleRAP_OffsetX]" />
                                     </div>
                                     <div class="mb-3">
                                         <label for="offsetY" class="form-label">@Localizer[Resources.BrailleRAP_OffsetY] (mm)</label>
                                         <input type="number" id="offsetY" class="form-control" 
-                                               @bind="machineConfig.OffsetY" 
+                                               value="@machineConfig.OffsetY"
+                                               @onchange="OnOffsetYChanged"
                                                step="0.1" 
                                                aria-label="@Localizer[Resources.BrailleRAP_OffsetY]" />
                                     </div>
@@ -303,6 +306,72 @@
         catch (Exception ex)
         {
             ShowStatus($"Error updating preview: {ex.Message}", "alert-danger");
+        }
+    }
+
+    private void OnInputTextChanged(ChangeEventArgs e)
+    {
+        inputText = e.Value?.ToString() ?? string.Empty;
+        UpdatePreview();
+    }
+
+    private void OnLanguageChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int langValue))
+        {
+            selectedLanguage = langValue;
+            UpdatePreview();
+        }
+    }
+
+    private void OnColumnsChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int value) && value > 0 && value <= 50)
+        {
+            pageConfig.Columns = value;
+            UpdatePreview();
+        }
+    }
+
+    private void OnRowsChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int value) && value > 0 && value <= 50)
+        {
+            pageConfig.Rows = value;
+            UpdatePreview();
+        }
+    }
+
+    private void OnLineSpacingChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int value) && value >= 0 && value <= 3)
+        {
+            pageConfig.LineSpacing = value;
+            UpdatePreview();
+        }
+    }
+
+    private void OnFeedRateChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int value) && value >= 100)
+        {
+            machineConfig.FeedRate = value;
+        }
+    }
+
+    private void OnOffsetXChanged(ChangeEventArgs e)
+    {
+        if (double.TryParse(e.Value?.ToString(), out double value))
+        {
+            machineConfig.OffsetX = value;
+        }
+    }
+
+    private void OnOffsetYChanged(ChangeEventArgs e)
+    {
+        if (double.TryParse(e.Value?.ToString(), out double value))
+        {
+            machineConfig.OffsetY = value;
         }
     }
 
