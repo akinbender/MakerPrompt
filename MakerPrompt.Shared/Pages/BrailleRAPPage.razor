@@ -66,6 +66,18 @@
                             <div id="pageSettings" class="accordion-collapse collapse show">
                                 <div class="accordion-body">
                                     <div class="mb-3">
+                                        <label for="brailleLanguage" class="form-label">@Localizer[Resources.BrailleRAP_Language]</label>
+                                        <select id="brailleLanguage" class="form-select" 
+                                                @bind="selectedLanguage" 
+                                                @bind:event="onchange"
+                                                aria-label="@Localizer[Resources.BrailleRAP_Language]">
+                                            <option value="0">English (Grade 1)</option>
+                                            <option value="1">Français (Intégral)</option>
+                                            <option value="2">Deutsch (Vollschrift)</option>
+                                            <option value="3">Español (Grado 1)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="columns" class="form-label">@Localizer[Resources.BrailleRAP_Columns]</label>
                                         <input type="number" id="columns" class="form-control" 
                                                @bind="pageConfig.Columns" 
@@ -160,11 +172,20 @@
                 <div class="card-body">
                     @if (!string.IsNullOrEmpty(inputText))
                     {
-                        <div class="braille-preview p-3 bg-light rounded" style="font-family: 'Courier New', monospace; font-size: 1.2rem; line-height: 1.5; white-space: pre-wrap; overflow-x: auto;">
-                            @foreach (var line in preview)
-                            {
-                                <div>@line</div>
-                            }
+                        <div class="braille-preview p-3 bg-light rounded" style="overflow-x: auto;">
+                            <table class="table table-sm table-borderless" style="font-family: 'Courier New', monospace; font-size: 1.5rem; line-height: 1.2; width: auto; table-layout: fixed;">
+                                <tbody>
+                                    @foreach (var line in preview)
+                                    {
+                                        <tr>
+                                            @foreach (var ch in line)
+                                            {
+                                                <td style="padding: 2px 4px; text-align: center; width: 1.5em;">@ch</td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     }
                     else
@@ -238,6 +259,7 @@
     private string generatedGCode = string.Empty;
     private int currentPage = 0;
     private (int PageCount, int TotalLines, int TotalCharacters) statistics = (0, 0, 0);
+    private int selectedLanguage = 0;
     
     private string statusMessage = string.Empty;
     private string statusAlertClass = "alert-info";
@@ -247,6 +269,7 @@
         base.OnInitialized();
         brailleService.SetPageConfig(pageConfig);
         brailleService.SetMachineConfig(machineConfig);
+        brailleService.SetLanguage(BrailleLanguage.EnglishGrade1);
         UpdatePreview();
     }
 
@@ -261,6 +284,10 @@
 
         try
         {
+            // Update language based on selection
+            var language = (BrailleLanguage)selectedLanguage;
+            brailleService.SetLanguage(language);
+            
             brailleService.SetPageConfig(pageConfig);
             brailleService.SetMachineConfig(machineConfig);
             

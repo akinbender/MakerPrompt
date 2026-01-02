@@ -178,6 +178,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Translation Language.
+        /// </summary>
+        public static string BrailleRAP_Language {
+            get {
+                return ResourceManager.GetString("BrailleRAP_Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Line spacing.
         /// </summary>
         public static string BrailleRAP_LineSpacing {

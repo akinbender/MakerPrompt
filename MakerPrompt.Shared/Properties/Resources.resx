@@ -603,6 +603,9 @@
   <data name="BrailleRAP_PageSettings" xml:space="preserve">
     <value>Page Settings</value>
   </data>
+  <data name="BrailleRAP_Language" xml:space="preserve">
+    <value>Translation Language</value>
+  </data>
   <data name="BrailleRAP_Columns" xml:space="preserve">
     <value>Columns per line</value>
   </data>

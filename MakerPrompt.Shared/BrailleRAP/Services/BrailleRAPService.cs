@@ -12,6 +12,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
         private readonly BraillePaginator _paginator;
         private PageConfig _pageConfig;
         private MachineConfig _machineConfig;
+        private BrailleLanguage _currentLanguage;
 
         public BrailleRAPService()
         {
@@ -19,7 +20,22 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
             _paginator = new BraillePaginator();
             _pageConfig = new PageConfig();
             _machineConfig = new MachineConfig();
+            _currentLanguage = BrailleLanguage.EnglishGrade1;
         }
+
+        /// <summary>
+        /// Sets the Braille translation language.
+        /// </summary>
+        public void SetLanguage(BrailleLanguage language)
+        {
+            _currentLanguage = language;
+            _translator.SetLanguage(language);
+        }
+
+        /// <summary>
+        /// Gets the current Braille language.
+        /// </summary>
+        public BrailleLanguage GetLanguage() => _currentLanguage;
 
         /// <summary>
         /// Sets the page configuration.
