@@ -8,6 +8,10 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
     /// </summary>
     public class BrailleTranslator
     {
+        // Braille character constants
+        private const char CapitalIndicator = '\u2820';
+        private const char BlankCell = '\u2800';
+
         // Basic English Grade 1 Braille mapping (simplified)
         // Unicode Braille patterns start at U+2800
         private static readonly Dictionary<char, char> EnglishGrade1Map = new()
@@ -22,13 +26,13 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
             { 'y', '\u283D' }, { 'z', '\u2835' },
             
             // Capital letter indicator
-            { 'A', '\u2820' }, { 'B', '\u2820' }, { 'C', '\u2820' }, { 'D', '\u2820' },
-            { 'E', '\u2820' }, { 'F', '\u2820' }, { 'G', '\u2820' }, { 'H', '\u2820' },
-            { 'I', '\u2820' }, { 'J', '\u2820' }, { 'K', '\u2820' }, { 'L', '\u2820' },
-            { 'M', '\u2820' }, { 'N', '\u2820' }, { 'O', '\u2820' }, { 'P', '\u2820' },
-            { 'Q', '\u2820' }, { 'R', '\u2820' }, { 'S', '\u2820' }, { 'T', '\u2820' },
-            { 'U', '\u2820' }, { 'V', '\u2820' }, { 'W', '\u2820' }, { 'X', '\u2820' },
-            { 'Y', '\u2820' }, { 'Z', '\u2820' },
+            { 'A', CapitalIndicator }, { 'B', CapitalIndicator }, { 'C', CapitalIndicator }, { 'D', CapitalIndicator },
+            { 'E', CapitalIndicator }, { 'F', CapitalIndicator }, { 'G', CapitalIndicator }, { 'H', CapitalIndicator },
+            { 'I', CapitalIndicator }, { 'J', CapitalIndicator }, { 'K', CapitalIndicator }, { 'L', CapitalIndicator },
+            { 'M', CapitalIndicator }, { 'N', CapitalIndicator }, { 'O', CapitalIndicator }, { 'P', CapitalIndicator },
+            { 'Q', CapitalIndicator }, { 'R', CapitalIndicator }, { 'S', CapitalIndicator }, { 'T', CapitalIndicator },
+            { 'U', CapitalIndicator }, { 'V', CapitalIndicator }, { 'W', CapitalIndicator }, { 'X', CapitalIndicator },
+            { 'Y', CapitalIndicator }, { 'Z', CapitalIndicator },
             
             // Numbers
             { '1', '\u2801' }, { '2', '\u2803' }, { '3', '\u2809' }, { '4', '\u2819' },
@@ -36,7 +40,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
             { '9', '\u280A' }, { '0', '\u281A' },
             
             // Common punctuation
-            { ' ', '\u2800' },  // Blank cell for space
+            { ' ', BlankCell },  // Blank cell for space
             { ',', '\u2802' },
             { '.', '\u2832' },
             { '?', '\u2826' },
@@ -84,7 +88,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
                     if (char.IsUpper(ch))
                     {
                         // Add capital indicator before the letter
-                        brailleLine.Append('\u2820');
+                        brailleLine.Append(CapitalIndicator);
                         // Then add the lowercase version
                         var lower = char.ToLower(ch);
                         if (EnglishGrade1Map.TryGetValue(lower, out var brailleChar))
@@ -94,7 +98,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
                         else
                         {
                             // Unknown character, use blank
-                            brailleLine.Append('\u2800');
+                            brailleLine.Append(BlankCell);
                         }
                     }
                     else if (EnglishGrade1Map.TryGetValue(ch, out var brailleChar))
@@ -105,7 +109,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
                     else
                     {
                         // Unknown character, use blank cell
-                        brailleLine.Append('\u2800');
+                        brailleLine.Append(BlankCell);
                     }
                 }
 

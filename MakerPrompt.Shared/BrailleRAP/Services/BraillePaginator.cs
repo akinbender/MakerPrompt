@@ -8,6 +8,8 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
     /// </summary>
     public class BraillePaginator
     {
+        private const char BlankBrailleCell = '\u2800';
+        
         private PageConfig _config;
         private List<string> _sourceLines;
         private List<List<string>> _pages;
@@ -86,7 +88,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
             foreach (var srcLine in _sourceLines)
             {
                 // Split by blank Braille cells (U+2800 is the blank cell used as space)
-                var words = srcLine.Split('\u2800');
+                var words = srcLine.Split(BlankBrailleCell);
 
                 var currentLine = "";
 
@@ -111,7 +113,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
 
                             if (word.Length < _config.Columns)
                             {
-                                currentLine = word + '\u2800';
+                                currentLine = word + BlankBrailleCell;
                             }
                             else
                             {
@@ -130,7 +132,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
                     else
                     {
                         currentLine += word;
-                        currentLine += '\u2800';
+                        currentLine += BlankBrailleCell;
                     }
                 }
 

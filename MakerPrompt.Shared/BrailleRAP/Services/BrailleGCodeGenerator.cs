@@ -36,7 +36,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
             }
 
             // Return to home position
-            gcode.Append(MoveTo(0, 300));
+            gcode.Append(MoveTo(0, _config.ReturnPositionY));
             gcode.Append(MotorOff());
 
             return gcode.ToString();

@@ -39,5 +39,10 @@ namespace MakerPrompt.Shared.BrailleRAP.Models
         /// Y-axis offset from origin (mm).
         /// </summary>
         public double OffsetY { get; set; } = 0.0;
+
+        /// <summary>
+        /// Y-coordinate for return position after printing (mm).
+        /// </summary>
+        public double ReturnPositionY { get; set; } = 300.0;
     }
 }
