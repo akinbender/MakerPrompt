@@ -147,6 +147,88 @@ public class CadabilityDocumentHost : ICadDocumentHost, IDisposable
         return Task.FromResult(result);
     }
 
+    /// <inheritdoc />
+    public Task CreateBoxAsync(double centerX, double centerY, double centerZ, 
+                               double width, double depth, double height, 
+                               CancellationToken ct = default)
+    {
+        if (_activeModel == null)
+            throw new InvalidOperationException("No model is loaded.");
+
+        // Create a box using CADability Make3D
+        var origin = new CADability.GeoPoint(centerX - width/2, centerY - depth/2, centerZ);
+        var xLength = width * CADability.GeoVector.XAxis;
+        var yLength = depth * CADability.GeoVector.YAxis;
+        var zLength = height * CADability.GeoVector.ZAxis;
+        
+        var box = CADability.GeoObject.Make3D.MakeBox(origin, xLength, yLength, zLength);
+        
+        _activeModel.Add(box);
+        Changed?.Invoke(this, EventArgs.Empty);
+        
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task CreateSphereAsync(double centerX, double centerY, double centerZ, 
+                                  double radius, 
+                                  CancellationToken ct = default)
+    {
+        if (_activeModel == null)
+            throw new InvalidOperationException("No model is loaded.");
+
+        // Create a sphere using CADability Make3D
+        var center = new CADability.GeoPoint(centerX, centerY, centerZ);
+        var sphere = CADability.GeoObject.Make3D.MakeSphere(center, radius);
+        
+        _activeModel.Add(sphere);
+        Changed?.Invoke(this, EventArgs.Empty);
+        
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task CreateCylinderAsync(double baseX, double baseY, double baseZ, 
+                                    double radius, double height, 
+                                    CancellationToken ct = default)
+    {
+        if (_activeModel == null)
+            throw new InvalidOperationException("No model is loaded.");
+
+        // Create a cylinder using CADability Make3D
+        var baseCenter = new CADability.GeoPoint(baseX, baseY, baseZ);
+        var axis = height * CADability.GeoVector.ZAxis;
+        var radiusVec = radius * CADability.GeoVector.XAxis;
+        
+        var cylinder = CADability.GeoObject.Make3D.MakeCylinder(baseCenter, axis, radiusVec);
+        
+        _activeModel.Add(cylinder);
+        Changed?.Invoke(this, EventArgs.Empty);
+        
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task CreateConeAsync(double baseX, double baseY, double baseZ, 
+                                double baseRadius, double height, double topRadius = 0, 
+                                CancellationToken ct = default)
+    {
+        if (_activeModel == null)
+            throw new InvalidOperationException("No model is loaded.");
+
+        // Create a cone using CADability Make3D
+        var baseCenter = new CADability.GeoPoint(baseX, baseY, baseZ);
+        var axis = height * CADability.GeoVector.ZAxis;
+        var baseRadiusVec = baseRadius * CADability.GeoVector.XAxis;
+        
+        var cone = CADability.GeoObject.Make3D.MakeCone(baseCenter, axis, baseRadiusVec, baseRadius, topRadius);
+        
+        _activeModel.Add(cone);
+        Changed?.Invoke(this, EventArgs.Empty);
+        
+        return Task.CompletedTask;
+    }
+
     private void WireModelEvents()
     {
         if (_activeModel == null)

@@ -7,9 +7,32 @@
 
 <div class="cad-document-host">
     <div class="cad-toolbar">
-        <button class="btn btn-sm btn-primary" @onclick="CreateNewDocument">New</button>
-        <button class="btn btn-sm btn-secondary" @onclick="RegenerateScene">Regenerate</button>
-        <button class="btn btn-sm btn-success" @onclick="ExportStl">Export STL</button>
+        <div class="btn-group me-2" role="group">
+            <button class="btn btn-sm btn-primary" @onclick="CreateNewDocument">
+                <i class="bi bi-file-plus"></i> New
+            </button>
+            <button class="btn btn-sm btn-secondary" @onclick="RegenerateScene">
+                <i class="bi bi-arrow-clockwise"></i> Regenerate
+            </button>
+            <button class="btn btn-sm btn-success" @onclick="ExportStl">
+                <i class="bi bi-download"></i> Export STL
+            </button>
+        </div>
+        
+        <div class="btn-group" role="group">
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateBox" title="Create Box">
+                <i class="bi bi-box"></i> Box
+            </button>
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateSphere" title="Create Sphere">
+                <i class="bi bi-circle"></i> Sphere
+            </button>
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateCylinder" title="Create Cylinder">
+                <i class="bi bi-cylinder"></i> Cylinder
+            </button>
+            <button class="btn btn-sm btn-outline-primary" @onclick="CreateCone" title="Create Cone">
+                <i class="bi bi-triangle"></i> Cone
+            </button>
+        </div>
     </div>
     
     <div class="cad-viewport">
@@ -125,6 +148,98 @@
         catch (Exception ex)
         {
             _errorMessage = $"Error exporting: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateBox()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a box at origin with default size (20x20x20)
+            await DocumentHost.CreateBoxAsync(0, 0, 0, 20, 20, 20);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating box: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateSphere()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a sphere at origin with default radius (10)
+            await DocumentHost.CreateSphereAsync(0, 0, 10, 10);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating sphere: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateCylinder()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a cylinder at origin with default size (radius 10, height 20)
+            await DocumentHost.CreateCylinderAsync(0, 0, 0, 10, 20);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating cylinder: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateCone()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            StateHasChanged();
+
+            // Create a cone at origin with default size (base radius 10, height 20, sharp tip)
+            await DocumentHost.CreateConeAsync(0, 0, 0, 10, 20, 0);
+            await UpdateScene();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error creating cone: {ex.Message}";
         }
         finally
         {

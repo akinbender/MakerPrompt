@@ -76,4 +76,57 @@ public interface ICadDocumentHost
     /// Exports the document mesh to a specific format (e.g., STL).
     /// </summary>
     Task<MeshExportResult> ExportMeshAsync(MeshExportOptions options, CancellationToken ct = default);
+
+    /// <summary>
+    /// Creates a box (rectangular prism) solid and adds it to the document.
+    /// </summary>
+    /// <param name="centerX">Center X coordinate.</param>
+    /// <param name="centerY">Center Y coordinate.</param>
+    /// <param name="centerZ">Center Z coordinate.</param>
+    /// <param name="width">Width (X direction).</param>
+    /// <param name="depth">Depth (Y direction).</param>
+    /// <param name="height">Height (Z direction).</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task CreateBoxAsync(double centerX, double centerY, double centerZ, 
+                       double width, double depth, double height, 
+                       CancellationToken ct = default);
+
+    /// <summary>
+    /// Creates a sphere solid and adds it to the document.
+    /// </summary>
+    /// <param name="centerX">Center X coordinate.</param>
+    /// <param name="centerY">Center Y coordinate.</param>
+    /// <param name="centerZ">Center Z coordinate.</param>
+    /// <param name="radius">Sphere radius.</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task CreateSphereAsync(double centerX, double centerY, double centerZ, 
+                          double radius, 
+                          CancellationToken ct = default);
+
+    /// <summary>
+    /// Creates a cylinder solid and adds it to the document.
+    /// </summary>
+    /// <param name="baseX">Base center X coordinate.</param>
+    /// <param name="baseY">Base center Y coordinate.</param>
+    /// <param name="baseZ">Base center Z coordinate.</param>
+    /// <param name="radius">Cylinder radius.</param>
+    /// <param name="height">Cylinder height (Z direction).</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task CreateCylinderAsync(double baseX, double baseY, double baseZ, 
+                            double radius, double height, 
+                            CancellationToken ct = default);
+
+    /// <summary>
+    /// Creates a cone solid and adds it to the document.
+    /// </summary>
+    /// <param name="baseX">Base center X coordinate.</param>
+    /// <param name="baseY">Base center Y coordinate.</param>
+    /// <param name="baseZ">Base center Z coordinate.</param>
+    /// <param name="baseRadius">Base radius.</param>
+    /// <param name="height">Cone height (Z direction).</param>
+    /// <param name="topRadius">Top radius (0 for sharp cone).</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task CreateConeAsync(double baseX, double baseY, double baseZ, 
+                        double baseRadius, double height, double topRadius = 0, 
+                        CancellationToken ct = default);
 }
