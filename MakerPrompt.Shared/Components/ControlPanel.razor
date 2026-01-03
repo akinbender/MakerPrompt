@@ -11,9 +11,9 @@
                             disabled="@(!IsConnected)">
                         <i class="bi bi-stop-btn-fill"></i>
                     </button>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">X: @PrinterServiceFactory.Current?.LastTelemetry.Position.X.ToString("F2")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Y: @PrinterServiceFactory.Current?.LastTelemetry.Position.Y.ToString("F2")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Z: @PrinterServiceFactory.Current?.LastTelemetry.Position.Z.ToString("F2")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">X: @Telemetry.Position.X.ToString("F2")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Y: @Telemetry.Position.Y.ToString("F2")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Z: @Telemetry.Position.Z.ToString("F2")</span>
                 </div>
                 <div class="input-group mb-2">
                     <span class="input-group-text">XY:</span>
@@ -30,7 +30,7 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row">
                             <div class="input-group justify-content-center">
-                                <button type="button" class="btn btn-secondary" style="border-bottom-left-radius: 0;" title="@Localizer[Resources.ControlPanel_HomeAll]" @onclick="async () => await PrinterServiceFactory.Current?.Home()" disabled="@(!IsConnected)"><i class="bi bi-houses"></i></button>
+                                <button type="button" class="btn btn-secondary" style="border-bottom-left-radius: 0;" title="@Localizer[Resources.ControlPanel_HomeAll]" @onclick="HomeAllAsync" disabled="@(!IsConnected)"><i class="bi bi-houses"></i></button>
                                 <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.X ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.X)">X</button>
                                 <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Y ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.Y)">Y</button>
                                 <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Z ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.Z)">Z</button>
@@ -59,26 +59,26 @@
             <h4 class="card-header">@Localizer[Resources.ControlPanel_Heating]</h4>
             <div class="card-body">
                 <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.HotendTemp.ToString("F1")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @PrinterServiceFactory.Current?.LastTelemetry.HotendTarget.ToString("F1")</span>
-                    <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" @bind:after="async () => await PrinterServiceFactory.Current?.SetHotendTemp(hotendTarget)" disabled="@(!IsConnected)">
+                     <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.HotendTemp.ToString("F1")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @Telemetry.HotendTarget.ToString("F1")</span>
+                     <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" @bind:after="SetHotendTempAsync" disabled="@(!IsConnected)">
                     <span class="input-group-text">°C</span>
-                    <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetHotendTemp]" @onclick="async () => await PrinterServiceFactory.Current?.SetHotendTemp(hotendTarget)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                    <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetHotendTemp]" @onclick="SetHotendTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.BedTemp.ToString("F1")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @PrinterServiceFactory.Current?.LastTelemetry.BedTarget.ToString("F1")</span>
-                    <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" @bind:after="async () => await PrinterServiceFactory.Current?.SetBedTemp(bedTarget)" disabled="@(!IsConnected)">
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.BedTemp.ToString("F1")</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @Telemetry.BedTarget.ToString("F1")</span>
+                    <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" @bind:after="SetBedTempAsync" disabled="@(!IsConnected)">
                     <span class="input-group-text">°C</span>
-                    <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetBedTemp]" @onclick="async () => await PrinterServiceFactory.Current?.SetBedTemp(bedTarget)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                    <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetBedTemp]" @onclick="SetBedTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.FanSpeed.ToString()</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.FanSpeed.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_FanSpeed]:</span>
                     <input type="text" min="0" max="100" class="form-control" @bind="printSpeed" disabled="@(!IsConnected)">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_Set_FanSpeed]"
-                            @onclick="async () => await PrinterServiceFactory.Current?.SetFanSpeed(printSpeed)" disabled="@(!IsConnected)">
+                            @onclick="SetFanSpeedAsync" disabled="@(!IsConnected)">
                         @Localizer[Resources.ControlPanel_Set]
                     </button>
                 </div>
@@ -100,8 +100,8 @@
                 </div>
                 <div class="d-flex align-items-end">
                     <div class="btn-group ms-auto" role="group">
-                        <button type="button" class="btn btn-primary" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(extrudeSpeed, 0, 0, 0, extrudeLength)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Extrude]</button>
-                        <button type="button" class="btn btn-primary" @onclick="async () => await PrinterServiceFactory.Current?.RelativeMove(extrudeSpeed, 0, 0, 0, -extrudeLength)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Reverse]</button>
+                        <button type="button" class="btn btn-primary" @onclick="async () => await ExtrudeAsync(extrudeLength)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Extrude]</button>
+                        <button type="button" class="btn btn-primary" @onclick="async () => await ExtrudeAsync(-extrudeLength)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Reverse]</button>
                     </div>
                 </div>
             </div>
@@ -111,16 +111,16 @@
             <h4 class="card-header">@Localizer[Resources.ControlPanel_Status]</h4>
             <div class="card-body">
                 <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.FeedRate.ToString()</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.FeedRate.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintSpeed]:</span>
-                    <input type="text" class="form-control" @bind="printSpeed" @bind:after="async () => await PrinterServiceFactory.Current?.SetPrintSpeed(printSpeed)" disabled="@(!IsConnected)">
+                    <input type="text" class="form-control" @bind="printSpeed" @bind:after="UpdatePrintSpeedAsync" disabled="@(!IsConnected)">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" disabled>@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
                 <div class="input-group">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @PrinterServiceFactory.Current?.LastTelemetry.FlowRate.ToString()</span>
+                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.FlowRate.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintFlow]:</span>
-                    <input type="text" class="form-control" @bind="printFlow" @bind:after="async () => await PrinterServiceFactory.Current?.SetPrintSpeed(printFlow)" disabled="@(!IsConnected)">
+                    <input type="text" class="form-control" @bind="printFlow" @bind:after="UpdatePrintFlowAsync" disabled="@(!IsConnected)">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" disabled>@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
@@ -132,7 +132,6 @@
 @code {
     private int hotendTarget = 0;
     private int bedTarget = 0;
-    private int fanSpeed = 0;
     private int extrudeLength = 5;
     private int extrudeSpeed = 100;
     private int xySpeed = 1000;
@@ -149,7 +148,7 @@
     private void MotionReversed(ChangeEventArgs e)
     {
         // get the checkbox state
-        isInverse = (bool)e.Value;
+        isInverse = e.Value as bool? ?? false;
     }
 
     private void SetAxis(AxisTab tab)
@@ -157,18 +156,27 @@
         ActiveTab = tab;
     }
 
+    private Task HomeAllAsync()
+    {
+        var printer = PrinterServiceFactory.Current;
+        return printer?.Home() ?? Task.CompletedTask;
+    }
+
     private async Task HomeSelectedAxis()
     {
+        var printer = PrinterServiceFactory.Current;
+        if (printer == null) return;
+
         switch (ActiveTab)
         {
             case AxisTab.X:
-                await PrinterServiceFactory.Current?.Home(true,false, false);
+                await printer.Home(true,false, false);
                 break;
             case AxisTab.Y:
-                await PrinterServiceFactory.Current?.Home(false, true, false);
+                await printer.Home(false, true, false);
                 break;
             case AxisTab.Z:
-                await PrinterServiceFactory.Current?.Home(false, false, true);
+                await printer.Home(false, false, true);
                 break;
             default:
                 return;
@@ -177,19 +185,61 @@
 
     private async Task MoveSelectedAxis(int length)
     {
+        var printer = PrinterServiceFactory.Current;
+        if (printer == null) return;
+
         switch (ActiveTab)
         {
             case AxisTab.X:
-                await PrinterServiceFactory.Current?.RelativeMove(xySpeed, length, 0, 0);
+                await printer.RelativeMove(xySpeed, length, 0, 0);
                 break;
             case AxisTab.Y:
-                await PrinterServiceFactory.Current?.RelativeMove(xySpeed, 0, length, 0);
+                await printer.RelativeMove(xySpeed, 0, length, 0);
                 break;
             case AxisTab.Z:
-                await PrinterServiceFactory.Current?.RelativeMove(zSpeed, 0, 0, length);
+                await printer.RelativeMove(zSpeed, 0, 0, length);
                 break;
             default:
                 return;
         }
     }
+
+    private Task SetHotendTempAsync()
+    {
+        var printer = PrinterServiceFactory.Current;
+        return printer?.SetHotendTemp(hotendTarget) ?? Task.CompletedTask;
+    }
+
+    private Task SetBedTempAsync()
+    {
+        var printer = PrinterServiceFactory.Current;
+        return printer?.SetBedTemp(bedTarget) ?? Task.CompletedTask;
+    }
+
+    private Task SetFanSpeedAsync()
+    {
+        var printer = PrinterServiceFactory.Current;
+        return printer?.SetFanSpeed(printSpeed) ?? Task.CompletedTask;
+    }
+
+    private Task ExtrudeAsync(int amount)
+    {
+        var printer = PrinterServiceFactory.Current;
+        return printer?.RelativeMove(extrudeSpeed, 0, 0, 0, amount) ?? Task.CompletedTask;
+    }
+
+    private Task UpdatePrintSpeedAsync()
+    {
+        var printer = PrinterServiceFactory.Current;
+        return printer?.SetPrintSpeed(printSpeed) ?? Task.CompletedTask;
+    }
+
+    private Task UpdatePrintFlowAsync()
+    {
+        var printer = PrinterServiceFactory.Current;
+        return printer?.SetPrintFlow(printFlow) ?? Task.CompletedTask;
+    }
+
+    private readonly PrinterTelemetry fallbackTelemetry = new();
+    private PrinterTelemetry Telemetry => PrinterServiceFactory.Current?.LastTelemetry ?? fallbackTelemetry;
 }

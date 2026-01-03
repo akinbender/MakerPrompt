@@ -22,7 +22,7 @@ namespace MakerPrompt.Blazor.Services
         {
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", StorageKey);
             _config = json != null
-                ? JsonSerializer.Deserialize<AppConfiguration>(json)
+                ? JsonSerializer.Deserialize<AppConfiguration>(json) ?? new AppConfiguration()
                 : new AppConfiguration();
         }
 
