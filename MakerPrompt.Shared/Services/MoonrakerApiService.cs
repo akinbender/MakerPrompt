@@ -5,8 +5,8 @@ namespace MakerPrompt.Shared.Services
 {
     public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
-        private HttpClient _httpClient;
-        private Uri _baseUri;
+        private HttpClient _httpClient = null!;
+        private Uri _baseUri = null!;
         private string _jwtToken = string.Empty;
         private string _refreshToken = string.Empty;
         public override PrinterConnectionType ConnectionType { get; } = PrinterConnectionType.Moonraker;
@@ -134,13 +134,14 @@ namespace MakerPrompt.Shared.Services
                 $"/server/files/list?root=gcodes");
             response.EnsureSuccessStatusCode();
             var content = JsonSerializer.Deserialize<FileListResponse>(await response.Content.ReadAsStringAsync());
-            return content.Files.Select(f => new FileEntry
+            var files = content?.Files ?? [];
+            return files.Select(f => new FileEntry
                 {
                     FullPath = f.Path,
                     Size = f.Size,
                     ModifiedDate = f.ModifiedDate,
                     IsAvailable = f.Permissions.Contains("rw"),
-                }).ToList() ?? [];
+                }).ToList();
         }
 
         public async Task<bool> AuthenticateAsync(string username, string password)

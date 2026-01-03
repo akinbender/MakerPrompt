@@ -2,30 +2,13 @@
 {
     public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
-        private readonly HttpClient _httpClient;
-        private readonly Uri _baseUri;
+        private readonly HttpClient _httpClient = null!;
         private readonly CancellationTokenSource _cts = new();
 
         public override PrinterConnectionType ConnectionType => PrinterConnectionType.PrusaLink;
 
         public PrusaLinkApiService()
         {
-            // TODO check compatibility warning
-            //_baseUri = new Uri(connectionSettings.Url);
-            //var handler = new HttpClientHandler
-            //{
-            //    PreAuthenticate = true
-            //};
-
-            //if (true)
-            //{
-            //    var credentials = new NetworkCredential(
-            //        connectionSettings.UserName,
-            //        connectionSettings.Password);
-            //    handler.Credentials = credentials;
-            //}
-
-            //_httpClient = new HttpClient(handler) { BaseAddress = _baseUri };
         }
 
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
@@ -96,15 +79,6 @@
         public async Task<List<FileEntry>> GetFilesAsync()
         {
             return [];
-            // var response = await _httpClient.GetAsync("/api/v1/storage");
-            // response.EnsureSuccessStatusCode();
-            // var content = JsonSerializer.Deserialize<PrusaFile‚Item>(await response.Content.ReadAsStringAsync());
-            // return response?.Storage.Select(s => new FileEntry
-            // {
-            //     FullPath = s.Path,
-            //     Size = s.Size,
-            //     Available = !s.Readonly,
-            // }).ToList() ?? new List<FileEntry>();
         }
 
         private async Task<PrusaVersionResponse?> GetVersionAsync()
@@ -199,23 +173,23 @@
     // PrusaLink DTOs
     public class PrusaVersionResponse
     {
-        public string Api { get; set; }
-        public string Version { get; set; }
-        public string Printer { get; set; }
-        public string Text { get; set; }
-        public string Firmware { get; set; }
+        public string Api { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
+        public string Printer { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public string Firmware { get; set; } = string.Empty;
     }
 
     public class PrusaStatusResponse
     {
-        public PrusaStatusPrinter Printer { get; set; }
+        public PrusaStatusPrinter Printer { get; set; } = new();
         public PrusaStatusJob? Job { get; set; }
         public List<PrusaStorage>? Storage { get; set; }
     }
 
     public class PrusaStatusPrinter
     {
-        public string State { get; set; }
+        public string State { get; set; } = string.Empty;
         public double? TempNozzle { get; set; }
         public double? TargetNozzle { get; set; }
         public double? TempBed { get; set; }
@@ -236,17 +210,17 @@
 
     public class PrusaStorage
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
         public bool Available { get; set; }
     }
 
     public class PrusaFileItem
     {
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         [JsonPropertyName("path")]
-        public string Path { get; set; }
+        public string Path { get; set; } = string.Empty;
         [JsonPropertyName("read_only")]
         public bool Readonly { get; set; }
         [JsonPropertyName("free_space")]

@@ -143,7 +143,7 @@
     private bool HasValidSelection => ActiveTab == PrinterConnectionType.Demo || !string.IsNullOrEmpty(SerialConnectionSettings.PortName) || !string.IsNullOrEmpty(ApiConnectionSettings.Url);
     private string ConnectButtonClass => IsConnected ? "btn-danger" : "btn-success";
     private string ConnectButtonText => IsConnected ? localizer[Resources.NavConnection_Disconnect] : localizer[Resources.NavConnection_Connect];
-    private string NavButtonText => IsConnected ? ServiceFactory.Current.ConnectionName : localizer[Resources.NavConnection_Connect];
+    private string NavButtonText => IsConnected ? ServiceFactory.Current?.ConnectionName ?? localizer[Resources.NavConnection_Connect] : localizer[Resources.NavConnection_Connect];
 
     protected override async Task OnInitializedAsync()
     {
@@ -183,7 +183,8 @@
                     PrinterConnectionType.Demo => new PrinterConnectionSettings(),
                     PrinterConnectionType.Serial => new PrinterConnectionSettings(SerialConnectionSettings),
                     PrinterConnectionType.Moonraker => new PrinterConnectionSettings(ApiConnectionSettings, ActiveTab),
-                    PrinterConnectionType.PrusaLink => new PrinterConnectionSettings(ApiConnectionSettings, ActiveTab)
+                    PrinterConnectionType.PrusaLink => new PrinterConnectionSettings(ApiConnectionSettings, ActiveTab),
+                    _ => new PrinterConnectionSettings()
                 };
 
                 await ServiceFactory.ConnectAsync(connectionSettings);
@@ -195,7 +196,7 @@
         }
     }
 
-    private void HandleConnectionChanged(object sender, bool isConnected)
+    private void HandleConnectionChanged(object? sender, bool isConnected)
     {
         IsConnected = isConnected;
         StateHasChanged();

@@ -7,7 +7,7 @@
 @code {
 
     [Parameter] public required Expression<Func<object>> For { get; set; }
-    [Inject] IStringLocalizer<Resources> Localizer { get; set; }
+    [Inject] IStringLocalizer<Resources> Localizer { get; set; } = default!;
 
     protected override void OnParametersSet()
     {
@@ -15,7 +15,7 @@
         Label = Localizer[GetDisplayName()];
     }
 
-    private string Label { get; set; }
+    private string Label { get; set; } = string.Empty;
 
     private string GetDisplayName()
     {

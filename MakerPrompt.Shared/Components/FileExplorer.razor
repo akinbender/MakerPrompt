@@ -2,7 +2,7 @@
 
 <div class="d-flex flex-row-reverse">
     <div class="btn-group mb-3">
-        <button class="btn btn-sm btn-primary" @onclick="() => PrinterServiceFactory.Current?.StartPrint(selectedFile)" disabled="@(!CanStartPrint)">
+        <button class="btn btn-sm btn-primary" @onclick="StartPrintAsync" disabled="@(!CanStartPrint)">
             <i class="bi bi-printer"></i> @Localizer[Resources.CalibrationPage_Start]
         </button>
         <button class="btn btn-sm btn-secondary" disabled="@(!IsConnected)" @onclick="RefreshFiles">
@@ -87,9 +87,14 @@
         _isLoading = true;
         StateHasChanged();
 
-        if (PrinterServiceFactory.Current != null)
+        var printerService = PrinterServiceFactory.Current;
+        if (printerService != null)
         {
-            _files = await PrinterServiceFactory.Current?.GetFilesAsync() ?? new List<FileEntry>();
+            _files = await printerService.GetFilesAsync() ?? new List<FileEntry>();
+        }
+        else
+        {
+            _files = new List<FileEntry>();
         }
 
         _isLoading = false;
@@ -121,5 +126,15 @@
     private string GetRowClass(FileEntry file)
     {
         return selectedFile == file ? "table-active" : string.Empty;
+    }
+
+    private Task StartPrintAsync()
+    {
+        if (selectedFile == null || PrinterServiceFactory.Current == null)
+        {
+            return Task.CompletedTask;
+        }
+
+        return PrinterServiceFactory.Current.StartPrint(selectedFile);
     }
 }

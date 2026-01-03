@@ -54,7 +54,9 @@ namespace MakerPrompt.Shared.Utils
         public static List<GCodeCommand> AllCommands() => typeof(GCodeCommands)
                 .GetFields(BindingFlags.Public | BindingFlags.Static)
                 .Where(f => f.FieldType == typeof(GCodeCommand))
-                .Select(f => (GCodeCommand)f.GetValue(null))
+                .Select(f => f.GetValue(null) as GCodeCommand)
+                .Where(c => c is not null)
+                .Cast<GCodeCommand>()
                 .ToList();
 
         // Movement Commands
