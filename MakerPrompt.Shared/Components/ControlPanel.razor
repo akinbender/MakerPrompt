@@ -237,7 +237,7 @@
     private Task UpdatePrintFlowAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.SetPrintSpeed(printFlow) ?? Task.CompletedTask;
+        return printer?.SetPrintFlow(printFlow) ?? Task.CompletedTask;
     }
 
     private readonly PrinterTelemetry fallbackTelemetry = new();
