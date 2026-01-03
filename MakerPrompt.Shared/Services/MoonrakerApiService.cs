@@ -206,6 +206,7 @@ namespace MakerPrompt.Shared.Services
         {
             updateTimer.Dispose();
             _httpClient?.Dispose();
+            _cts.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -217,19 +218,16 @@ namespace MakerPrompt.Shared.Services
 
         private void ConfigureClient(ApiConnectionSettings settings)
         {
-            _httpClient = _customHandler != null
-                ? new HttpClient(_customHandler, false)
-                : new HttpClient();
-
-            Client.BaseAddress = _baseUri;
-            Client.Timeout = TimeSpan.FromSeconds(30);
-            Client.DefaultRequestHeaders.Accept.Clear();
-            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var client = Client;
+            client.BaseAddress = _baseUri;
+            client.Timeout = TimeSpan.FromSeconds(30);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             if (!string.IsNullOrEmpty(settings.UserName) && !string.IsNullOrEmpty(settings.Password))
             {
                 var credentialBytes = Encoding.ASCII.GetBytes($"{settings.UserName}:{settings.Password}");
-                Client.DefaultRequestHeaders.Authorization =
+                client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Basic", Convert.ToBase64String(credentialBytes));
             }
         }

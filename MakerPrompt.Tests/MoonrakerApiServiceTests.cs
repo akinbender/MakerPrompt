@@ -67,14 +67,15 @@ public class MoonrakerApiServiceTests
         return request =>
         {
             var path = request.RequestUri?.AbsolutePath ?? string.Empty;
+            var query = request.RequestUri?.Query ?? string.Empty;
             return path switch
             {
                 "/printer/info" => JsonResponse("""{"result":{"state":"ready"}}"""),
-                "/printer/objects/query" when request.RequestUri!.Query.Contains("heater_bed") =>
+                "/printer/objects/query" when query.Contains("heater_bed", StringComparison.OrdinalIgnoreCase) =>
                     JsonResponse("""{"result":{"status":{"heater_bed":{"temperature":59.5,"target":60},"extruder":{"temperature":214.9,"target":215}}}}"""),
-                "/printer/objects/query" when request.RequestUri!.Query.Contains("gcode_move") =>
+                "/printer/objects/query" when query.Contains("gcode_move", StringComparison.OrdinalIgnoreCase) =>
                     JsonResponse("""{"result":{"status":{"gcode_move":{"position":[1,2,3],"speed":100,"extrude_factor":1.0},"fan":{"speed":1}}}}"""),
-                "/printer/objects/query" when request.RequestUri!.Query.Contains("print_stats") =>
+                "/printer/objects/query" when query.Contains("print_stats", StringComparison.OrdinalIgnoreCase) =>
                     JsonResponse("""{"result":{"status":{"print_stats":{"state":"printing"}}}}"""),
                 "/server/files/list" => JsonResponse("""{"result":[{"path":"gcodes/test.gcode","modified":1700000000,"size":1234,"permissions":"rw"}]}"""),
                 "/printer/gcode/script" => new HttpResponseMessage(HttpStatusCode.OK),
