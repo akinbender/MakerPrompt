@@ -35,3 +35,6 @@ jobs:
 
     - name: Build (Blazor WebAssembly)
       run: dotnet build MakerPrompt.Blazor/MakerPrompt.Blazor.csproj -c Release --no-restore
+
+    - name: Test (Unit)
+      run: dotnet test MakerPrompt.Tests/MakerPrompt.Tests.csproj -c Release
