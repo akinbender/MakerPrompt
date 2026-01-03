@@ -1,15 +1,38 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using MakerPrompt.Shared.Infrastructure;
+using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Utils;
+using static MakerPrompt.Shared.Utils.Enums;
 
 namespace MakerPrompt.Shared.Services
 {
     public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
-        private HttpClient _httpClient = null!;
+        private readonly CancellationTokenSource _cts = new();
+        private readonly HttpMessageHandler? _customHandler;
+        private HttpClient? _httpClient;
         private Uri _baseUri = null!;
         private string _jwtToken = string.Empty;
         private string _refreshToken = string.Empty;
         public override PrinterConnectionType ConnectionType { get; } = PrinterConnectionType.Moonraker;
+
+        public MoonrakerApiService()
+        {
+        }
+
+        public MoonrakerApiService(HttpMessageHandler handler)
+        {
+            _customHandler = handler;
+            _httpClient = new HttpClient(handler, false);
+        }
+
+        private HttpClient Client => _httpClient ??= _customHandler != null
+            ? new HttpClient(_customHandler, false)
+            : new HttpClient();
 
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
@@ -18,11 +41,7 @@ namespace MakerPrompt.Shared.Services
             if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Api == null) throw new ArgumentException();
 
             _baseUri = new Uri(connectionSettings.Api.Url);
-            _httpClient = new HttpClient
-            {
-                BaseAddress = _baseUri,
-                Timeout = TimeSpan.FromSeconds(30)
-            };
+            ConfigureClient(connectionSettings.Api);
 
             if (!string.IsNullOrEmpty(connectionSettings.Api.UserName) && !string.IsNullOrEmpty(connectionSettings.Api.Password))
             {
@@ -32,9 +51,9 @@ namespace MakerPrompt.Shared.Services
 
             try
             {
-                var response = await _httpClient.GetAsync("/printer/info");
+                var response = await Client.GetAsync("/printer/info", _cts.Token);
                 IsConnected = response.IsSuccessStatusCode;
-                updateTimer.Elapsed += async (s, e) => await GetPrinterTelemetryAsync();
+                updateTimer.Elapsed += async (s, e) => await SafeTelemetryAsync();
                 updateTimer.Start();
                 ConnectionName = _baseUri.AbsoluteUri;
             }
@@ -50,7 +69,8 @@ namespace MakerPrompt.Shared.Services
         public async Task DisconnectAsync()
         {
             updateTimer.Stop();
-            _httpClient.CancelPendingRequests();
+            _cts.Cancel();
+            _httpClient?.CancelPendingRequests();
             IsConnected = false;
             RaiseConnectionChanged();
             await Task.CompletedTask;
@@ -60,9 +80,10 @@ namespace MakerPrompt.Shared.Services
         {
             if (!IsConnected) return;
 
-            var response = await _httpClient.PostAsync(
+            var response = await Client.PostAsync(
                 $"/printer/gcode/script?script={WebUtility.UrlEncode(command)}",
-                null);
+                null,
+                _cts.Token);
 
             var content = await response.Content.ReadAsStringAsync();
             LastTelemetry.LastResponse = content;
@@ -74,7 +95,7 @@ namespace MakerPrompt.Shared.Services
             if (!IsConnected) return LastTelemetry;
 
             // Get temperature data
-            var tempResponse = await _httpClient.GetAsync("/printer/objects/query?heater_bed&extruder");
+            var tempResponse = await Client.GetAsync("/printer/objects/query?heater_bed&extruder", _cts.Token);
             if (tempResponse.IsSuccessStatusCode)
             {
                 var json = await tempResponse.Content.ReadAsStringAsync();
@@ -87,7 +108,7 @@ namespace MakerPrompt.Shared.Services
                 LastTelemetry.HotendTarget = root.GetProperty("extruder").GetProperty("target").GetDouble();
             }
 
-            var motionResponse = await _httpClient.GetAsync("/printer/objects/query?gcode_move,fan");
+            var motionResponse = await Client.GetAsync("/printer/objects/query?gcode_move,fan", _cts.Token);
             if (motionResponse.IsSuccessStatusCode)
             {
                 var json = await motionResponse.Content.ReadAsStringAsync();
@@ -113,7 +134,7 @@ namespace MakerPrompt.Shared.Services
             }
 
             // Get printer status
-            var statusResponse = await _httpClient.GetAsync("/printer/objects/query?print_stats");
+            var statusResponse = await Client.GetAsync("/printer/objects/query?print_stats", _cts.Token);
             if (statusResponse.IsSuccessStatusCode)
             {
                 var json = await statusResponse.Content.ReadAsStringAsync();
@@ -130,8 +151,8 @@ namespace MakerPrompt.Shared.Services
         {
             if (!IsConnected) return [];
 
-            var response = await _httpClient.GetAsync(
-                $"/server/files/list?root=gcodes");
+            var response = await Client.GetAsync(
+                $"/server/files/list?root=gcodes", _cts.Token);
             response.EnsureSuccessStatusCode();
             var content = JsonSerializer.Deserialize<FileListResponse>(await response.Content.ReadAsStringAsync());
             var files = content?.Files ?? [];
@@ -158,7 +179,7 @@ namespace MakerPrompt.Shared.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("/access/login", content);
+                var response = await Client.PostAsync("/access/login", content, _cts.Token);
                 response.EnsureSuccessStatusCode();
 
                 var responseJson = await response.Content.ReadAsStringAsync();
@@ -169,7 +190,7 @@ namespace MakerPrompt.Shared.Services
 
                 if (!string.IsNullOrEmpty(_jwtToken))
                 {
-                    _httpClient.DefaultRequestHeaders.Authorization =
+                    Client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", _jwtToken);
                 }
 
@@ -184,7 +205,7 @@ namespace MakerPrompt.Shared.Services
         public void Dispose()
         {
             updateTimer.Dispose();
-            _httpClient.Dispose();
+            _httpClient?.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -193,6 +214,116 @@ namespace MakerPrompt.Shared.Services
             Dispose();
             return ValueTask.CompletedTask;
         }
+
+        private void ConfigureClient(ApiConnectionSettings settings)
+        {
+            _httpClient = _customHandler != null
+                ? new HttpClient(_customHandler, false)
+                : new HttpClient();
+
+            Client.BaseAddress = _baseUri;
+            Client.Timeout = TimeSpan.FromSeconds(30);
+            Client.DefaultRequestHeaders.Accept.Clear();
+            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            if (!string.IsNullOrEmpty(settings.UserName) && !string.IsNullOrEmpty(settings.Password))
+            {
+                var credentialBytes = Encoding.ASCII.GetBytes($"{settings.UserName}:{settings.Password}");
+                Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Basic", Convert.ToBase64String(credentialBytes));
+            }
+        }
+
+        private async Task SafeTelemetryAsync()
+        {
+            try
+            {
+                await GetPrinterTelemetryAsync();
+            }
+            catch
+            {
+                // swallow background telemetry errors
+            }
+        }
+
+        private Task SendGcodeAsync(string gcode) => WriteDataAsync(gcode);
+
+        public Task SetHotendTemp(int targetTemp = 0) =>
+            SendGcodeAsync($"M104 S{targetTemp}");
+
+        public Task SetBedTemp(int targetTemp = 0) =>
+            SendGcodeAsync($"M140 S{targetTemp}");
+
+        public Task Home(bool x = true, bool y = true, bool z = true)
+        {
+            var axes = new StringBuilder();
+            if (x) axes.Append(" X");
+            if (y) axes.Append(" Y");
+            if (z) axes.Append(" Z");
+            var command = axes.Length == 0 ? "G28" : $"G28{axes}";
+            return SendGcodeAsync(command);
+        }
+
+        public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            var sb = new StringBuilder();
+            sb.Append("G91\nG1");
+            if (Math.Abs(x) > 0.0001f) sb.Append($" X{x}");
+            if (Math.Abs(y) > 0.0001f) sb.Append($" Y{y}");
+            if (Math.Abs(z) > 0.0001f) sb.Append($" Z{z}");
+            if (Math.Abs(e) > 0.0001f) sb.Append($" E{e}");
+            sb.Append($" F{feedRate}\nG90");
+            return SendGcodeAsync(sb.ToString());
+        }
+
+        public Task SetFanSpeed(int speed)
+        {
+            var clamped = Math.Clamp(speed, 0, 100);
+            var duty = (int)Math.Round(clamped * 255.0 / 100.0, MidpointRounding.AwayFromZero);
+            return SendGcodeAsync($"M106 S{duty}");
+        }
+
+        public Task SetPrintSpeed(int speed)
+        {
+            var clamped = Math.Clamp(speed, 1, 200);
+            return SendGcodeAsync($"M220 S{clamped}");
+        }
+
+        public Task SetPrintFlow(int flow)
+        {
+            var clamped = Math.Clamp(flow, 1, 200);
+            return SendGcodeAsync($"M221 S{clamped}");
+        }
+
+        public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        {
+            var sb = new StringBuilder("M92");
+            if (x > 0) sb.Append($" X{x}");
+            if (y > 0) sb.Append($" Y{y}");
+            if (z > 0) sb.Append($" Z{z}");
+            if (e > 0) sb.Append($" E{e}");
+            return SendGcodeAsync(sb.ToString());
+        }
+
+        public Task RunPidTuning(int cycles, int targetTemp, int extruderIndex)
+        {
+            var heater = extruderIndex == 0 ? "extruder" : $"extruder{extruderIndex}";
+            return SendGcodeAsync($"PID_CALIBRATE HEATER={heater} TARGET={targetTemp}");
+        }
+
+        public Task RunThermalModelCalibration(int cycles, int targetTemp)
+        {
+            // No direct Moonraker endpoint; fall back to PID tuning for the bed as closest available.
+            return SendGcodeAsync($"PID_CALIBRATE HEATER=heater_bed TARGET={targetTemp}");
+        }
+
+        public async Task StartPrint(FileEntry file)
+        {
+            var filename = WebUtility.UrlEncode(file.FullPath);
+            await Client.PostAsync($"/printer/print/start?filename={filename}", null, _cts.Token);
+        }
+
+        public Task SaveEEPROM() => SendGcodeAsync("SAVE_CONFIG");
 
         private record AuthResponse
         {
@@ -240,65 +371,6 @@ namespace MakerPrompt.Shared.Services
             public bool IsDirectory => Size == 0;
         }
 
-        public Task SetHotendTemp(int targetTemp = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetBedTemp(int targetTemp = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Home(bool x = true, bool y = true, bool z = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetFanSpeed(int speed)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetPrintSpeed(int speed)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetPrintFlow(int flow)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RunPidTuning(int cycles, int targetTemp, int extruderIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RunThermalModelCalibration(int cycles, int targetTemp)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task StartPrint(FileEntry file)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveEEPROM()
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }
