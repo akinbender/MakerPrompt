@@ -4,8 +4,8 @@ namespace MakerPrompt.Shared.Services
 {
     public class DemoPrinterService : BasePrinterConnectionService, IPrinterCommunicationService
     {
-        private readonly List<FileEntry> files = new();
-        private readonly Dictionary<string, byte[]> fileContents = new();
+        private readonly List<FileEntry> files = [];
+        private readonly Dictionary<string, byte[]> fileContents = [];
         private double _hotendTarget = 0;
         private double _bedTarget = 0;
         private double _hotendTemp = 25;

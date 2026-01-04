@@ -234,7 +234,7 @@
 
 @code {
     [Inject] private GCodeDocumentService GCodeDoc { get; set; } = null!;
-
+    [Inject] protected ToastService ToastService { get; set; }
     private BrailleRAPService brailleService = new();
     private PageConfig pageConfig = new();
     private MachineConfig machineConfig = new();
@@ -430,7 +430,7 @@
     {
         statusMessage = message;
         statusAlertClass = alertClass;
-        StateHasChanged();
+        ToastService.Notify(new(ToastType.Success, message));
     }
 
     private void ClearStatus()

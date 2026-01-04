@@ -9,7 +9,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Models
         /// Pages of Braille lines.
         /// Each page contains multiple lines, each line is a string of Braille characters.
         /// </summary>
-        public List<List<string>> Pages { get; set; } = new();
+        public List<List<string>> Pages { get; set; } = [];
 
         /// <summary>
         /// Gets the total number of pages.
@@ -22,7 +22,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Models
         public List<string> GetPage(int pageIndex)
         {
             if (pageIndex < 0 || pageIndex >= Pages.Count)
-                return new List<string>();
+                return [];
             return Pages[pageIndex];
         }
     }

@@ -103,7 +103,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
         private List<GeomPoint> SortGeomZigZag(List<GeomPoint> geom)
         {
             if (geom == null || geom.Count == 0)
-                return new List<GeomPoint>();
+                return [];
 
             var sorted = new List<GeomPoint>();
             int start = 0;

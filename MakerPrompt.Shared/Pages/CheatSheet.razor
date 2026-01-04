@@ -5,11 +5,13 @@
 
 <LocalizedTitle TitleKey="@Resources.PageTitle_GCodeList" />
 
+<Modal @ref="modal" IsServiceModal="false" />
+
 <div class="container">
     <div class="row mb-3">
         <div class="col-md-6">
             <input type="text" class="form-control"
-            placeholder="@localizer[Resources.CheatSheetPage_SearchCommands]" @bind="searchTerm" />
+                   placeholder="@localizer[Resources.CheatSheetPage_SearchCommands]" @bind="searchTerm" />
         </div>
     </div>
 
@@ -58,7 +60,7 @@
                         </td>
                         <td class="text-end">
                             <button class="btn btn-sm btn-outline-primary action-button"
-                            @onclick="() => ShowCommandDetails(command)">
+                                    @onclick="() => ShowCommandDetailsAsync(command)">
                                 <i class="bi bi-play-fill"></i>
                             </button>
                         </td>
@@ -70,8 +72,7 @@
 </div>
 
 @code {
-    [CascadingParameter] public IModalService ModalService { get; set; } = default!;
-
+    private Modal modal = default!;
     private string searchTerm = string.Empty;
 
     private List<GCodeCommand> GetFilteredCommands()
@@ -82,11 +83,13 @@
             .ToList();
     }
 
-    private void ShowCommandDetails(GCodeCommand command)
+    private async Task ShowCommandDetailsAsync(GCodeCommand command)
     {
-        var parameters = new ModalParameters()
-            .Add(nameof(TestCommandModal.Command), command.Command);
+        var parameters = new Dictionary<string, object>
+        {
+            { nameof(TestCommandModal.Command), command.Command }
+        };
 
-        ModalService.Show<TestCommandModal>(command.Command, parameters);
+        await modal.ShowAsync<TestCommandModal>(title: command.Command, parameters: parameters);
     }
 }

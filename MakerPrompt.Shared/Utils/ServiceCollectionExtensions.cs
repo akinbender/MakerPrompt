@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Blazored.Modal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MakerPrompt.Shared.Utils
@@ -16,6 +15,7 @@ namespace MakerPrompt.Shared.Utils
             services.AddScoped<IAppConfigurationService, P>();
             services.AddSingleton<ISerialService, L>();
             services.AddSingleton<PrinterCommunicationServiceFactory>();
+            services.AddScoped<PrinterStorageProvider>();
             services.AddSingleton<GCodeDocumentService>();
             services.AddScoped<MakerPromptJsInterop>();
             services.AddScoped<LocalizedTitleService>();
@@ -24,11 +24,8 @@ namespace MakerPrompt.Shared.Utils
             {
                 options.ResourcesPath = "Resources";
             });
-            services.AddBlazoredModal();
             services.AddHttpClient();
-
-            // Storage providers
-            services.AddScoped<MakerPrompt.Shared.Infrastructure.PrinterStorageProvider>();
+            services.AddBlazorBootstrap();  
 
             return services;
         }

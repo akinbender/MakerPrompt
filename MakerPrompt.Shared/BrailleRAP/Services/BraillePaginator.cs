@@ -19,9 +19,9 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
         public BraillePaginator()
         {
             _config = new PageConfig();
-            _sourceLines = new List<string>();
-            _pages = new List<List<string>>();
-            _currentPage = new List<string>();
+            _sourceLines = [];
+            _pages = [];
+            _currentPage = [];
             _computedRows = _config.GetComputedRows();
         }
 

@@ -1,5 +1,6 @@
-﻿@inject IStringLocalizer<Resources> localizer
-
+﻿@* @inject IStringLocalizer<Resources> localizer
+@inject ModalService ModalService
+TODO reimplement using BlazorBootstrap!!
 <div>
     @if (selectedCommand != null)
     {
@@ -27,8 +28,8 @@
         }
 
         <div class="mb-3">
-@*             <h6>@localizer[Resources.CommandDetails_Example]</h6>
- *@            <code>@selectedCommand.GetCommandExample()</code>
+             <h6>@localizer[Resources.CommandDetails_Example]</h6>
+            <code>@selectedCommand.GetCommandExample()</code>
         </div>
     }
 
@@ -36,8 +37,6 @@
 </div>
 
 @code {
-    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = default!;
-
     [Parameter] public string? Command { get; set; }
 
     private GCodeCommand selectedCommand { get; set; } = null!;
@@ -50,3 +49,4 @@
 
     private async Task Close() => await BlazoredModal.CloseAsync();
 }
+ *@

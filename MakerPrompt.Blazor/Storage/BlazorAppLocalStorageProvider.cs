@@ -23,7 +23,7 @@ namespace MakerPrompt.Blazor.Storage
         public async Task<List<FileEntry>> ListFilesAsync(CancellationToken cancellationToken = default)
         {
             var json = await js.InvokeAsync<string>("localStorage.getItem", ManifestKey);
-            var entries = string.IsNullOrEmpty(json) ? new List<ManifestEntry>() : (JsonSerializer.Deserialize<List<ManifestEntry>>(json) ?? new List<ManifestEntry>());
+            var entries = string.IsNullOrEmpty(json) ? [] : (JsonSerializer.Deserialize<List<ManifestEntry>>(json) ?? []);
             return entries.Select(e => new FileEntry
             {
                 FullPath = e.Name,
@@ -85,7 +85,7 @@ namespace MakerPrompt.Blazor.Storage
         private async Task<List<ManifestEntry>> GetManifestAsync()
         {
             var json = await js.InvokeAsync<string>("localStorage.getItem", ManifestKey);
-            return string.IsNullOrEmpty(json) ? new List<ManifestEntry>() : (JsonSerializer.Deserialize<List<ManifestEntry>>(json) ?? new List<ManifestEntry>());
+            return string.IsNullOrEmpty(json) ? [] : (JsonSerializer.Deserialize<List<ManifestEntry>>(json) ?? []);
         }
 
         private Task SaveManifestAsync(List<ManifestEntry> entries)

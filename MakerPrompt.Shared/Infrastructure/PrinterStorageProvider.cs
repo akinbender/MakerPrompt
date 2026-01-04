@@ -16,14 +16,13 @@ namespace MakerPrompt.Shared.Infrastructure
         public async Task<List<FileEntry>> ListFilesAsync(CancellationToken cancellationToken = default)
         {
             var svc = factory.Current;
-            if (svc == null) return new();
-            return await svc.GetFilesAsync() ?? new();
+            if (svc == null) return [];
+            return await svc.GetFilesAsync() ?? [];
         }
 
         public async Task<Stream?> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
         {
-            var svc = factory.Current as Services.DemoPrinterService;
-            if (svc != null)
+            if (factory.Current is Services.DemoPrinterService svc)
             {
                 return await svc.OpenReadAsync(fullPath);
             }
@@ -32,8 +31,7 @@ namespace MakerPrompt.Shared.Infrastructure
 
         public async Task SaveFileAsync(string fullPath, Stream content, CancellationToken cancellationToken = default)
         {
-            var svc = factory.Current as Services.DemoPrinterService;
-            if (svc != null)
+            if (factory.Current is Services.DemoPrinterService svc)
             {
                 await svc.SaveFileAsync(fullPath, content);
             }
@@ -41,8 +39,7 @@ namespace MakerPrompt.Shared.Infrastructure
 
         public async Task DeleteFileAsync(string fullPath, CancellationToken cancellationToken = default)
         {
-            var svc = factory.Current as Services.DemoPrinterService;
-            if (svc != null)
+            if (factory.Current is Services.DemoPrinterService svc)
             {
                 await svc.DeleteFileAsync(fullPath);
             }
