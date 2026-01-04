@@ -1,0 +1,167 @@
+@inherits ConnectionComponentBase
+@using System.IO
+@inject GCodeDocumentService GCodeDoc
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public IStorageProvider Provider { get; set; } = null!;
+    [Parameter] public IStorageProvider? TargetProvider { get; set; }
+    [Parameter] public bool EnableUpload { get; set; } = false;
+    [Parameter] public bool EnableDelete { get; set; } = true;
+    [Parameter] public bool EnableOpen { get; set; } = true;
+    [Parameter] public bool EnableCopy { get; set; } = true;
+
+    private List<FileEntry> _files = new();
+    private bool _isLoading;
+    private FileEntry? selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshFiles();
+    }
+
+    private async Task RefreshFiles()
+    {
+        _isLoading = true;
+        StateHasChanged();
+        _files = await Provider.ListFilesAsync();
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        if (!EnableUpload) return;
+        var file = e.File;
+        if (file == null) return;
+        await using var stream = file.OpenReadStream(long.MaxValue);
+        await Provider.SaveFileAsync(file.Name, stream);
+        await RefreshFiles();
+    }
+
+    private async Task CopySelected()
+    {
+        if (!EnableCopy || selectedFile == null || TargetProvider == null) return;
+        await using var stream = await Provider.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
+        if (stream == Stream.Null) return;
+        await TargetProvider.SaveFileAsync(Path.GetFileName(selectedFile.FullPath), stream);
+    }
+
+    private async Task OpenSelected()
+    {
+        if (!EnableOpen || selectedFile == null) return;
+        await using var stream = await Provider.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
+        if (stream == Stream.Null) return;
+        using var reader = new StreamReader(stream);
+        var content = await reader.ReadToEndAsync();
+        GCodeDoc.SetGCode(content);
+    }
+
+    private async Task DeleteSelected()
+    {
+        if (!EnableDelete || selectedFile == null) return;
+        await Provider.DeleteFileAsync(selectedFile.FullPath);
+        selectedFile = null;
+        await RefreshFiles();
+    }
+
+    private string FormatSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double len = bytes;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    private void SelectFile(FileEntry file)
+    {
+        selectedFile = file;
+    }
+
+    private string GetRowClass(FileEntry file)
+    {
+        return selectedFile == file ? "table-active" : string.Empty;
+    }
+}
+
+<div class="card">
+    <h4 class="card-header">@Title</h4>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <strong>@Provider.DisplayName</strong>
+            </div>
+            <div class="btn-group">
+                @if (EnableUpload)
+                {
+                    var uploadId = $"fileUpload-{Title?.Replace(" ", string.Empty)}";
+                    <label class="btn btn-sm btn-outline-primary" for="@uploadId">
+                        <i class="bi bi-upload"></i> Upload
+                    </label>
+                    <InputFile id="@uploadId" OnChange="OnFileSelected" />
+                }
+                <button class="btn btn-sm btn-secondary" @onclick="RefreshFiles">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                @if (EnableCopy)
+                {
+                    <button class="btn btn-sm btn-outline-success" @onclick="CopySelected" disabled="@(selectedFile == null)">
+                        <i class="bi bi-arrow-left-right"></i> Copy
+                    </button>
+                }
+                @if (EnableOpen)
+                {
+                    <button class="btn btn-sm btn-outline-info" @onclick="OpenSelected" disabled="@(selectedFile == null)">
+                        <i class="bi bi-eye"></i> Open
+                    </button>
+                }
+                @if (EnableDelete)
+                {
+                    <button class="btn btn-sm btn-outline-danger" @onclick="DeleteSelected" disabled="@(selectedFile == null)">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="table-responsive" style="max-height: 65vh;">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Modified</th>
+                        <th>Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (_isLoading)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in _files)
+                        {
+                            <tr class="@GetRowClass(item)" @onclick="() => SelectFile(item)">
+                                <td>@Path.GetFileName(item.FullPath)</td>
+                                <td>@item.ModifiedDate?.ToString("g")</td>
+                                <td>@FormatSize(item.Size)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

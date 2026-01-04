@@ -1,6 +1,8 @@
 ﻿@inject MakerPromptJsInterop JS
 @inject GCodeDocumentService GCodeDoc
 @inject IStringLocalizer<Resources> localizer
+@inject IAppLocalStorageProvider AppStorage
+@inject PrinterStorageProvider PrinterStorage
 @implements IAsyncDisposable
 
 <div class="card p-0">
@@ -17,9 +19,15 @@
                 <i class="bi bi-clipboard"></i> @localizer[Resources.BrailleRAP_Copy]
             </button>
 
-            <button class="btn btn-sm btn-outline-secondary" @onclick="CopyGCode">
-                <i class="bi bi-file-arrow-up"></i> Export
-            </button>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-arrow-up"></i> Export
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" @onclick="ExportToApp">Save to App storage</a></li>
+                    <li><a class="dropdown-item" href="#" @onclick="ExportToPrinter">Save to Printer storage</a></li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="card-body">
@@ -29,11 +37,12 @@
         }
         else
         {
-            <pre class="mb-0" style="max-height: 400px; overflow-y: auto;"><code>@(GCodeDoc.CurrentGCode ?? string.Empty)</code></pre>
+            <textarea class="form-control h-100" readonly style="font-family: monospace; white-space: pre; overflow:auto;">
+@GCodeDoc.CurrentGCode
+            </textarea>
         }
     </div>
 </div>
-
 
 @code {
     private ElementReference viewerContainer;
@@ -71,10 +80,25 @@
         }
         catch (Exception)
         {
-            //add notification if fail, implement toast notification? cross platform?
-            //ShowStatus(Localizer[Resources.BrailleRAP_CopiedToClipboard], "alert-success");
         }
-        
+    }
+
+    private async Task ExportToApp()
+    {
+        var content = GCodeDoc.CurrentGCode;
+        if (string.IsNullOrWhiteSpace(content)) return;
+        var name = $"export_{DateTime.Now:yyyyMMdd_HHmmss}.gcode";
+        await using var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
+        await AppStorage.SaveFileAsync(name, ms);
+    }
+
+    private async Task ExportToPrinter()
+    {
+        var content = GCodeDoc.CurrentGCode;
+        if (string.IsNullOrWhiteSpace(content)) return;
+        var name = $"printer_{DateTime.Now:yyyyMMdd_HHmmss}.gcode";
+        await using var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
+        await PrinterStorage.SaveFileAsync(name, ms);
     }
 
     public async ValueTask DisposeAsync()

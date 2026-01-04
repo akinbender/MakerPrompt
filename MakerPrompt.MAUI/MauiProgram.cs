@@ -2,6 +2,8 @@
 using MakerPrompt.Shared.Utils;
 using Microsoft.AspNetCore.Builder;
 using MakerPrompt.MAUI.Services;
+using MakerPrompt.MAUI.Storage;
+using MakerPrompt.Shared.Infrastructure;
 
 namespace MakerPrompt.MAUI
 {
@@ -28,13 +30,13 @@ namespace MakerPrompt.MAUI
                 options.ResourcesPath = "Resources";
             });
 
-            //TODO fix
             var supportedCultures = new AppConfiguration().SupportedCultures;
             var localizationOptions = new RequestLocalizationOptions()
                 .SetDefaultCulture(supportedCultures[0])
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
             builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, SerialService>();
+            builder.Services.AddScoped<IAppLocalStorageProvider, MauiAppLocalStorageProvider>();
             return builder.Build();
         }
     }

@@ -1,8 +1,11 @@
+using MakerPrompt.Shared.Models;
+
 namespace MakerPrompt.Shared.Services
 {
     public class DemoPrinterService : BasePrinterConnectionService, IPrinterCommunicationService
     {
-        private readonly Random _random = new();
+        private readonly List<FileEntry> files = new();
+        private readonly Dictionary<string, byte[]> fileContents = new();
         private double _hotendTarget = 0;
         private double _bedTarget = 0;
         private double _hotendTemp = 25;
@@ -196,9 +199,52 @@ namespace MakerPrompt.Shared.Services
             RaiseTelemetryUpdated();
         }
 
+        public Task SaveFileAsync(string fullPath, Stream content)
+        {
+            using var ms = new MemoryStream();
+            content.CopyTo(ms);
+            var bytes = ms.ToArray();
+            fileContents[fullPath] = bytes;
+            var entry = files.FirstOrDefault(f => f.FullPath == fullPath);
+            if (entry == null)
+            {
+                files.Add(new FileEntry
+                {
+                    FullPath = fullPath,
+                    Size = bytes.Length,
+                    ModifiedDate = DateTime.Now,
+                    IsAvailable = true
+                });
+            }
+            else
+            {
+                entry.Size = bytes.Length;
+                entry.ModifiedDate = DateTime.Now;
+            }
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteFileAsync(string fullPath)
+        {
+            files.RemoveAll(f => f.FullPath == fullPath);
+            fileContents.Remove(fullPath);
+            return Task.CompletedTask;
+        }
+
+        public Task<Stream?> OpenReadAsync(string fullPath)
+        {
+            if (fileContents.TryGetValue(fullPath, out var bytes))
+            {
+                return Task.FromResult<Stream?>(new MemoryStream(bytes));
+            }
+            return Task.FromResult<Stream?>(null);
+        }
+
         public override ValueTask DisposeAsync()
         {
             updateTimer.Stop();
+            files.Clear();
+            fileContents.Clear();
             return ValueTask.CompletedTask;
         }
 

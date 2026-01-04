@@ -35,4 +35,9 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Storage\" />
+    <Compile Include="Storage\*.cs" />
+  </ItemGroup>
+
 </Project>

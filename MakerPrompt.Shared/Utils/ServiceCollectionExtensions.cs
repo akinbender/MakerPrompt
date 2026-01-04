@@ -26,6 +26,10 @@ namespace MakerPrompt.Shared.Utils
             });
             services.AddBlazoredModal();
             services.AddHttpClient();
+
+            // Storage providers
+            services.AddScoped<MakerPrompt.Shared.Infrastructure.PrinterStorageProvider>();
+
             return services;
         }
     }

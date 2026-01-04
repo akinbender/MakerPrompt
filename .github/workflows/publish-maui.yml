@@ -73,7 +73,7 @@ jobs:
     - name: Zip MacCatalyst Release
       uses: vimtor/action-zip@v1.2
       with:
-        files: MakerPrompt.MAUI/bin/Release/net8.0-maccatalyst
+        files: MakerPrompt.MAUI/bin/Release/net10.0-maccatalyst
         dest: maccatalyst-release.zip
 
     - name: Release
