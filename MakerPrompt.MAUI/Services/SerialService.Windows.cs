@@ -23,9 +23,11 @@ namespace MakerPrompt.MAUI.Services
                 DataBits = 8,
                 Parity = Parity.None,
                 StopBits = StopBits.One,
-                Handshake = Handshake.RequestToSend,
-                ReadTimeout = 500,
-                WriteTimeout = 500,
+                Handshake = Handshake.None,   // was RequestToSend
+                DtrEnable = true,             // assert DTR for many CDC devices
+                RtsEnable = true,             // assert RTS manually (optional)
+                ReadTimeout = 2000,
+                WriteTimeout = 5000,
                 NewLine = "\n",
                 Encoding = Encoding.ASCII
             };
@@ -88,14 +90,15 @@ namespace MakerPrompt.MAUI.Services
                 while (IsConnected && !ct.IsCancellationRequested)
                 {
                     var command = await _commandQueue.ReceiveAsync(ct);
-                    await Task.Run(() => _serialPort.WriteLine(command), ct);
-                    await Task.Delay(10, ct); // Flow control delay
+                    if (!_serialPort.IsOpen) break;
+
+                    var payload = Encoding.ASCII.GetBytes(command + _serialPort.NewLine);
+                    await _serialPort.BaseStream.WriteAsync(payload, 0, payload.Length, ct);
+                    await _serialPort.BaseStream.FlushAsync(ct);
+                    await Task.Delay(10, ct);
                 }
             }
-            catch (OperationCanceledException)
-            {
-                // Normal shutdown
-            }
+            catch (OperationCanceledException) { }
         }
 
         private async Task ReceiveLoopAsync(CancellationToken ct)
