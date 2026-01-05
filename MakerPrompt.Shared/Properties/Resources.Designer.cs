@@ -896,6 +896,15 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("Files_Size", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Gcode.
+        /// </summary>
+        public static string GCode_Title {
+            get {
+                return ResourceManager.GetString("GCode_Title", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Calibration.
@@ -1123,6 +1132,15 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inline mode (on / off).
+        /// </summary>
+        public static string GCodeDescription_I_InlineMode {
+            get {
+                return ResourceManager.GetString("GCodeDescription_I_InlineMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set hotend temperature (non-blocking).
         /// </summary>
         public static string GCodeDescription_M104 {
@@ -1137,6 +1155,33 @@ namespace MakerPrompt.Shared.Properties {
         public static string GCodeDescription_M105 {
             get {
                 return ResourceManager.GetString("GCodeDescription_M105", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spindle / laser on (clockwise).
+        /// </summary>
+        public static string GCodeDescription_M3 {
+            get {
+                return ResourceManager.GetString("GCodeDescription_M3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spindle / laser on (counterclockwise).
+        /// </summary>
+        public static string GCodeDescription_M4 {
+            get {
+                return ResourceManager.GetString("GCodeDescription_M4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spindle / laser off.
+        /// </summary>
+        public static string GCodeDescription_M5 {
+            get {
+                return ResourceManager.GetString("GCodeDescription_M5", resourceCulture);
             }
         }
         
@@ -1465,11 +1510,29 @@ namespace MakerPrompt.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Spindle / laser power (PWM 0-255).
+        /// </summary>
+        public static string GCodeDescription_O_SpindlePower {
+            get {
+                return ResourceManager.GetString("GCodeDescription_O_SpindlePower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Target temperature.
         /// </summary>
         public static string GCodeDescription_S_TargetTemp {
             get {
                 return ResourceManager.GetString("GCodeDescription_S_TargetTemp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spindle / laser speed.
+        /// </summary>
+        public static string GCodeDescription_S_SpindleSpeed {
+            get {
+                return ResourceManager.GetString("GCodeDescription_S_SpindleSpeed", resourceCulture);
             }
         }
         

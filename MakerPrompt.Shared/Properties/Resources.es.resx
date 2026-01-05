@@ -303,6 +303,33 @@
   </data>
   
   
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve">
+    
+    
+    <value>Modo en línea (encendido / apagado)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve">
+    
+    
+    <value>Potencia del husillo / láser (PWM 0-255)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve">
+    
+    
+    <value>Velocidad del husillo / láser</value>
+    
+  
+  </data>
+  
+  
   <data name="GCodeDescription_M106" xml:space="preserve">
     
     
@@ -334,6 +361,33 @@
     
     
     <value>Parada de emergencia</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M3" xml:space="preserve">
+    
+    
+    <value>Husillo / láser encendido (sentido horario)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M4" xml:space="preserve">
+    
+    
+    <value>Husillo / láser encendido (sentido antihorario)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M5" xml:space="preserve">
+    
+    
+    <value>Husillo / láser apagado</value>
     
   
   </data>
@@ -1580,7 +1634,7 @@
     <value>Generar código G</value>
   </data>
   <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
-    <value>Código G generado</value>
+    <value>Código G</value>
   </data>
   <data name="BrailleRAP_Language" xml:space="preserve">
     <value>Idioma de traducción</value>
@@ -1593,6 +1647,9 @@
   </data>
   <data name="BrailleRAP_MachineSettings" xml:space="preserve">
     <value>Configuración de máquina</value>
+  </data>
+  <data name="GCode_Title" xml:space="preserve">
+    <value>Código G</value>
   </data>
   <data name="BrailleRAP_NoPreview" xml:space="preserve">
     <value>Ingrese texto para ver la vista previa en Braille</value>

@@ -303,6 +303,33 @@
   </data>
   
   
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve">
+    
+    
+    <value>Satır içi mod (açık / kapalı)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve">
+    
+    
+    <value>Mil / lazer gücü (PWM 0-255)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve">
+    
+    
+    <value>Mil / lazer hızı</value>
+    
+  
+  </data>
+  
+  
   <data name="GCodeDescription_M106" xml:space="preserve">
     
     
@@ -334,6 +361,33 @@
     
     
     <value>Acil durdurma</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M3" xml:space="preserve">
+    
+    
+    <value>Mil / lazer açık (saat yönünde)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M4" xml:space="preserve">
+    
+    
+    <value>Mil / lazer açık (saat yönünün tersine)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M5" xml:space="preserve">
+    
+    
+    <value>Mil / lazer kapalı</value>
     
   
   </data>
@@ -1580,7 +1634,7 @@
     <value>G-kodu oluştur</value>
   </data>
   <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
-    <value>Oluşturulan G-kodu</value>
+    <value>G-kodu</value>
   </data>
   <data name="BrailleRAP_Language" xml:space="preserve">
     <value>Çeviri Dili</value>
@@ -1596,6 +1650,9 @@
   </data>
   <data name="BrailleRAP_NoPreview" xml:space="preserve">
     <value>Braille önizlemesini görmek için metin girin</value>
+  </data>
+  <data name="GCode_Title" xml:space="preserve">
+    <value>G-kodu</value>
   </data>
   <data name="BrailleRAP_NotConnected" xml:space="preserve">
     <value>Lütfen önce bir yazıcıya bağlanın</value>

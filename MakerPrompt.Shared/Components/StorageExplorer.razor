@@ -96,36 +96,40 @@
             <div>
                 <strong>@Provider.DisplayName</strong>
             </div>
-            <div class="btn-group">
+            <div class="d-flex align-items-center gap-2">
                 @if (EnableUpload)
                 {
                     var uploadId = $"fileUpload-{Title?.Replace(" ", string.Empty)}";
-                    <label class="btn btn-sm btn-outline-primary" for="@uploadId">
-                        <i class="bi bi-upload"></i>
-                    </label>
-                    <InputFile id="@uploadId" OnChange="OnFileSelected" />
+                    <div class="input-group input-group-sm" style="max-width: 260px;">
+                        <InputFile id="@uploadId" class="form-control" OnChange="OnFileSelected" />
+                        <label class="input-group-text" for="@uploadId">
+                            <i class="bi bi-upload me-1"></i>Upload
+                        </label>
+                    </div>
                 }
-                <button class="btn btn-sm btn-secondary" @onclick="RefreshFiles">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </button>
-                @if (EnableCopy)
-                {
-                    <button class="btn btn-sm btn-outline-success" @onclick="CopySelected" disabled="@(selectedFile == null)">
-                        <i class="bi bi-arrow-left-right"></i>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-secondary" @onclick="RefreshFiles">
+                        <i class="bi bi-arrow-clockwise"></i>
                     </button>
-                }
-                @if (EnableOpen)
-                {
-                    <button class="btn btn-sm btn-outline-info" @onclick="OpenSelected" disabled="@(selectedFile == null)">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                }
-                @if (EnableDelete)
-                {
-                    <button class="btn btn-sm btn-outline-danger" @onclick="DeleteSelected" disabled="@(selectedFile == null)">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                }
+                    @if (EnableCopy)
+                    {
+                        <button class="btn btn-sm btn-outline-success" @onclick="CopySelected" disabled="@(selectedFile == null)">
+                            <i class="bi bi-arrow-left-right"></i>
+                        </button>
+                    }
+                    @if (EnableOpen)
+                    {
+                        <button class="btn btn-sm btn-outline-info" @onclick="OpenSelected" disabled="@(selectedFile == null)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    }
+                    @if (EnableDelete)
+                    {
+                        <button class="btn btn-sm btn-outline-danger" @onclick="DeleteSelected" disabled="@(selectedFile == null)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    }
+                </div>
             </div>
         </div>
 

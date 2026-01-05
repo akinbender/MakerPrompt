@@ -303,6 +303,33 @@
   </data>
   
   
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve">
+    
+    
+    <value>Tryb inline (włączony / wyłączony)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve">
+    
+    
+    <value>Moc wrzeciona / lasera (PWM 0-255)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve">
+    
+    
+    <value>Prędkość wrzeciona / lasera</value>
+    
+  
+  </data>
+  
+  
   <data name="GCodeDescription_M106" xml:space="preserve">
     
     
@@ -334,6 +361,33 @@
     
     
     <value>Zatrzymanie awaryjne</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M3" xml:space="preserve">
+    
+    
+    <value>Wrzeciono / laser włączony (zgodnie z ruchem wskazówek zegara)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M4" xml:space="preserve">
+    
+    
+    <value>Wrzeciono / laser włączony (przeciwnie do ruchu wskazówek zegara)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M5" xml:space="preserve">
+    
+    
+    <value>Wrzeciono / laser wyłączony</value>
     
   
   </data>
@@ -1580,7 +1634,7 @@
     <value>Generuj G-code</value>
   </data>
   <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
-    <value>Wygenerowany G-code</value>
+    <value>G-code</value>
   </data>
   <data name="BrailleRAP_Language" xml:space="preserve">
     <value>Język tłumaczenia</value>
@@ -1596,6 +1650,9 @@
   </data>
   <data name="BrailleRAP_NoPreview" xml:space="preserve">
     <value>Wprowadź tekst, aby zobaczyć podgląd Braille'a</value>
+  </data>
+  <data name="GCode_Title" xml:space="preserve">
+    <value>G-code</value>
   </data>
   <data name="BrailleRAP_NotConnected" xml:space="preserve">
     <value>Najpierw połącz się z drukarką</value>

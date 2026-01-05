@@ -1,6 +1,7 @@
-﻿@* @inject IStringLocalizer<Resources> localizer
+﻿@inject IStringLocalizer<Resources> localizer
 @inject ModalService ModalService
-TODO reimplement using BlazorBootstrap!!
+
+
 <div>
     @if (selectedCommand != null)
     {
@@ -28,12 +29,10 @@ TODO reimplement using BlazorBootstrap!!
         }
 
         <div class="mb-3">
-             <h6>@localizer[Resources.CommandDetails_Example]</h6>
+            <h6>@localizer[Resources.Calculators_GCodeExample]</h6>
             <code>@selectedCommand.GetCommandExample()</code>
         </div>
     }
-
-    <button class="btn btn-secondary" @onclick="Close">Close</button>
 </div>
 
 @code {
@@ -47,6 +46,5 @@ TODO reimplement using BlazorBootstrap!!
         selectedCommand = GCodeCommands.AllCommands().First(g => g.Command.Equals(Command, StringComparison.CurrentCultureIgnoreCase));
     }
 
-    private async Task Close() => await BlazoredModal.CloseAsync();
+    //private async Task Close() => await ModalService.HideAsync();
 }
- *@

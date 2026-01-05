@@ -218,23 +218,11 @@
         </div>
     </div>
 
-    <!-- Status Messages -->
-    @if (!string.IsNullOrEmpty(statusMessage))
-    {
-        <div class="row">
-            <div class="col-12 mb-3">
-                <div class="alert @statusAlertClass alert-dismissible fade show" role="alert">
-                    @statusMessage
-                    <button type="button" class="btn-close" @onclick="ClearStatus" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
 @code {
     [Inject] private GCodeDocumentService GCodeDoc { get; set; } = null!;
-    [Inject] protected ToastService ToastService { get; set; }
+    [Inject] private ToastService ToastService { get; set; } = null!;
     private BrailleRAPService brailleService = new();
     private PageConfig pageConfig = new();
     private MachineConfig machineConfig = new();
@@ -245,9 +233,6 @@
     private int currentPage = 0;
     private (int PageCount, int TotalLines, int TotalCharacters) statistics = (0, 0, 0);
     private int selectedLanguage = 0;
-    
-    private string statusMessage = string.Empty;
-    private string statusAlertClass = "alert-info";
 
     protected override void OnInitialized()
     {
@@ -287,7 +272,7 @@
         }
         catch (Exception ex)
         {
-            ShowStatus($"Error updating preview: {ex.Message}", "alert-danger");
+            ShowStatus($"Error updating preview: {ex.Message}", ToastType.Danger);
         }
     }
 
@@ -390,11 +375,11 @@
         {
             generatedGCode = brailleService.GenerateGCode(inputText, currentPage);
             GCodeDoc.SetGCode(generatedGCode);
-            ShowStatus(Localizer[Resources.BrailleRAP_GCodeGenerated], "alert-success");
+            ShowStatus(Localizer[Resources.BrailleRAP_GCodeGenerated], ToastType.Success);
         }
         catch (Exception ex)
         {
-            ShowStatus($"Error generating G-code: {ex.Message}", "alert-danger");
+            ShowStatus($"Error generating G-code: {ex.Message}", ToastType.Danger);
         }
     }
 
@@ -402,13 +387,13 @@
     {
         if (!IsConnected)
         {
-            ShowStatus(Localizer[Resources.BrailleRAP_NotConnected], "alert-warning");
+            ShowStatus(Localizer[Resources.BrailleRAP_NotConnected], ToastType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(generatedGCode))
         {
-            ShowStatus(Localizer[Resources.BrailleRAP_GenerateFirst], "alert-warning");
+            ShowStatus(Localizer[Resources.BrailleRAP_GenerateFirst], ToastType.Warning);
             return;
         }
 
@@ -417,24 +402,17 @@
             if (PrinterServiceFactory.Current != null)
             {
                 await PrinterServiceFactory.Current.WriteDataAsync(generatedGCode);
-                ShowStatus(Localizer[Resources.BrailleRAP_SentSuccessfully], "alert-success");
+                ShowStatus(Localizer[Resources.BrailleRAP_SentSuccessfully], ToastType.Success);
             }
         }
         catch (Exception ex)
         {
-            ShowStatus($"Error sending to printer: {ex.Message}", "alert-danger");
+            ShowStatus($"Error sending to printer: {ex.Message}", ToastType.Danger);
         }
     }
 
-    private void ShowStatus(string message, string alertClass)
+    private void ShowStatus(string message, ToastType toastType)
     {
-        statusMessage = message;
-        statusAlertClass = alertClass;
-        ToastService.Notify(new(ToastType.Success, message));
-    }
-
-    private void ClearStatus()
-    {
-        statusMessage = string.Empty;
+        ToastService.Notify(new(toastType, message));
     }
 }

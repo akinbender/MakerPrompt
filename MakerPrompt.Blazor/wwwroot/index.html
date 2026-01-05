@@ -11,6 +11,40 @@
     <meta name="robots" content="index, follow">
     <meta name="author" content="Akın Bender" />
     <base href="/" />
+    <script>
+        (function () {
+            try {
+                var configJson = window.localStorage.getItem('AppConfig');
+                var themeKey = 'auto';
+                if (configJson) {
+                    var config = JSON.parse(configJson);
+                    if (config && config.Theme !== undefined && config.Theme !== null) {
+                        var raw = config.Theme;
+                        if (typeof raw === 'string') {
+                            themeKey = raw.toLowerCase();
+                        } else if (typeof raw === 'number') {
+                            switch (raw) {
+                                case 1: themeKey = 'light'; break;   // Theme.Light
+                                case 2: themeKey = 'dark'; break;    // Theme.Dark
+                                case 3: themeKey = 'mpdark'; break;  // Theme.MpDark
+                                default: themeKey = 'auto'; break;   // Theme.Auto or unknown
+                            }
+                        }
+                    }
+                }
+
+                var resolvedTheme = themeKey;
+                if (!resolvedTheme || resolvedTheme === 'auto') {
+                    resolvedTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                        ? 'dark'
+                        : 'light';
+                }
+
+                document.documentElement.setAttribute('data-bs-theme', resolvedTheme);
+                document.documentElement.style.colorScheme = resolvedTheme;
+            } catch { }
+        })();
+    </script>
     <link rel="stylesheet" href="MakerPrompt.Blazor.styles.css" />
     <link rel="stylesheet" href="_content/MakerPrompt.Shared/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="_content/MakerPrompt.Shared/lib/bootstrap-icons/font/bootstrap-icons.min.css" />

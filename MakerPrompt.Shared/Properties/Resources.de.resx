@@ -303,6 +303,33 @@
   </data>
   
   
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve">
+    
+    
+    <value>Inline-Modus (an / aus)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve">
+    
+    
+    <value>Spindel- / Laserleistung (PWM 0-255)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve">
+    
+    
+    <value>Spindel- / Laser-Drehzahl</value>
+    
+  
+  </data>
+  
+  
   <data name="GCodeDescription_M106" xml:space="preserve">
     
     
@@ -334,6 +361,33 @@
     
     
     <value>Not-Aus</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M3" xml:space="preserve">
+    
+    
+    <value>Spindel / Laser ein (rechtslauf)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M4" xml:space="preserve">
+    
+    
+    <value>Spindel / Laser ein (linkslauf)</value>
+    
+  
+  </data>
+  
+  
+  <data name="GCodeDescription_M5" xml:space="preserve">
+    
+    
+    <value>Spindel / Laser aus</value>
     
   
   </data>
@@ -1579,7 +1633,7 @@
     <value>G-Code generieren</value>
   </data>
   <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
-    <value>Generierter G-Code</value>
+     <value>G-Code</value>
   </data>
   <data name="BrailleRAP_Language" xml:space="preserve">
     <value>Übersetzungssprache</value>
@@ -1595,6 +1649,9 @@
   </data>
   <data name="BrailleRAP_NoPreview" xml:space="preserve">
     <value>Text eingeben, um Braille-Vorschau anzuzeigen</value>
+  </data>
+  <data name="GCode_Title" xml:space="preserve">
+    <value>G-Code</value>
   </data>
   <data name="BrailleRAP_NotConnected" xml:space="preserve">
     <value>Bitte zuerst mit einem Drucker verbinden</value>
