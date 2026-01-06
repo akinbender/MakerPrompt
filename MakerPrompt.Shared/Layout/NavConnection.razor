@@ -7,6 +7,7 @@
 @inject PrinterCommunicationServiceFactory ServiceFactory;
 @inject IStringLocalizer<Resources> localizer
 @inject NavigationManager Navigation
+@inject ToastService ToastService
 @implements IDisposable
 
 <nav class="navbar navbar-expand px-2">
@@ -15,7 +16,8 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false"
+                           @onclick="OnConnectionDropdownOpenedAsync">
                             @NavButtonText
                         </a>
                         <div class="dropdown-menu dropdown-menu-end p-3" style="width:30vh;">
@@ -157,8 +159,26 @@
         await base.OnInitializedAsync();
     }
 
+    private async Task OnConnectionDropdownOpenedAsync()
+    {
+        if (!IsSerialAvailable) return;
+        // Only refresh serial ports when serial tab is active and not currently connected.
+        if (ActiveTab == PrinterConnectionType.Serial && IsSerialAvailable && !IsConnected)
+        {
+            await RefreshPortsAsync();
+
+            // Auto-select first available port if none selected yet.
+            if (string.IsNullOrEmpty(SerialConnectionSettings.PortName) && AvailablePorts.Count > 0)
+            {
+                SerialConnectionSettings.PortName = AvailablePorts[0];
+                StateHasChanged();
+            }
+        }
+    }
+
     private async Task RefreshPortsAsync()
     {
+        if (!IsSerialAvailable) return;
         IsBusy = true;
         try
         {
@@ -182,6 +202,11 @@
             }
             else
             {
+                if (!IsSerialAvailable && ActiveTab == PrinterConnectionType.Serial)
+                {
+                    ToastService.Notify(new(ToastType.Danger, localizer[Resources.NavConnection_BrowserNotSupported]));
+                    return;
+                }
 
                 var connectionSettings = ActiveTab switch
                 {

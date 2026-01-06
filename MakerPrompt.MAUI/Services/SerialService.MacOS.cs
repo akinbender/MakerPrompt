@@ -166,24 +166,21 @@ namespace MakerPrompt.MAUI.Services
 
         public Task StartPrint(GCodeDoc gcodeDoc)
         {
-            if (!IsConnected || string.IsNullOrWhiteSpace(gcodeDoc.Content))
+            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
             {
                 return Task.CompletedTask;
             }
 
             return Task.Run(async () =>
             {
-                using var reader = new StringReader(gcodeDoc.Content);
-                string? line;
-                while (IsConnected && (line = await reader.ReadLineAsync()) != null)
+                await foreach (var command in gcodeDoc.EnumerateCommandsAsync(_cts?.Token ?? CancellationToken.None))
                 {
-                    line = line.Trim();
-                    if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
+                    if (!IsConnected)
                     {
-                        continue;
+                        break;
                     }
 
-                    await WriteDataAsync(line);
+                    await WriteDataAsync(command);
                 }
             });
         }

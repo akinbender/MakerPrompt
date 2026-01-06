@@ -1,6 +1,6 @@
 // Individual exported functions following Microsoft's pattern
 export async function checkSupported() {
-    return navigator.serial != undefined
+    return navigator.serial != undefined;
 }
 
 export async function requestPort() {
@@ -11,6 +11,12 @@ export async function requestPort() {
             manufacturer: getManufacturerInfo(port)
         };
     } catch (error) {
+        // User can cancel the chooser dialog; treat that as a benign case.
+        if (error && error.name === 'NotFoundError') {
+            console.warn('Serial port selection canceled by user.');
+            return null;
+        }
+
         console.error('Port request failed:', error);
         throw error;
     }
@@ -28,19 +34,34 @@ export async function openPort(options, dotNetRef) {
     let port;
     try {
         port = await navigator.serial.requestPort();
-        await port.open({
-            baudRate: options.baudRate,
-            dataBits: options.dataBits,
-            stopBits: options.stopBits,
-            parity: options.parity,
-            flowControl: options.flowControl
-        });
+
+        // If the port is already open, avoid reopening and just start reading.
+        if (!port.readable && !port.writable) {
+            await port.open({
+                baudRate: options.baudRate,
+                dataBits: options.dataBits,
+                stopBits: options.stopBits,
+                parity: options.parity,
+                flowControl: options.flowControl
+            });
+        }
 
         startReading(port, dotNetRef);
         return port;
     } catch (error) {
+        // User canceled the dialog - do not treat this as a fatal error.
+        if (error && error.name === 'NotFoundError') {
+            console.warn('Serial port open canceled by user.');
+            return null;
+        }
+
         console.error('Error opening port:', error);
-        if (port) await safeClosePort(port);
+
+        // Only attempt a close if the port exists and is actually open.
+        if (port && (port.readable || port.writable)) {
+            await safeClosePort(port);
+        }
+
         throw error;
     }
 }
@@ -87,15 +108,26 @@ async function startReading(port, dotNetRef) {
             }
         }
     } catch (error) {
+        // Framing errors and similar serial exceptions are expected on some devices.
         console.error('Read error:', error);
-        dotNetRef.invokeMethodAsync('OnConnectionChanged', false);
+        try {
+            await dotNetRef.invokeMethodAsync('OnConnectionChanged', false);
+        } catch {
+            // Swallow interop errors so we do not crash the app on shutdown.
+        }
     }
 }
 
 async function safeClosePort(port) {
     try {
+        // If there is an active reader, wait for it to finish by canceling it via closing.
+        if (!port.readable && !port.writable) {
+            return; // already closed
+        }
+
         await port.close();
     } catch (error) {
+        // Some browsers throw if the stream is locked when closing; just log and move on.
         console.error('Error closing port:', error);
     }
 }

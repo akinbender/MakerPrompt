@@ -1,10 +1,10 @@
 using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Services;
 using UsbSerialForAndroid.Net;
 using UsbSerialForAndroid.Net.Drivers;
 using UsbSerialForAndroid.Net.Helper;
 using System.Text;
-using MakerPrompt.Shared.Services;
 
 namespace MakerPrompt.MAUI.Services
 {
@@ -71,25 +71,26 @@ namespace MakerPrompt.MAUI.Services
             _usbDriver.Write(buffer);
         }
 
-        public async Task StartPrint(GCodeDoc gcodeDoc)
+        public Task StartPrint(GCodeDoc gcodeDoc)
         {
-            if (!IsConnected || string.IsNullOrWhiteSpace(gcodeDoc.Content))
+            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            using var reader = new StringReader(gcodeDoc.Content);
-            string? line;
-            while (IsConnected && (line = await reader.ReadLineAsync()) != null)
+            // Android path does not currently expose a CancellationToken; use a simple IsConnected check.
+            return Task.Run(async () =>
             {
-                line = line.Trim();
-                if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
+                await foreach (var command in gcodeDoc.EnumerateCommandsAsync())
                 {
-                    continue;
-                }
+                    if (!IsConnected)
+                    {
+                        break;
+                    }
 
-                await WriteDataAsync(line);
-            }
+                    await WriteDataAsync(command);
+                }
+            });
         }
 
         public override async ValueTask DisposeAsync()
