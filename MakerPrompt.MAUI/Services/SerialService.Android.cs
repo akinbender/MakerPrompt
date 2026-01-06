@@ -4,6 +4,7 @@ using UsbSerialForAndroid.Net;
 using UsbSerialForAndroid.Net.Drivers;
 using UsbSerialForAndroid.Net.Helper;
 using System.Text;
+using MakerPrompt.Shared.Services;
 
 namespace MakerPrompt.MAUI.Services
 {
@@ -68,6 +69,27 @@ namespace MakerPrompt.MAUI.Services
 
             var buffer = Encoding.ASCII.GetBytes(data);
             _usbDriver.Write(buffer);
+        }
+
+        public async Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            if (!IsConnected || string.IsNullOrWhiteSpace(gcodeDoc.Content))
+            {
+                return;
+            }
+
+            using var reader = new StringReader(gcodeDoc.Content);
+            string? line;
+            while (IsConnected && (line = await reader.ReadLineAsync()) != null)
+            {
+                line = line.Trim();
+                if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
+                {
+                    continue;
+                }
+
+                await WriteDataAsync(line);
+            }
         }
 
         public override async ValueTask DisposeAsync()

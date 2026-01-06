@@ -7,6 +7,7 @@ using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
 using MakerPrompt.Shared.Utils;
 using static MakerPrompt.Shared.Utils.Enums;
+using System.IO;
 
 namespace MakerPrompt.Shared.Services
 {
@@ -89,7 +90,6 @@ namespace MakerPrompt.Shared.Services
             LastTelemetry.LastResponse = content;
             RaiseTelemetryUpdated();
         }
-
         public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
             if (!IsConnected) return LastTelemetry;
@@ -164,7 +164,6 @@ namespace MakerPrompt.Shared.Services
                     IsAvailable = f.Permissions.Contains("rw"),
                 }).ToList();
         }
-
         public async Task<bool> AuthenticateAsync(string username, string password)
         {
             try
@@ -319,6 +318,26 @@ namespace MakerPrompt.Shared.Services
         {
             var filename = WebUtility.UrlEncode(file.FullPath);
             await Client.PostAsync($"/printer/print/start?filename={filename}", null, _cts.Token);
+        }
+
+        public async Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            // Stream G-code lines through the existing script endpoint, preserving queue behavior.
+            if (!IsConnected) return;
+            if (string.IsNullOrWhiteSpace(gcodeDoc.Content)) return;
+
+            using var reader = new StringReader(gcodeDoc.Content);
+            string? line;
+            while (IsConnected && (line = await reader.ReadLineAsync()) != null)
+            {
+                line = line.Trim();
+                if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
+                {
+                    continue; // skip comments/blank lines
+                }
+
+                await WriteDataAsync(line);
+            }
         }
 
         public Task SaveEEPROM() => SendGcodeAsync("SAVE_CONFIG");

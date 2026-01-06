@@ -203,6 +203,9 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
     public Task StartPrint(FileEntry file) =>
         Task.FromException(new NotSupportedException("Starting prints requires uploading with Print-After-Upload per PrusaLink spec."));
 
+    public Task StartPrint(GCodeDoc gcodeDoc) =>
+        Task.FromException(new NotSupportedException("Direct G-code printing is not supported by the PrusaLink API."));
+
     public Task SaveEEPROM() =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose EEPROM save commands."));
 

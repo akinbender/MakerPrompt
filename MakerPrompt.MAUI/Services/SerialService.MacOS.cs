@@ -1,5 +1,6 @@
 ﻿using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Services;
 using MakerPrompt.Shared.Utils;
 using System.Text;
 using System.Threading.Tasks.Dataflow;
@@ -162,5 +163,29 @@ namespace MakerPrompt.MAUI.Services
         public Task<bool> CheckSupportedAsync() => Task.FromResult(true);
 
         public Task RequestPortAsync() => Task.CompletedTask;
+
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            if (!IsConnected || string.IsNullOrWhiteSpace(gcodeDoc.Content))
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(async () =>
+            {
+                using var reader = new StringReader(gcodeDoc.Content);
+                string? line;
+                while (IsConnected && (line = await reader.ReadLineAsync()) != null)
+                {
+                    line = line.Trim();
+                    if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
+                    {
+                        continue;
+                    }
+
+                    await WriteDataAsync(line);
+                }
+            });
+        }
     }
 }

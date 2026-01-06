@@ -26,6 +26,7 @@
         Task RunPidTuning(int cycles, int targetTemp, int extruderIndex);
         Task RunThermalModelCalibration(int cycles, int targetTemp);
         Task StartPrint(FileEntry file);
+        Task StartPrint(GCodeDoc document);
         Task SaveEEPROM();
     }
 }

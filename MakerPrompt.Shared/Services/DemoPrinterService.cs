@@ -199,6 +199,16 @@ namespace MakerPrompt.Shared.Services
             RaiseTelemetryUpdated();
         }
 
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            // For the demo printer, just log that we would print the provided G-code.
+            LastTelemetry.LastResponse = string.IsNullOrWhiteSpace(gcodeDoc.Content)
+                ? "No G-code loaded to print."
+                : "Simulated print from in-memory G-code document started.";
+            RaiseTelemetryUpdated();
+            return Task.CompletedTask;
+        }
+
         public Task SaveFileAsync(string fullPath, Stream content)
         {
             using var ms = new MemoryStream();

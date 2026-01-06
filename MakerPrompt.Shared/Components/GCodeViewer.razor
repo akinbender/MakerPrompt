@@ -1,8 +1,8 @@
-﻿@inject MakerPromptJsInterop JS
-@inject GCodeDocumentService GCodeDoc
+﻿@inject GCodeDocumentService GCodeDoc
 @inject IStringLocalizer<Resources> localizer
 @inject IAppLocalStorageProvider AppStorage
 @inject PrinterStorageProvider PrinterStorage
+@inherits ConnectionComponentBase
 @implements IAsyncDisposable
 
 <div class="card p-0 h-100 d-flex flex-column">
@@ -34,6 +34,10 @@
                     <li><a class="dropdown-item" href="#" @onclick="ExportToPrinter">Save to Printer storage</a></li>
                 </ul>
             </div>
+
+            <button class="btn btn-sm btn-primary" @onclick="PrintCurrentGCode" disabled="@(!CanPrint)">
+                <i class="bi bi-printer"></i> @localizer[Resources.CalibrationPage_Start]
+            </button>
         </div>
     </div>
     <div class="card-body d-flex flex-column overflow-hidden">
@@ -54,8 +58,11 @@
     private ElementReference viewerContainer;
     private bool showVisual = true;
 
+    private bool CanPrint => IsConnected && !string.IsNullOrWhiteSpace(GCodeDoc.CurrentGCode) && PrinterServiceFactory.Current != null;
+
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         GCodeDoc.Changed += OnDocChanged;
     }
 
@@ -105,6 +112,22 @@
         var name = $"printer_{DateTime.Now:yyyyMMdd_HHmmss}.gcode";
         await using var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
         await PrinterStorage.SaveFileAsync(name, ms);
+    }
+
+    private async Task PrintCurrentGCode()
+    {
+        if (!CanPrint) return;
+        var service = PrinterServiceFactory.Current;
+        if (service == null) return;
+
+        try
+        {
+            await service.StartPrint(GCodeDoc.Document);
+        }
+        catch
+        {
+            // Swallow UI print errors; telemetry and other UI will indicate issues.
+        }
     }
 
     public async ValueTask DisposeAsync()

@@ -1,5 +1,6 @@
 ﻿using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Services;
 using Microsoft.JSInterop;
 
 namespace MakerPrompt.Blazor.Services
@@ -75,6 +76,30 @@ namespace MakerPrompt.Blazor.Services
             if (_portReference == null) throw new InvalidOperationException("Port not open");
             var module = await _moduleTask.Value;
             await module.InvokeVoidAsync("writeData", _portReference, data);
+        }
+
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            if (!IsConnected || string.IsNullOrWhiteSpace(gcodeDoc.Content))
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(async () =>
+            {
+                using var reader = new StringReader(gcodeDoc.Content);
+                string? line;
+                while (IsConnected && (line = await reader.ReadLineAsync()) != null)
+                {
+                    line = line.Trim();
+                    if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
+                    {
+                        continue;
+                    }
+
+                    await WriteDataAsync(line);
+                }
+            });
         }
 
         [JSInvokable]
