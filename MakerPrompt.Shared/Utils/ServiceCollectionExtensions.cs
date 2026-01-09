@@ -17,7 +17,7 @@ namespace MakerPrompt.Shared.Utils
             services.AddSingleton<PrinterCommunicationServiceFactory>();
             services.AddScoped<PrinterStorageProvider>();
             services.AddSingleton<GCodeDocumentService>();
-            services.AddScoped<MakerPromptJsInterop>();
+            services.AddSingleton<MakerPromptJsInterop>();
             services.AddScoped<LocalizedTitleService>();
             services.AddScoped<ThemeService>();
             services.AddLocalization(options =>

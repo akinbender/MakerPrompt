@@ -5,12 +5,14 @@ export function showPrompt(message) {
   return prompt(message, 'Type anything here');
 }
 
-let renderer = null;
+// Track a viewer instance per container to avoid leaking a global renderer
+const viewers = new WeakMap();
 
 export function initializeViewer(container, gcodeContent) {
-    // Destroy existing viewer if any
-    if (renderer) {
-        renderer.destroy();
+    const existing = viewers.get(container);
+    if (existing) {
+        existing.destroy();
+        viewers.delete(container);
     }
 
     const TRANSPARENT_COLOR = new gcodeViewer.Color();
@@ -53,7 +55,7 @@ export function initializeViewer(container, gcodeContent) {
         }
     });
 
-    renderer = new gcodeViewer.GCodeRenderer(
+    const renderer = new gcodeViewer.GCodeRenderer(
         gcodeContent,
         800,
         600,
@@ -65,7 +67,23 @@ export function initializeViewer(container, gcodeContent) {
     );
 
     renderer.render();
+    viewers.set(container, renderer);
     return renderer;
+}
+
+export function disposeViewer(container) {
+    const renderer = viewers.get(container);
+    if (!renderer) {
+        return;
+    }
+
+    try {
+        renderer.destroy();
+    } catch {
+        // ignore viewer dispose errors
+    }
+
+    viewers.delete(container);
 }
 
 // Scroll a container to the bottom; used by the command prompt history.

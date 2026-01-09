@@ -31,7 +31,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var command in GetFilteredCommands())
+                            @foreach (var command in FilteredCommands)
                             {
                                 <tr>
                                     <td class="font-monospace">@command.Command</td>
@@ -126,18 +126,28 @@
     private Dictionary<string, string>? moonrakerHelp;
     private string? moonrakerHelpError;
 
+    // Cache all G-code commands once for this component to avoid repeated reflection and allocations.
+    private static readonly List<GCodeCommand> allCommands = GCodeCommands.AllCommands();
+
+    private IEnumerable<GCodeCommand> FilteredCommands =>
+        string.IsNullOrWhiteSpace(searchTerm)
+            ? allCommands
+            : allCommands.Where(c =>
+                c.Command.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                c.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         await TryLoadMoonrakerHelpAsync();
     }
 
-    protected override async void HandleConnectionChanged(object? sender, bool connected)
+    protected override void HandleConnectionChanged(object? sender, bool connected)
     {
         base.HandleConnectionChanged(sender, connected);
         if (connected && PrinterServiceFactory.Current?.ConnectionType == MakerPrompt.Shared.Utils.Enums.PrinterConnectionType.Moonraker)
         {
-            await TryLoadMoonrakerHelpAsync();
+            _ = TryLoadMoonrakerHelpAsync();
         }
     }
 
@@ -148,6 +158,7 @@
 
         if (PrinterServiceFactory.Current is not MoonrakerApiService moonrakerService)
         {
+            await InvokeAsync(StateHasChanged);
             return;
         }
 
@@ -161,14 +172,6 @@
         }
 
         await InvokeAsync(StateHasChanged);
-    }
-
-    private List<GCodeCommand> GetFilteredCommands()
-    {
-        return GCodeCommands.AllCommands()
-            .Where(c => c.Command.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                        c.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-            .ToList();
     }
 
     private async Task ShowCommandDetailsAsync(GCodeCommand command)

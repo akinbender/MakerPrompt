@@ -8,25 +8,26 @@ Open source "cross-platform" 3D printer management software powered by Blazor Hy
 In our 3D-lab @[x-hain](https://x-hain.de) hackspace we have several printers from different manufacturers, and I wanted to create a unified interface for maintenance while demonstrating the capabilities of Blazor Hybrid. I've been using [Pronterface](https://github.com/kliment/Printrun) for almost a decade and have been meaning to write sth new, just found the time after recently losing my job.
 
 ## Current Status = Fast Fertig
-I dont have access to any machines atm, so cannot do much bugfixing..
-- **Serial**: Uses Web Serial (Chromium browsers only), can connect and recieve data but there is a buffer issue. 
-**MAUI Windows App**: Uses good-old System.IO.Ports. Partial implementation (missing fan, print speed & flow telemetry update)
+- **WEB**: A WASM project that uses Web Serial (Chromium browsers only)
+- **MAUI Windows**: Uses good-old System.IO.Ports
+- **MAUI MacOS**: Uses my nuget [UsbSerialForMacOS](https://github.com/akinbender/UsbSerialForMacOS)
+- **MAUI Android**: apk builds but not yet, uses [UsbSerialForAndroid.Net](https://github.com/LUJIAN2020/UsbSerialForAndroid.Net)..
 - **Prusalink**: Implemented but untested, so atm disabled
 - **Moonraker**: Partially tested (no auth) on K1 Max
-- **Android Support**: apk builds but not yet..
 
 ## TODOs
 - [ ] TEST & BUGFIX
 - [x] Add logo
 - [x] Versioning
 - [ ] Enable PrusaLink
-- [ ] Fix Web serial telemety update & memory leak
+- [x] Fix Web serial telemety update
 - [x] Fix CommandPrompt usage
 - [x] Fix ControlPanel coordinate axis movement
 - [x] Implement File list component
 - [x] Add Android&Macos support
 - [x] Moonraker GCode list
 - [x] Expand language support? (es, pl, fr)
+- [ ] Mention used open source projects
 
 The BrailleRAP integration is based on logic from [AccessBrailleRAP](https://github.com/braillerap/AccessBrailleRAP) and adapted for the MakerPrompt architecture.
 
