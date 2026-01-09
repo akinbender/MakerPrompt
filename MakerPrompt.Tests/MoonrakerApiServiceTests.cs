@@ -62,6 +62,24 @@ public class MoonrakerApiServiceTests
         Assert.Contains(handler.RequestPaths, p => p.Contains("/printer/print/start", StringComparison.Ordinal));
     }
 
+        [Fact]
+    public async Task GetGcodeHelpAsync_ReturnsParsedCommands()
+    {
+        var handler = new FakeMoonrakerHandler(BuildDefaultResponses());
+        var service = new MoonrakerApiService(handler);
+
+        await service.ConnectAsync(new MakerPrompt.Shared.Models.PrinterConnectionSettings(
+            new MakerPrompt.Shared.Models.ApiConnectionSettings("http://moonraker.local", string.Empty, string.Empty),
+            PrinterConnectionType.Moonraker));
+
+        var help = await service.GetGcodeHelpAsync();
+
+        Assert.NotNull(help);
+        Assert.True(help.Count > 0);
+        Assert.Equal("Reload config file and restart host software", help["RESTART"]);
+        Assert.Equal("Restart firmware, host, and reload config", help["FIRMWARE_RESTART"]);
+    }
+
     private static Func<HttpRequestMessage, HttpResponseMessage> BuildDefaultResponses()
     {
         return request =>
@@ -71,6 +89,7 @@ public class MoonrakerApiServiceTests
             return path switch
             {
                 "/printer/info" => JsonResponse("""{"result":{"state":"ready"}}"""),
+                "/printer/gcode/help" => JsonResponse("{\"result\":{\"RESTART\":\"Reload config file and restart host software\",\"FIRMWARE_RESTART\":\"Restart firmware, host, and reload config\"}}"),
                 "/printer/objects/query" when query.Contains("heater_bed", StringComparison.OrdinalIgnoreCase) =>
                     JsonResponse("""{"result":{"status":{"heater_bed":{"temperature":59.5,"target":60},"extruder":{"temperature":214.9,"target":215}}}}"""),
                 "/printer/objects/query" when query.Contains("gcode_move", StringComparison.OrdinalIgnoreCase) =>
