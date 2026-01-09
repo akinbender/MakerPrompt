@@ -2,6 +2,7 @@
 @inject IStringLocalizer<Resources> localizer
 @inject IAppLocalStorageProvider AppStorage
 @inject PrinterStorageProvider PrinterStorage
+@inject ToastService ToastService
 @inherits ConnectionComponentBase
 @implements IAsyncDisposable
 
@@ -56,7 +57,7 @@
 
 @code {
     private ElementReference viewerContainer;
-    private bool showVisual = true;
+    private bool showVisual = false;
 
     private bool CanPrint => IsConnected && !string.IsNullOrWhiteSpace(GCodeDoc.CurrentGCode) && PrinterServiceFactory.Current != null;
 
@@ -70,7 +71,15 @@
     {
         if (showVisual && !string.IsNullOrWhiteSpace(GCodeDoc.CurrentGCode))
         {
-            await JS.InitializeViewerAsync(viewerContainer, GCodeDoc.CurrentGCode!);
+            try
+            {
+                await JS.InitializeViewerAsync(viewerContainer, GCodeDoc.CurrentGCode!);
+
+            }
+            catch (Exception)
+            {
+                ToastService.Notify(new(ToastType.Danger, "Braille Gcode view is not supported atm."));
+            }
         }
     }
 
