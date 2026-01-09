@@ -1,5 +1,6 @@
 ﻿using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Services;
 using Microsoft.JSInterop;
 
 namespace MakerPrompt.Blazor.Services
@@ -42,14 +43,19 @@ namespace MakerPrompt.Blazor.Services
 
         public async Task DisconnectAsync()
         {
+            // Stop telemetry timer and detach handler first
+            updateTimer.Stop();
+            updateTimer.Elapsed -= OnUpdateTimerElapsed;
+
             if (_portReference != null)
             {
                 var module = await _moduleTask.Value;
                 await module.InvokeVoidAsync("closePort", _portReference);
                 _portReference = null;
-                IsConnected = false;
-                RaiseConnectionChanged();
             }
+
+            IsConnected = false;
+            RaiseConnectionChanged();
         }
 
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
@@ -67,7 +73,32 @@ namespace MakerPrompt.Blazor.Services
             _portReference = await module.InvokeAsync<IJSObjectReference>("openPort", options, _dotNetRef);
             IsConnected = true;
             ConnectionName = port;
+
+            // Ensure only one subscription to the telemetry timer
+            updateTimer.Stop();
+            updateTimer.Elapsed -= OnUpdateTimerElapsed;
+            updateTimer.Elapsed += OnUpdateTimerElapsed;
+            updateTimer.Start();
+
             RaiseConnectionChanged();
+        }
+
+        private async void OnUpdateTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            // Guard against callbacks after disconnect
+            if (!IsConnected || _portReference == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await GetPrinterTelemetryAsync();
+            }
+            catch
+            {
+                // Swallow background telemetry errors
+            }
         }
 
         public override async Task WriteDataAsync(string data)
@@ -75,6 +106,27 @@ namespace MakerPrompt.Blazor.Services
             if (_portReference == null) throw new InvalidOperationException("Port not open");
             var module = await _moduleTask.Value;
             await module.InvokeVoidAsync("writeData", _portReference, data);
+        }
+
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(async () =>
+            {
+                await foreach (var command in gcodeDoc.EnumerateCommandsAsync())
+                {
+                    if (!IsConnected)
+                    {
+                        break;
+                    }
+
+                    await WriteDataAsync(command);
+                }
+            });
         }
 
         [JSInvokable]
@@ -87,6 +139,10 @@ namespace MakerPrompt.Blazor.Services
         public void OnConnectionChanged(bool isConnected)
         {
             IsConnected = isConnected;
+            if (!IsConnected)
+            {
+                updateTimer.Stop();
+            }
             RaiseConnectionChanged();
         }
 

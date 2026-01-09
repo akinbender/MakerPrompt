@@ -4,6 +4,7 @@ using System.Threading.Tasks.Dataflow;
 using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
 using MakerPrompt.Shared.Utils;
+using MakerPrompt.Shared.Services;
 
 namespace MakerPrompt.MAUI.Services
 {
@@ -23,9 +24,11 @@ namespace MakerPrompt.MAUI.Services
                 DataBits = 8,
                 Parity = Parity.None,
                 StopBits = StopBits.One,
-                Handshake = Handshake.RequestToSend,
-                ReadTimeout = 500,
-                WriteTimeout = 500,
+                Handshake = Handshake.None,   // was RequestToSend
+                DtrEnable = true,             // assert DTR for many CDC devices
+                RtsEnable = true,             // assert RTS manually (optional)
+                ReadTimeout = 2000,
+                WriteTimeout = 5000,
                 NewLine = "\n",
                 Encoding = Encoding.ASCII
             };
@@ -38,7 +41,9 @@ namespace MakerPrompt.MAUI.Services
             if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrWhiteSpace(connectionSettings.Serial.PortName)) return false;
 
             _serialPort.PortName = connectionSettings.Serial.PortName;
-            _serialPort.BaudRate = connectionSettings.Serial.BaudRate;
+            _serialPort.BaudRate = connectionSettings.Serial.BaudRate == 0
+                ? 250000
+                : connectionSettings.Serial.BaudRate;
 
             try
             {
@@ -88,14 +93,15 @@ namespace MakerPrompt.MAUI.Services
                 while (IsConnected && !ct.IsCancellationRequested)
                 {
                     var command = await _commandQueue.ReceiveAsync(ct);
-                    await Task.Run(() => _serialPort.WriteLine(command), ct);
-                    await Task.Delay(10, ct); // Flow control delay
+                    if (!_serialPort.IsOpen) break;
+
+                    var payload = Encoding.ASCII.GetBytes(command + _serialPort.NewLine);
+                    await _serialPort.BaseStream.WriteAsync(payload, 0, payload.Length, ct);
+                    await _serialPort.BaseStream.FlushAsync(ct);
+                    await Task.Delay(10, ct);
                 }
             }
-            catch (OperationCanceledException)
-            {
-                // Normal shutdown
-            }
+            catch (OperationCanceledException) { }
         }
 
         private async Task ReceiveLoopAsync(CancellationToken ct)
@@ -172,5 +178,27 @@ namespace MakerPrompt.MAUI.Services
         public Task<bool> CheckSupportedAsync() => Task.FromResult(true);
 
         public Task RequestPortAsync() => Task.CompletedTask;
+
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            // Stream G-code through the existing send queue without blocking.
+            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(async () =>
+            {
+                await foreach (var command in gcodeDoc.EnumerateCommandsAsync(_cts.Token))
+                {
+                    if (!IsConnected)
+                    {
+                        break;
+                    }
+
+                    await WriteDataAsync(command);
+                }
+            });
+        }
     }
 }

@@ -171,6 +171,15 @@
   <data name="GCodeDescription_M112" xml:space="preserve">
     <value>Emergency stop</value>
   </data>
+  <data name="GCodeDescription_M3" xml:space="preserve">
+    <value>Spindle / laser on (clockwise)</value>
+  </data>
+  <data name="GCodeDescription_M4" xml:space="preserve">
+    <value>Spindle / laser on (counterclockwise)</value>
+  </data>
+  <data name="GCodeDescription_M5" xml:space="preserve">
+    <value>Spindle / laser off</value>
+  </data>
   <data name="GCodeDescription_M114" xml:space="preserve">
     <value>Get current position</value>
   </data>
@@ -263,6 +272,15 @@
   </data>
   <data name="GCodeDescription_S_TargetTemp" xml:space="preserve">
     <value>Target temperature</value>
+  </data>
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve">
+    <value>Inline mode (on / off)</value>
+  </data>
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve">
+    <value>Spindle / laser power (PWM 0-255)</value>
+  </data>
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve">
+    <value>Spindle / laser speed</value>
   </data>
   <data name="GCodeDescription_C_Cycle" xml:space="preserve">
     <value>Cycles (3-20)</value>
@@ -646,7 +664,7 @@
     <value>Send to Printer</value>
   </data>
   <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
-    <value>Generated G-code</value>
+    <value>G-code</value>
   </data>
   <data name="BrailleRAP_Copy" xml:space="preserve">
     <value>Copy</value>
@@ -665,5 +683,11 @@
   </data>
   <data name="BrailleRAP_CopiedToClipboard" xml:space="preserve">
     <value>Copied to clipboard</value>
+  </data>
+  <data name="GCode_Title" xml:space="preserve">
+    <value>G-code</value>
+  </data>
+  <data name="CommandPrompt_ShowTelemetry" xml:space="preserve">
+    <value>Show telemetry output</value>
   </data>
 </root>

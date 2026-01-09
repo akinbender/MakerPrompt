@@ -14,6 +14,9 @@
 
         public readonly System.Timers.Timer updateTimer = new(TimeSpan.FromMilliseconds(3000));
 
+        // True while a print job is actively streaming G-code to the printer.
+        public bool IsPrinting { get; protected set; }
+
         public void RaiseConnectionChanged()
         {
             ConnectionStateChanged?.Invoke(this, IsConnected);

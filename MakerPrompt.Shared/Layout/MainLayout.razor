@@ -17,31 +17,20 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">@TitleService.CurrentTitle</h1>
             </div>
-            <div class="row">
+            <div class="row min-vh-100">
                 <div class="col-lg-7 col-md-12">
-                    @Body
+                    <div class="container-fluid vh-100 overflow-y-auto">
+                        @Body
+                    </div>
                 </div>
                 <div class="col-lg-5 col-md-12">
-                    <div class="calibration-tabs">
-                        <ul class="nav nav-tabs mb-3">
-                            <li class="nav-item">
-                                <a class="nav-link @(ActiveTab == LayoutTab.CommandPrompt ? "active" : string.Empty)" @onclick="() => ShowTab(LayoutTab.CommandPrompt)">@localizer[Resources.PageTitle_CommandPrompt]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ActiveTab == LayoutTab.GCodeViewer ? "active" : string.Empty)" @onclick="() => ShowTab(LayoutTab.GCodeViewer)">@localizer[Resources.PageTitle_GCodeViewer]</a>
-                            </li>
-                        </ul>
-
-                        @switch (ActiveTab)
-                        {
-                            default:
-                            case LayoutTab.CommandPrompt:
-                                <CommandPrompt />
-                                break;
-                            case LayoutTab.GCodeViewer:
-                                <GCodeViewer />
-                                break;
-                        }
+                    <div class="container-fluid vh-100">
+                        <div class="row h-50 mb-3">
+                            <CommandPrompt />
+                        </div>
+                        <div class="row h-50">
+                            <GCodeViewer />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -49,17 +38,12 @@
     </div>
 </div>
 
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.BottomRight" />
+
 @code {
     [Inject]
     private LocalizedTitleService TitleService { get; set; } = null!;
-    private LayoutTab ActiveTab = LayoutTab.CommandPrompt;
 
-    private enum LayoutTab { CommandPrompt, GCodeViewer }
-
-    private void ShowTab(LayoutTab tab)
-    {
-        ActiveTab = tab;
-    }
     protected override void OnInitialized()
     {
         base.OnInitialized();

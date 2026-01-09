@@ -16,7 +16,7 @@ namespace MakerPrompt.Shared.Infrastructure
         public required PrinterCommunicationServiceFactory PrinterServiceFactory { get; set; }
 
         protected bool IsConnected { get; set; }
-        protected string ConnectionCssClass => IsConnected ? string.Empty : "disabled";
+        protected string ConnectionDisabledAttribute => IsConnected ? string.Empty : "disabled";
 
         private void OnTelemetryUpdated(object? sender, PrinterTelemetry e)
         {

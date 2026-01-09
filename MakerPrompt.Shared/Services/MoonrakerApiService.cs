@@ -7,6 +7,8 @@ using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
 using MakerPrompt.Shared.Utils;
 using static MakerPrompt.Shared.Utils.Enums;
+using System.IO;
+using MakerPrompt.Shared.Services;
 
 namespace MakerPrompt.Shared.Services
 {
@@ -89,7 +91,6 @@ namespace MakerPrompt.Shared.Services
             LastTelemetry.LastResponse = content;
             RaiseTelemetryUpdated();
         }
-
         public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
             if (!IsConnected) return LastTelemetry;
@@ -164,7 +165,6 @@ namespace MakerPrompt.Shared.Services
                     IsAvailable = f.Permissions.Contains("rw"),
                 }).ToList();
         }
-
         public async Task<bool> AuthenticateAsync(string username, string password)
         {
             try
@@ -321,7 +321,61 @@ namespace MakerPrompt.Shared.Services
             await Client.PostAsync($"/printer/print/start?filename={filename}", null, _cts.Token);
         }
 
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(async () =>
+            {
+                await foreach (var command in gcodeDoc.EnumerateCommandsAsync(_cts.Token))
+                {
+                    if (!IsConnected)
+                    {
+                        break;
+                    }
+
+                    await WriteDataAsync(command);
+                }
+            });
+        }
+
         public Task SaveEEPROM() => SendGcodeAsync("SAVE_CONFIG");
+
+        public async Task<Dictionary<string, string>> GetGcodeHelpAsync()
+        {
+            if (!IsConnected)
+            {
+                return new Dictionary<string, string>();
+            }
+
+            try
+            {
+                var response = await Client.GetAsync("/printer/gcode/help", _cts.Token);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new Dictionary<string, string>();
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement.GetProperty("result");
+
+                var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var prop in root.EnumerateObject())
+                {
+                    dict[prop.Name] = prop.Value.GetString() ?? string.Empty;
+                }
+
+                return dict;
+            }
+            catch
+            {
+                return new Dictionary<string, string>();
+            }
+        }
 
         private record AuthResponse
         {

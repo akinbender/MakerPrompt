@@ -1,0 +1,15 @@
+@page "/files"
+<LocalizedTitle TitleKey="Files" />
+
+@inject PrinterStorageProvider PrinterStorage
+@inject IAppLocalStorageProvider AppStorage
+
+<div class="row">
+    <div class="col-md-12">
+        <StorageExplorer Title="Printer storage" Provider="PrinterStorage" TargetProvider="AppStorage" EnableUpload="false" EnableDelete="true" EnableOpen="true" EnableCopy="true" />
+    </div>
+</div>
+<div class="row"></div>
+    <div class="col-md-12 mt-4">
+        <StorageExplorer Title="App storage" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" />
+</div>

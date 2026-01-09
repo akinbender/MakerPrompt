@@ -6,7 +6,6 @@ namespace MakerPrompt.Shared.Services
     {
         private readonly IJSRuntime jsRuntime;
         private readonly Lazy<Task<IJSObjectReference>> moduleTask;
-        private IJSObjectReference? viewerInstance;
 
         public MakerPromptJsInterop(IJSRuntime jsRuntime)
         {
@@ -19,6 +18,12 @@ namespace MakerPrompt.Shared.Services
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<string>("showPrompt", message);
+        }
+
+        public async ValueTask ScrollToBottom(ElementReference container)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("scrollToBottom", container);
         }
 
         public async ValueTask CopyToClipboard(string text)
@@ -35,16 +40,28 @@ namespace MakerPrompt.Shared.Services
         public async ValueTask InitializeViewerAsync(ElementReference container, string gcodeContent)
         {
             var module = await moduleTask.Value;
-            viewerInstance = await module.InvokeAsync<IJSObjectReference>(
-                "initializeViewer", container, gcodeContent);
+            await module.InvokeVoidAsync("initializeViewer", container, gcodeContent);
+        }
+
+        public async ValueTask DisposeViewerAsync(ElementReference container)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("disposeViewer", container);
         }
 
         public async ValueTask DisposeAsync()
         {
             if (moduleTask.IsValueCreated)
             {
-                var module = await moduleTask.Value;
-                await module.DisposeAsync();
+                try
+                {
+                    var module = await moduleTask.Value;
+                    await module.DisposeAsync();
+                }
+                catch
+                {
+                    // ignore JS module dispose errors
+                }
             }
         }
     }

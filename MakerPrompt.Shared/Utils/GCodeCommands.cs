@@ -30,6 +30,12 @@ namespace MakerPrompt.Shared.Utils
 
         public static GCodeParameter FilePath = new('F', Resources.GCodeDescription_F_File);
 
+        public static GCodeParameter SpindleInlineMode = new('I', Resources.GCodeDescription_I_InlineMode);
+
+        public static GCodeParameter SpindlePwmPower = new('O', Resources.GCodeDescription_O_SpindlePower);
+
+        public static GCodeParameter SpindleSpeed = new('S', Resources.GCodeDescription_S_SpindleSpeed);
+
         public static GCodeParameter Proportional = new('P', Resources.GCodeDescription_P_Proportional);
 
         public static GCodeParameter Integral = new('I', Resources.GCodeDescription_I_Integral);
@@ -87,6 +93,21 @@ namespace MakerPrompt.Shared.Utils
 
         public static GCodeCommand RelativePositioning =
             new("G91", Resources.GCodeDescription_G91, [GCodeCategory.Movement]);
+
+        public static GCodeCommand SpindleOnClockwise =
+            new("M3", Resources.GCodeDescription_M3, [GCodeCategory.Movement],
+                [ GCodeParameters.SpindleInlineMode,
+                  GCodeParameters.SpindlePwmPower,
+                  GCodeParameters.SpindleSpeed ]);
+
+        public static GCodeCommand SpindleOnCounterClockwise =
+            new("M4", Resources.GCodeDescription_M4, [GCodeCategory.Movement],
+                [ GCodeParameters.SpindleInlineMode,
+                  GCodeParameters.SpindlePwmPower,
+                  GCodeParameters.SpindleSpeed ]);
+
+        public static GCodeCommand SpindleOff =
+            new("M5", Resources.GCodeDescription_M5, [GCodeCategory.Movement]);
 
         public static GCodeCommand EnableSteppers =
             new("M17", Resources.GCodeDescription_M17, [GCodeCategory.Movement]);

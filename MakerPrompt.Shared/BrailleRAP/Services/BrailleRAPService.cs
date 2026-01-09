@@ -100,7 +100,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
             var layout = TranslateAndLayout(text);
 
             if (layout.PageCount == 0 || pageIndex >= layout.PageCount)
-                return new List<string>();
+                return [];
 
             return layout.GetPage(pageIndex);
         }

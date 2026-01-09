@@ -6,9 +6,6 @@
             <a class="nav-link @(ActiveTab == DashboardTab.ControlPanel ? "active" : string.Empty)" @onclick="() => ShowTab(DashboardTab.ControlPanel)">@localizer[Resources.Dashboard_ControlPanel]</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link @(ActiveTab == DashboardTab.Files ? "active" : string.Empty)" @onclick="() => ShowTab(DashboardTab.Files)">@localizer[Resources.Dashboard_FileExplorer]</a>
-        </li>
-        <li class="nav-item">
             <a class="nav-link @(ActiveTab == DashboardTab.PID ? "active" : string.Empty)" @onclick="() => ShowTab(DashboardTab.PID)">@localizer[Resources.CalibrationPage_PidTuning]</a>
         </li>
         <li class="nav-item">
@@ -22,9 +19,6 @@
         case DashboardTab.ControlPanel:
             <ControlPanel />
             break;
-        case DashboardTab.Files:
-            <FileExplorer />
-            break;
         case DashboardTab.PID:
             <PidCalibration />
             break;
@@ -37,7 +31,7 @@
 @code{
     private DashboardTab ActiveTab = DashboardTab.ControlPanel;
 
-    private enum DashboardTab { ControlPanel, Files, PID, Thermal }
+    private enum DashboardTab { ControlPanel, PID, Thermal }
 
     private void ShowTab(DashboardTab tab)
     {

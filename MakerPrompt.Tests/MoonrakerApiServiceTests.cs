@@ -97,7 +97,7 @@ public class MoonrakerApiServiceTests
     private sealed class FakeMoonrakerHandler : HttpMessageHandler
     {
         private readonly Func<HttpRequestMessage, HttpResponseMessage> responder;
-        public List<string> RequestPaths { get; } = new();
+        public List<string> RequestPaths { get; } = [];
 
         public FakeMoonrakerHandler(Func<HttpRequestMessage, HttpResponseMessage> responder)
         {

@@ -1,5 +1,6 @@
 ﻿using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Models;
+using MakerPrompt.Shared.Services;
 using MakerPrompt.Shared.Utils;
 using System.Text;
 using System.Threading.Tasks.Dataflow;
@@ -25,7 +26,9 @@ namespace MakerPrompt.MAUI.Services
                 throw new ArgumentException("Invalid connection settings");
 
             var portName = connectionSettings.Serial.PortName;
-            var baudRate = connectionSettings.Serial.BaudRate;
+            var baudRate = connectionSettings.Serial.BaudRate == 0
+                ? 250000
+                : connectionSettings.Serial.BaudRate;
 
             try
             {
@@ -162,5 +165,26 @@ namespace MakerPrompt.MAUI.Services
         public Task<bool> CheckSupportedAsync() => Task.FromResult(true);
 
         public Task RequestPortAsync() => Task.CompletedTask;
+
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(async () =>
+            {
+                await foreach (var command in gcodeDoc.EnumerateCommandsAsync(_cts?.Token ?? CancellationToken.None))
+                {
+                    if (!IsConnected)
+                    {
+                        break;
+                    }
+
+                    await WriteDataAsync(command);
+                }
+            });
+        }
     }
 }

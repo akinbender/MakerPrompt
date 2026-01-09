@@ -248,7 +248,7 @@ namespace MakerPrompt.Shared.BrailleRAP.Services
         public List<string> Translate(string text)
         {
             if (string.IsNullOrEmpty(text))
-                return new List<string>();
+                return [];
 
             var translationMap = GetTranslationMap();
 

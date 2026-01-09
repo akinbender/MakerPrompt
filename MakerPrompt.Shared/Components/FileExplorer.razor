@@ -1,12 +1,21 @@
 @inherits ConnectionComponentBase
+@inject IAppLocalStorageProvider AppStorage
+@inject PrinterStorageProvider PrinterStorage
+@inject GCodeDocumentService GCodeDoc
 
-<div class="d-flex flex-row-reverse">
-    <div class="btn-group mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="btn-group">
         <button class="btn btn-sm btn-primary" @onclick="StartPrintAsync" disabled="@(!CanStartPrint)">
             <i class="bi bi-printer"></i> @Localizer[Resources.CalibrationPage_Start]
         </button>
         <button class="btn btn-sm btn-secondary" disabled="@(!IsConnected)" @onclick="RefreshFiles">
             <i class="bi bi-arrow-clockwise"></i> @Localizer[Resources.Files_Refresh]
+        </button>
+        <button class="btn btn-sm btn-outline-info" @onclick="OpenSelectedPrinter" disabled="@(selectedFile == null)">
+            <i class="bi bi-eye"></i> Open
+        </button>
+        <button class="btn btn-sm btn-outline-success" @onclick="CopySelectedToApp" disabled="@(selectedFile == null)">
+            <i class="bi bi-arrow-left-square"></i> Copy to App
         </button>
     </div>
 </div>
@@ -136,5 +145,23 @@
         }
 
         return PrinterServiceFactory.Current.StartPrint(selectedFile);
+    }
+
+    private async Task CopySelectedToApp()
+    {
+        if (selectedFile == null) return;
+        await using var stream = await PrinterStorage.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
+        if (stream == Stream.Null) return;
+        await AppStorage.SaveFileAsync(Path.GetFileName(selectedFile.FullPath), stream);
+    }
+
+    private async Task OpenSelectedPrinter()
+    {
+        if (selectedFile == null) return;
+        await using var stream = await PrinterStorage.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
+        if (stream == Stream.Null) return;
+        using var reader = new StreamReader(stream);
+        var content = await reader.ReadToEndAsync();
+        GCodeDoc.SetGCode(content);
     }
 }

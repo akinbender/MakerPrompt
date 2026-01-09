@@ -175,7 +175,7 @@
                 <div class="card-body">
                     @if (!string.IsNullOrEmpty(inputText))
                     {
-                        <div class="braille-preview p-3 bg-light rounded" style="overflow-x: auto;">
+                        <div class="braille-preview p-3 rounded" style="overflow-x: auto;">
                             <table class="table table-sm table-borderless" style="font-family: 'Courier New', monospace; font-size: 1.5rem; line-height: 1.2; width: auto; table-layout: fixed;">
                                 <tbody>
                                     @foreach (var line in preview)
@@ -218,41 +218,11 @@
         </div>
     </div>
 
-    <!-- G-code Display -->
-    @if (!string.IsNullOrEmpty(generatedGCode))
-    {
-        <div class="row">
-            <div class="col-12 mb-3">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">@Localizer[Resources.BrailleRAP_GeneratedGCode]</h5>
-                        <button class="btn btn-sm btn-outline-secondary" @onclick="CopyGCode">
-                            <i class="bi bi-clipboard"></i> @Localizer[Resources.BrailleRAP_Copy]
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <pre class="mb-0" style="max-height: 300px; overflow-y: auto;"><code>@generatedGCode</code></pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
-    <!-- Status Messages -->
-    @if (!string.IsNullOrEmpty(statusMessage))
-    {
-        <div class="row">
-            <div class="col-12 mb-3">
-                <div class="alert @statusAlertClass alert-dismissible fade show" role="alert">
-                    @statusMessage
-                    <button type="button" class="btn-close" @onclick="ClearStatus" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
 @code {
+    [Inject] private GCodeDocumentService GCodeDoc { get; set; } = null!;
+    [Inject] private ToastService ToastService { get; set; } = null!;
     private BrailleRAPService brailleService = new();
     private PageConfig pageConfig = new();
     private MachineConfig machineConfig = new();
@@ -263,9 +233,6 @@
     private int currentPage = 0;
     private (int PageCount, int TotalLines, int TotalCharacters) statistics = (0, 0, 0);
     private int selectedLanguage = 0;
-    
-    private string statusMessage = string.Empty;
-    private string statusAlertClass = "alert-info";
 
     protected override void OnInitialized()
     {
@@ -305,7 +272,7 @@
         }
         catch (Exception ex)
         {
-            ShowStatus($"Error updating preview: {ex.Message}", "alert-danger");
+            ShowStatus($"Error updating preview: {ex.Message}", ToastType.Danger);
         }
     }
 
@@ -380,6 +347,7 @@
         inputText = string.Empty;
         generatedGCode = string.Empty;
         currentPage = 0;
+        GCodeDoc.Clear();
         UpdatePreview();
     }
 
@@ -406,11 +374,12 @@
         try
         {
             generatedGCode = brailleService.GenerateGCode(inputText, currentPage);
-            ShowStatus(Localizer[Resources.BrailleRAP_GCodeGenerated], "alert-success");
+            GCodeDoc.SetGCode(generatedGCode);
+            ShowStatus(Localizer[Resources.BrailleRAP_GCodeGenerated], ToastType.Success);
         }
         catch (Exception ex)
         {
-            ShowStatus($"Error generating G-code: {ex.Message}", "alert-danger");
+            ShowStatus($"Error generating G-code: {ex.Message}", ToastType.Danger);
         }
     }
 
@@ -418,13 +387,13 @@
     {
         if (!IsConnected)
         {
-            ShowStatus(Localizer[Resources.BrailleRAP_NotConnected], "alert-warning");
+            ShowStatus(Localizer[Resources.BrailleRAP_NotConnected], ToastType.Warning);
             return;
         }
 
         if (string.IsNullOrEmpty(generatedGCode))
         {
-            ShowStatus(Localizer[Resources.BrailleRAP_GenerateFirst], "alert-warning");
+            ShowStatus(Localizer[Resources.BrailleRAP_GenerateFirst], ToastType.Warning);
             return;
         }
 
@@ -433,30 +402,17 @@
             if (PrinterServiceFactory.Current != null)
             {
                 await PrinterServiceFactory.Current.WriteDataAsync(generatedGCode);
-                ShowStatus(Localizer[Resources.BrailleRAP_SentSuccessfully], "alert-success");
+                ShowStatus(Localizer[Resources.BrailleRAP_SentSuccessfully], ToastType.Success);
             }
         }
         catch (Exception ex)
         {
-            ShowStatus($"Error sending to printer: {ex.Message}", "alert-danger");
+            ShowStatus($"Error sending to printer: {ex.Message}", ToastType.Danger);
         }
     }
 
-    private async Task CopyGCode()
+    private void ShowStatus(string message, ToastType toastType)
     {
-        await JS.CopyToClipboard(generatedGCode);
-        ShowStatus(Localizer[Resources.BrailleRAP_CopiedToClipboard], "alert-success");
-    }
-
-    private void ShowStatus(string message, string alertClass)
-    {
-        statusMessage = message;
-        statusAlertClass = alertClass;
-        StateHasChanged();
-    }
-
-    private void ClearStatus()
-    {
-        statusMessage = string.Empty;
+        ToastService.Notify(new(toastType, message));
     }
 }

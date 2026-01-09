@@ -9,6 +9,7 @@
         PrinterTelemetry LastTelemetry { get; }
         string ConnectionName { get; }
         bool IsConnected { get; }
+        bool IsPrinting { get; }
 
         Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings);
         Task DisconnectAsync();
@@ -26,6 +27,7 @@
         Task RunPidTuning(int cycles, int targetTemp, int extruderIndex);
         Task RunThermalModelCalibration(int cycles, int targetTemp);
         Task StartPrint(FileEntry file);
+        Task StartPrint(GCodeDoc document);
         Task SaveEEPROM();
     }
 }
