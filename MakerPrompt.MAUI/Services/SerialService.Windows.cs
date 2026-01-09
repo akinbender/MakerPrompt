@@ -41,7 +41,9 @@ namespace MakerPrompt.MAUI.Services
             if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrWhiteSpace(connectionSettings.Serial.PortName)) return false;
 
             _serialPort.PortName = connectionSettings.Serial.PortName;
-            _serialPort.BaudRate = connectionSettings.Serial.BaudRate;
+            _serialPort.BaudRate = connectionSettings.Serial.BaudRate == 0
+                ? 250000
+                : connectionSettings.Serial.BaudRate;
 
             try
             {

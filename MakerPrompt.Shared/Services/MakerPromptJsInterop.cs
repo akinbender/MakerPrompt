@@ -21,6 +21,12 @@ namespace MakerPrompt.Shared.Services
             return await module.InvokeAsync<string>("showPrompt", message);
         }
 
+        public async ValueTask<string> ScrollToBottom(ElementReference container)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<string>("scrollToBottom", container);
+        }
+
         public async ValueTask CopyToClipboard(string text)
         {
             await jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);

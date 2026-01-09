@@ -8,12 +8,22 @@
         
         StringBuilder _receiveBuffer = new();
 
+        // Core write entry point used by higher-level services. Implementations should
+        // enqueue commands with appropriate metadata where available.
         public abstract Task WriteDataAsync(string command);
+
+        // Convenience helpers for tagging commands with their intent. Implementations
+        // that support a queued sender can use this classification to prioritise work.
+        public virtual Task WriteUserCommandAsync(string command) => WriteDataAsync(command);
+        public virtual Task WriteTelemetryCommandAsync(string command) => WriteDataAsync(command);
+        public virtual Task WritePrintCommandAsync(string command) => WriteDataAsync(command);
 
         public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
         {
-            await WriteDataAsync(GCodeCommands.GetTemperature.ToString());
-            await WriteDataAsync(GCodeCommands.GetCurrentPosition.ToString());
+            // Treat telemetry polling distinctly so queueing code can prioritise
+            // active print commands when necessary.
+            await WriteTelemetryCommandAsync(GCodeCommands.GetTemperature.ToString());
+            await WriteTelemetryCommandAsync(GCodeCommands.GetCurrentPosition.ToString());
             //await WriteDataAsync("M123");
             //await WriteDataAsync(GCodeCommands.SetFeedratePercentage.ToString());
             //await WriteDataAsync(GCodeCommands.SetFlowratePercentage.ToString());
@@ -36,7 +46,7 @@
             var command = GCodeCommands.SetTemp
                 .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
                 .ToString();
-            await WriteDataAsync(command);
+            await WriteUserCommandAsync(command);
         }
 
         public async Task SetBedTemp(int targetTemp = 0)
@@ -45,7 +55,7 @@
             var command = GCodeCommands.SetBedTemp
                 .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
                 .ToString();
-            await WriteDataAsync(command);
+            await WriteUserCommandAsync(command);
         }
 
         public async Task Home(bool x = true, bool y = true, bool z = true)
@@ -59,7 +69,7 @@
                 if (z) command.SetParameterValue(GCodeParameters.HomeZ.Label);
             }
 
-            await WriteDataAsync(command.ToString());
+            await WriteUserCommandAsync(command.ToString());
         }
 
         public async Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
@@ -73,9 +83,9 @@
             if (!IsEqual(e, 0.0f)) command.SetParameterValue(GCodeParameters.PositionE.Label, e.ToString("0.0"));
             command.SetParameterValue(GCodeParameters.Feedrate.Label, feedRate.ToString());
 
-            await WriteDataAsync(GCodeCommands.RelativePositioning.ToString());
-            await WriteDataAsync(command.ToString());
-            await WriteDataAsync(GCodeCommands.AbsolutePositioning.ToString());
+            await WriteUserCommandAsync(GCodeCommands.RelativePositioning.ToString());
+            await WriteUserCommandAsync(command.ToString());
+            await WriteUserCommandAsync(GCodeCommands.AbsolutePositioning.ToString());
         }
 
         public async Task SetFanSpeed(int fanSpeedPercentage = 0)
@@ -83,21 +93,21 @@
             if (!IsConnected || (fanSpeedPercentage < 0 || fanSpeedPercentage > 100)) return;
             var command = fanSpeedPercentage == 0 ? GCodeCommands.FanOff
                 :GCodeCommands.SetFanSpeed.SetParameterValue(GCodeParameters.FanSpeed.Label, ((int)(fanSpeedPercentage * 2.55)).ToString());
-            await WriteDataAsync(command.ToString());
+            await WriteUserCommandAsync(command.ToString());
         }
 
         public async Task SetPrintSpeed(int speed)
         {
             if (!IsConnected || (speed < 1 || speed > 200)) return;
             var command = GCodeCommands.SetFeedratePercentage.SetParameterValue(GCodeParameters.RatePercentage.Label, speed.ToString());
-            await WriteDataAsync(command.ToString());
+            await WriteUserCommandAsync(command.ToString());
         }
 
         public async Task SetPrintFlow(int flow)
         {
             if (!IsConnected || (flow < 1 || flow > 200)) return;
             var command = GCodeCommands.SetFlowratePercentage.SetParameterValue(GCodeParameters.RatePercentage.Label, flow.ToString());
-            await WriteDataAsync(command.ToString());
+            await WriteUserCommandAsync(command.ToString());
         }
 
         public async Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
@@ -109,7 +119,7 @@
             if (!IsEqual(y, 0.0f)) command.SetParameterValue(GCodeParameters.PositionY.Label, y.ToString("0.0"));
             if (!IsEqual(z, 0.0f)) command.SetParameterValue(GCodeParameters.PositionZ.Label, z.ToString("0.0"));
             if (!IsEqual(e, 0.0f)) command.SetParameterValue(GCodeParameters.PositionE.Label, e.ToString("0.0"));
-            await WriteDataAsync(command.ToString());
+            await WriteUserCommandAsync(command.ToString());
         }
 
         public async Task RunPidTuning(int cycles, int targetTemp, int extruderIndex)
@@ -120,7 +130,7 @@
                 .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
                 .SetParameterValue(GCodeParameters.PositionE.Label, extruderIndex.ToString())
             .ToString();
-            await WriteDataAsync(command);
+            await WriteUserCommandAsync(command);
         }
 
         public async Task RunThermalModelCalibration(int cycles, int targetTemp)
@@ -130,7 +140,7 @@
                 .SetParameterValue(GCodeParameters.CalibrationCycle.Label, cycles.ToString())
                 .SetParameterValue(GCodeParameters.TargetTemp.Label, targetTemp.ToString())
             .ToString();
-            await WriteDataAsync(command);
+            await WriteUserCommandAsync(command);
         }
 
         public Task StartPrint(FileEntry file)
@@ -141,7 +151,7 @@
         public async Task SaveEEPROM()
         {
             if (!IsConnected) return;
-            await WriteDataAsync(GCodeCommands.StoreEEPROM.ToString());
+            await WriteUserCommandAsync(GCodeCommands.StoreEEPROM.ToString());
         }
 
         private static bool IsEqual(float a, float b, float tolerance = 0.001f)

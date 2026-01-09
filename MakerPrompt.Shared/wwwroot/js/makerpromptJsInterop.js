@@ -45,7 +45,7 @@ export function initializeViewer(container, gcodeContent) {
 
         if (
             colorConfig.length === 0 ||
-            color && colorConfig[colorConfig.length - 1].color !== color
+            (color && colorConfig[colorConfig.length - 1].color !== color)
         ) {
             colorConfig.push({ toLine: i, color });
         } else {
@@ -66,4 +66,19 @@ export function initializeViewer(container, gcodeContent) {
 
     renderer.render();
     return renderer;
+}
+
+// Scroll a container to the bottom; used by the command prompt history.
+export function scrollToBottom(element) {
+    if (!element) {
+        return;
+    }
+
+    // Support both plain elements and Blazor's ElementReference wrappers.
+    const target = element instanceof HTMLElement ? element : element.firstElementChild || element;
+    if (!target) {
+        return;
+    }
+
+    target.scrollTop = target.scrollHeight;
 }

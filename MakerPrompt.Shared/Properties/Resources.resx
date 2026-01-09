@@ -687,4 +687,7 @@
   <data name="GCode_Title" xml:space="preserve">
     <value>G-code</value>
   </data>
+  <data name="CommandPrompt_ShowTelemetry" xml:space="preserve">
+    <value>Show telemetry output</value>
+  </data>
 </root>

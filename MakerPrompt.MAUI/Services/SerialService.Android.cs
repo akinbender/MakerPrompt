@@ -21,7 +21,9 @@ namespace MakerPrompt.MAUI.Services
             try
             {
                 var deviceName = connectionSettings.Serial.PortName; // fix to id
-                var baudRate = connectionSettings.Serial.BaudRate;
+                var baudRate = connectionSettings.Serial.BaudRate == 0
+                    ? 250000
+                    : connectionSettings.Serial.BaudRate;
                 var dataBits = (byte)8;
                 var stopBits = UsbSerialForAndroid.Net.Enums.StopBits.One;
                 var parity = UsbSerialForAndroid.Net.Enums.Parity.None;

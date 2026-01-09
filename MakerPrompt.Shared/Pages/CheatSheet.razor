@@ -2,6 +2,7 @@
 @using System.Reflection
 @using System.ComponentModel.DataAnnotations
 @inject IStringLocalizer<Resources> localizer
+@inherits ConnectionComponentBase
 
 <LocalizedTitle TitleKey="@Resources.PageTitle_GCodeList" />
 
@@ -15,65 +16,152 @@
         </div>
     </div>
 
-    <div class="table-responsive h-100">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Command)" /></th>
-                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Description)" /></th>
-                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Categories)" /></th>
-                    <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Parameters)" /></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var command in GetFilteredCommands())
-                {
-                    <tr>
-                        <td class="font-monospace">@command.Command</td>
-                        <td>@localizer[command.Description]</td>
-                        <td>
-                            @foreach (var category in command.Categories)
+    <BlazorBootstrap.Tabs>
+        <BlazorBootstrap.Tab Title="@localizer[Resources.PageTitle_GCodeList]">
+            <Content>
+                <div class="table-responsive h-100">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Command)" /></th>
+                                <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Description)" /></th>
+                                <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Categories)" /></th>
+                                <th><LocalizedLabel For="(() => GCodeCommands.MoveLinear.Parameters)" /></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var command in GetFilteredCommands())
                             {
-                                <span class="badge bg-primary">
-                                    @category.GetLocalizedDisplayName()
-                                </span>
+                                <tr>
+                                    <td class="font-monospace">@command.Command</td>
+                                    <td>@localizer[command.Description]</td>
+                                    <td>
+                                        @foreach (var category in command.Categories)
+                                        {
+                                            <span class="badge bg-primary">
+                                                @category.GetLocalizedDisplayName()
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (command.Parameters.Any())
+                                        {
+                                            <ul class="list-unstyled me-2 mb-2">
+                                                @foreach (var param in command.Parameters)
+                                                {
+                                                    <li>
+                                                        <span class="badge bg-secondary">@param.Label</span>
+                                                        @param.Description
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">@localizer[Resources.CheatSheetPage_None]</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-outline-primary action-button"
+                                                @onclick="() => ShowCommandDetailsAsync(command)">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                    </td>
+                                </tr>
                             }
-                        </td>
-                        <td>
-                            @if (command.Parameters.Any())
-                            {
-                                <ul class="list-unstyled me-2 mb-2">
-                                    @foreach (var param in command.Parameters)
+                        </tbody>
+                    </table>
+                </div>
+            </Content>
+        </BlazorBootstrap.Tab>
+
+        @if (IsConnected && PrinterServiceFactory.Current?.ConnectionType == MakerPrompt.Shared.Utils.Enums.PrinterConnectionType.Moonraker)
+        {
+            <BlazorBootstrap.Tab Title="Moonraker G-code Help">
+                <Content>
+                    @if (moonrakerHelpError != null)
+                    {
+                        <div class="alert alert-warning">@moonrakerHelpError</div>
+                    }
+                    else if (moonrakerHelp is null)
+                    {
+                        <div class="text-muted">Loading Moonraker G-code help...</div>
+                    }
+                    else if (moonrakerHelp.Count == 0)
+                    {
+                        <div class="text-muted">No G-code help available from Moonraker.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive h-100">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Command</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var entry in moonrakerHelp)
                                     {
-                                        <li>
-                                            <span class="badge bg-secondary">@param.Label</span>
-                                            @param.Description
-                                        </li>
+                                        <tr>
+                                            <td class="font-monospace">@entry.Key</td>
+                                            <td>@entry.Value</td>
+                                        </tr>
                                     }
-                                </ul>
-                            }
-                            else
-                            {
-                                <span class="text-muted">@localizer[Resources.CheatSheetPage_None]</span>
-                            }
-                        </td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-outline-primary action-button"
-                                    @onclick="() => ShowCommandDetailsAsync(command)">
-                                <i class="bi bi-play-fill"></i>
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </Content>
+            </BlazorBootstrap.Tab>
+        }
+    </BlazorBootstrap.Tabs>
 </div>
 
 @code {
     private Modal modal = default!;
     private string searchTerm = string.Empty;
+    private Dictionary<string, string>? moonrakerHelp;
+    private string? moonrakerHelpError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await TryLoadMoonrakerHelpAsync();
+    }
+
+    protected override async void HandleConnectionChanged(object? sender, bool connected)
+    {
+        base.HandleConnectionChanged(sender, connected);
+        if (connected && PrinterServiceFactory.Current?.ConnectionType == MakerPrompt.Shared.Utils.Enums.PrinterConnectionType.Moonraker)
+        {
+            await TryLoadMoonrakerHelpAsync();
+        }
+    }
+
+    private async Task TryLoadMoonrakerHelpAsync()
+    {
+        moonrakerHelpError = null;
+        moonrakerHelp = null;
+
+        if (PrinterServiceFactory.Current is not MoonrakerApiService moonrakerService)
+        {
+            return;
+        }
+
+        try
+        {
+            moonrakerHelp = await moonrakerService.GetGcodeHelpAsync();
+        }
+        catch (Exception ex)
+        {
+            moonrakerHelpError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
 
     private List<GCodeCommand> GetFilteredCommands()
     {

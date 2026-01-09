@@ -9,6 +9,7 @@
         PrinterTelemetry LastTelemetry { get; }
         string ConnectionName { get; }
         bool IsConnected { get; }
+        bool IsPrinting { get; }
 
         Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings);
         Task DisconnectAsync();

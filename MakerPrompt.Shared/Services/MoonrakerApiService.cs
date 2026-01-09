@@ -344,6 +344,39 @@ namespace MakerPrompt.Shared.Services
 
         public Task SaveEEPROM() => SendGcodeAsync("SAVE_CONFIG");
 
+        public async Task<Dictionary<string, string>> GetGcodeHelpAsync()
+        {
+            if (!IsConnected)
+            {
+                return new Dictionary<string, string>();
+            }
+
+            try
+            {
+                var response = await Client.GetAsync("/printer/gcode/help", _cts.Token);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new Dictionary<string, string>();
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement.GetProperty("result");
+
+                var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var prop in root.EnumerateObject())
+                {
+                    dict[prop.Name] = prop.Value.GetString() ?? string.Empty;
+                }
+
+                return dict;
+            }
+            catch
+            {
+                return new Dictionary<string, string>();
+            }
+        }
+
         private record AuthResponse
         {
             [JsonPropertyName("username")]

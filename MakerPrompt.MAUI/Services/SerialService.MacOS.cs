@@ -26,7 +26,9 @@ namespace MakerPrompt.MAUI.Services
                 throw new ArgumentException("Invalid connection settings");
 
             var portName = connectionSettings.Serial.PortName;
-            var baudRate = connectionSettings.Serial.BaudRate;
+            var baudRate = connectionSettings.Serial.BaudRate == 0
+                ? 250000
+                : connectionSettings.Serial.BaudRate;
 
             try
             {
