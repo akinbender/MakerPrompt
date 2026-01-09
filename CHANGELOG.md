@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.2.0"></a>
+## [0.2.0](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.2.0) (2026-01-09)
+
+### Features
+
+* extended file operations ([138d5c4](https://www.github.com/akinbender/MakerPrompt/commit/138d5c4301d5fbbb50d1a574657a52593b4001fd))
+
+### Bug Fixes
+
+* gcode & layout ([0b65064](https://www.github.com/akinbender/MakerPrompt/commit/0b65064d894bc69973fe1885f923560e5b723217))
+* gcodeviewer error ([8c23042](https://www.github.com/akinbender/MakerPrompt/commit/8c230420c6e1f6d11a7ef98bde8e86d0c763824d))
+* notification systems ([ed7562f](https://www.github.com/akinbender/MakerPrompt/commit/ed7562f3b577df4a74f0449955715d92c6ea67f3))
+* UI and infra fixes ([548de4b](https://www.github.com/akinbender/MakerPrompt/commit/548de4bccc34fceda2fbc9a15304aad007332fa2))
+* web serial telemetry ([0d9e4c0](https://www.github.com/akinbender/MakerPrompt/commit/0d9e4c056368d488bdd1e1415c5dc39848ee9fc6))
+
 <a name="0.1.14"></a>
 ## [0.1.14](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.1.14) (2026-01-01)
 
