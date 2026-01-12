@@ -244,6 +244,40 @@ namespace MakerPrompt.Shared.Services
                     IsAvailable = f.Permissions.Contains("rw"),
                 }).ToList();
         }
+
+        public async Task<Stream?> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
+        {
+            if (!IsConnected) return null;
+            if (string.IsNullOrWhiteSpace(fullPath)) return null;
+
+            try
+            {
+                // Moonraker's file API expects: /server/files/{root}/{filename}
+                // We currently list from the "gcodes" root and store FileEntry.FullPath
+                // as the path relative to that root.
+                var relativePath = fullPath.TrimStart('/');
+
+                // If a root was accidentally included, strip a leading "gcodes/" once
+                if (relativePath.StartsWith("gcodes/", StringComparison.OrdinalIgnoreCase))
+                {
+                    relativePath = relativePath.Substring("gcodes/".Length);
+                }
+
+                var requestUri = $"/server/files/gcodes/{relativePath}";
+
+                var response = await Client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null;
+                }
+
+                return await response.Content.ReadAsStreamAsync(cancellationToken);
+            }
+            catch
+            {
+                return null;
+            }
+        }
         public async Task<bool> AuthenticateAsync(string username, string password)
         {
             try

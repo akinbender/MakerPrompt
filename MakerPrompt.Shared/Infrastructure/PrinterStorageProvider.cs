@@ -22,11 +22,15 @@ namespace MakerPrompt.Shared.Infrastructure
 
         public async Task<Stream?> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
         {
-            if (factory.Current is Services.DemoPrinterService svc)
+            switch (factory.Current)
             {
-                return await svc.OpenReadAsync(fullPath);
+                case Services.DemoPrinterService demo:
+                    return await demo.OpenReadAsync(fullPath);
+                case Services.MoonrakerApiService moonraker:
+                    return await moonraker.OpenReadAsync(fullPath, cancellationToken);
+                default:
+                    return null;
             }
-            return null;
         }
 
         public async Task SaveFileAsync(string fullPath, Stream content, CancellationToken cancellationToken = default)
