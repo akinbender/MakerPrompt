@@ -9,9 +9,13 @@ else if (_hasError)
 {
     <div class="text-danger small">Unable to load webcam stream.</div>
 }
-else if (!string.IsNullOrWhiteSpace(_currentUrl))
+else if (!string.IsNullOrWhiteSpace(_currentUrl)
+         && (_currentUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+             || _currentUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
 {
-    <img src="@_currentUrl" class="img-fluid rounded border" @onerror="OnImageError" />
+    <img src="@_currentUrl"
+         class="img-fluid rounded border"
+         @onerror="OnImageError" />
 }
 else
 {
@@ -45,14 +49,14 @@ else
 
         if (hasStream)
         {
-            // Prefer continuous stream when available; no polling required.
             StopSnapshotLoop();
             _currentUrl = Camera.StreamUrl;
+            Console.WriteLine($"[WebcamViewer] Using stream URL: {_currentUrl}");
         }
         else if (hasSnapshot)
         {
-            // Use periodic snapshot refresh when only a snapshot URL is available.
             StartSnapshotLoop();
+            Console.WriteLine($"[WebcamViewer] Using snapshot URL: {Camera.SnapshotUrl}");
         }
         else
         {

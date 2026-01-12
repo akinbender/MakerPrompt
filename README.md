@@ -20,12 +20,14 @@ In our 3D-lab @[x-hain](https://x-hain.de) hackspace we have several printers fr
 - [x] Add logo
 - [x] Versioning
 - [ ] Enable PrusaLink
+- [ ] PrusaLink webcam?
 - [x] Fix Web serial telemety update
 - [x] Fix CommandPrompt usage
 - [x] Fix ControlPanel coordinate axis movement
 - [x] Implement File list component
 - [x] Add Android&Macos support
 - [x] Moonraker GCode list
+- [x] Moonraker Webcam
 - [x] Expand language support? (es, pl, fr)
 - [ ] Mention used open source projects
 

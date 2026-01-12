@@ -40,13 +40,22 @@ namespace MakerPrompt.Shared.Services
         {
             if (string.IsNullOrWhiteSpace(url)) return null;
 
-            if (Uri.TryCreate(url, UriKind.Absolute, out var absolute))
+            // If already absolute HTTP/HTTPS URL, just return it
+            if (Uri.TryCreate(url, UriKind.Absolute, out var absolute) &&
+                (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps))
             {
                 return absolute.AbsoluteUri;
             }
 
-            // Treat as path relative to Moonraker host.
-            return new Uri(baseUri, url).AbsoluteUri;
+            // Only combine when baseUri is HTTP/HTTPS to avoid accidental file:// URLs
+            if (baseUri.Scheme == Uri.UriSchemeHttp || baseUri.Scheme == Uri.UriSchemeHttps)
+            {
+                var combined = new Uri(baseUri, url);
+                return combined.AbsoluteUri;
+            }
+
+            // Fallback: return original string when scheme is not web-compatible
+            return url;
         }
 
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
@@ -178,7 +187,7 @@ namespace MakerPrompt.Shared.Services
 
                 await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
                 var result = await JsonSerializer.DeserializeAsync<WebcamListResponse>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var webcams = result?.Webcams ?? new List<WebcamEntry>();
+                var webcams = result?.Result?.Webcams ?? new List<WebcamEntry>();
 
                 var cameras = new List<PrinterCamera>();
                 foreach (var cam in webcams)
@@ -195,6 +204,7 @@ namespace MakerPrompt.Shared.Services
                     {
                         continue;
                     }
+                    Console.WriteLine($"[Moonraker] baseUri={_baseUri}, raw={cam.StreamUrl}, normalized={streamUrl}");
 
                     cameras.Add(new PrinterCamera
                     {
@@ -416,27 +426,25 @@ namespace MakerPrompt.Shared.Services
         public async Task<Dictionary<string, string>> GetGcodeHelpAsync()
         {
             if (!IsConnected)
-            {
                 return new Dictionary<string, string>();
-            }
 
             try
             {
                 var response = await Client.GetAsync("/printer/gcode/help", _cts.Token);
                 if (!response.IsSuccessStatusCode)
+                    return new Dictionary<string, string>();
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                if (!doc.RootElement.TryGetProperty("result", out var root) ||
+                    root.ValueKind != JsonValueKind.Object)
                 {
                     return new Dictionary<string, string>();
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(json);
-                var root = doc.RootElement.GetProperty("result");
-
                 var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var prop in root.EnumerateObject())
-                {
                     dict[prop.Name] = prop.Value.GetString() ?? string.Empty;
-                }
 
                 return dict;
             }
@@ -493,6 +501,12 @@ namespace MakerPrompt.Shared.Services
         }
 
         private sealed record WebcamListResponse
+        {
+            [JsonPropertyName("result")]
+            public WebcamResult? Result { get; set; }
+        }
+
+        private sealed record WebcamResult
         {
             [JsonPropertyName("webcams")]
             public List<WebcamEntry> Webcams { get; set; } = new();
