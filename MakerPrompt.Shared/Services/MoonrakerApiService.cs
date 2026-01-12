@@ -36,6 +36,19 @@ namespace MakerPrompt.Shared.Services
             ? new HttpClient(_customHandler, false)
             : new HttpClient();
 
+        private static string? NormalizeUrl(Uri baseUri, string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return null;
+
+            if (Uri.TryCreate(url, UriKind.Absolute, out var absolute))
+            {
+                return absolute.AbsoluteUri;
+            }
+
+            // Treat as path relative to Moonraker host.
+            return new Uri(baseUri, url).AbsoluteUri;
+        }
+
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (IsConnected) return IsConnected;
@@ -146,6 +159,62 @@ namespace MakerPrompt.Shared.Services
 
             RaiseTelemetryUpdated();
             return LastTelemetry;
+        }
+
+        public async Task<IReadOnlyList<PrinterCamera>> GetCamerasAsync(CancellationToken cancellationToken = default)
+        {
+            if (!IsConnected || _baseUri is null)
+            {
+                return Array.Empty<PrinterCamera>();
+            }
+
+            try
+            {
+                using var response = await Client.GetAsync("/server/webcams/list", cancellationToken).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Array.Empty<PrinterCamera>();
+                }
+
+                await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+                var result = await JsonSerializer.DeserializeAsync<WebcamListResponse>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var webcams = result?.Webcams ?? new List<WebcamEntry>();
+
+                var cameras = new List<PrinterCamera>();
+                foreach (var cam in webcams)
+                {
+                    if (!cam.Enabled)
+                    {
+                        continue;
+                    }
+
+                    var streamUrl = NormalizeUrl(_baseUri, cam.StreamUrl);
+                    var snapshotUrl = NormalizeUrl(_baseUri, cam.SnapshotUrl);
+
+                    if (string.IsNullOrWhiteSpace(streamUrl) && string.IsNullOrWhiteSpace(snapshotUrl))
+                    {
+                        continue;
+                    }
+
+                    cameras.Add(new PrinterCamera
+                    {
+                        Id = string.IsNullOrWhiteSpace(cam.Uid) ? cam.Name ?? string.Empty : cam.Uid,
+                        DisplayName = string.IsNullOrWhiteSpace(cam.Name) ? "Webcam" : cam.Name!,
+                        StreamUrl = streamUrl,
+                        SnapshotUrl = snapshotUrl,
+                        IsEnabled = cam.Enabled,
+                        Location = cam.Location
+                    });
+                }
+
+                return cameras;
+            }
+            catch
+            {
+                // Discovery failures should not surface to the UI; absence of
+                // cameras simply means the webcam card is not shown.
+                return Array.Empty<PrinterCamera>();
+            }
         }
 
         public async Task<List<FileEntry>> GetFilesAsync()
@@ -421,6 +490,36 @@ namespace MakerPrompt.Shared.Services
 
             [JsonIgnore]
             public bool IsDirectory => Size == 0;
+        }
+
+        private sealed record WebcamListResponse
+        {
+            [JsonPropertyName("webcams")]
+            public List<WebcamEntry> Webcams { get; set; } = new();
+        }
+
+        private sealed record WebcamEntry
+        {
+            [JsonPropertyName("name")]
+            public string? Name { get; set; }
+
+            [JsonPropertyName("location")]
+            public string? Location { get; set; }
+
+            [JsonPropertyName("service")]
+            public string? Service { get; set; }
+
+            [JsonPropertyName("enabled")]
+            public bool Enabled { get; set; }
+
+            [JsonPropertyName("stream_url")]
+            public string? StreamUrl { get; set; }
+
+            [JsonPropertyName("snapshot_url")]
+            public string? SnapshotUrl { get; set; }
+
+            [JsonPropertyName("uid")]
+            public string? Uid { get; set; }
         }
 
     }

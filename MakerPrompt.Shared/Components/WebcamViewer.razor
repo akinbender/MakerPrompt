@@ -1,0 +1,120 @@
+@using MakerPrompt.Shared.Models
+@implements IAsyncDisposable
+
+@if (Camera is null)
+{
+    <div class="text-muted small">No webcam configured.</div>
+}
+else if (_hasError)
+{
+    <div class="text-danger small">Unable to load webcam stream.</div>
+}
+else if (!string.IsNullOrWhiteSpace(_currentUrl))
+{
+    <img src="@_currentUrl" class="img-fluid rounded border" @onerror="OnImageError" />
+}
+else
+{
+    <div class="text-muted small">Webcam not available.</div>
+}
+
+@code {
+    [Parameter]
+    public PrinterCamera? Camera { get; set; }
+
+    [Parameter]
+    public TimeSpan SnapshotInterval { get; set; } = TimeSpan.FromSeconds(3);
+
+    private string? _currentUrl;
+    private bool _hasError;
+    private CancellationTokenSource? _snapshotCts;
+
+    protected override void OnParametersSet()
+    {
+        _hasError = false;
+
+        if (Camera is null)
+        {
+            StopSnapshotLoop();
+            _currentUrl = null;
+            return;
+        }
+
+        var hasStream = !string.IsNullOrWhiteSpace(Camera.StreamUrl);
+        var hasSnapshot = !string.IsNullOrWhiteSpace(Camera.SnapshotUrl);
+
+        if (hasStream)
+        {
+            // Prefer continuous stream when available; no polling required.
+            StopSnapshotLoop();
+            _currentUrl = Camera.StreamUrl;
+        }
+        else if (hasSnapshot)
+        {
+            // Use periodic snapshot refresh when only a snapshot URL is available.
+            StartSnapshotLoop();
+        }
+        else
+        {
+            StopSnapshotLoop();
+            _currentUrl = null;
+        }
+    }
+
+    private void StartSnapshotLoop()
+    {
+        if (_snapshotCts != null)
+        {
+            return;
+        }
+
+        _snapshotCts = new CancellationTokenSource();
+        _ = RunSnapshotLoopAsync(_snapshotCts.Token);
+    }
+
+    private void StopSnapshotLoop()
+    {
+        if (_snapshotCts == null)
+        {
+            return;
+        }
+
+        _snapshotCts.Cancel();
+        _snapshotCts.Dispose();
+        _snapshotCts = null;
+    }
+
+    private async Task RunSnapshotLoopAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested && Camera != null && !string.IsNullOrWhiteSpace(Camera.SnapshotUrl))
+        {
+            var baseUrl = Camera.SnapshotUrl!;
+            var separator = baseUrl.Contains("?", StringComparison.Ordinal) ? "&" : "?";
+            _currentUrl = baseUrl + separator + "t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            _hasError = false;
+            await InvokeAsync(StateHasChanged);
+
+            try
+            {
+                await Task.Delay(SnapshotInterval, token);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
+        }
+    }
+
+    private void OnImageError()
+    {
+        _hasError = true;
+        StopSnapshotLoop();
+        StateHasChanged();
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        StopSnapshotLoop();
+        return ValueTask.CompletedTask;
+    }
+}

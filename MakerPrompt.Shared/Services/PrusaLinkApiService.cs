@@ -221,6 +221,16 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// PrusaLink / Prusa Connect cameras require additional registration and authentication
+    /// not currently configured in MakerPrompt. For now this returns an empty set so that
+    /// webcam UI remains disabled for this backend until full camera support is wired up.
+    /// </summary>
+    public Task<IReadOnlyList<PrinterCamera>> GetCamerasAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult((IReadOnlyList<PrinterCamera>)Array.Empty<PrinterCamera>());
+    }
+
     private void ConfigureClient(ApiConnectionSettings settings)
     {
         _baseUri = new Uri(settings.Url);
