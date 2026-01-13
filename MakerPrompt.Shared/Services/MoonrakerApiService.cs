@@ -14,7 +14,7 @@ namespace MakerPrompt.Shared.Services
 {
     public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
-        private readonly CancellationTokenSource _cts = new();
+        private CancellationTokenSource _cts = new();
         private readonly HttpMessageHandler? _customHandler;
         private HttpClient? _httpClient;
         private Uri _baseUri = null!;
@@ -36,11 +36,41 @@ namespace MakerPrompt.Shared.Services
             ? new HttpClient(_customHandler, false)
             : new HttpClient();
 
+        private static string? NormalizeUrl(Uri baseUri, string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return null;
+
+            // If already absolute HTTP/HTTPS URL, just return it
+            if (Uri.TryCreate(url, UriKind.Absolute, out var absolute) &&
+                (absolute.Scheme == Uri.UriSchemeHttp || absolute.Scheme == Uri.UriSchemeHttps))
+            {
+                return absolute.AbsoluteUri;
+            }
+
+            // Only combine when baseUri is HTTP/HTTPS to avoid accidental file:// URLs
+            if (baseUri.Scheme == Uri.UriSchemeHttp || baseUri.Scheme == Uri.UriSchemeHttps)
+            {
+                var combined = new Uri(baseUri, url);
+                return combined.AbsoluteUri;
+            }
+
+            // Fallback: return original string when scheme is not web-compatible
+            return url;
+        }
+
+        private bool _telemetryTimerInitialized;
+
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (IsConnected) return IsConnected;
 
             if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Api == null) throw new ArgumentException();
+
+            if (_cts.IsCancellationRequested)
+            {
+                _cts.Dispose();
+                _cts = new CancellationTokenSource();
+            }
 
             _baseUri = new Uri(connectionSettings.Api.Url);
             ConfigureClient(connectionSettings.Api);
@@ -55,8 +85,15 @@ namespace MakerPrompt.Shared.Services
             {
                 var response = await Client.GetAsync("/printer/info", _cts.Token);
                 IsConnected = response.IsSuccessStatusCode;
-                updateTimer.Elapsed += async (s, e) => await SafeTelemetryAsync();
-                updateTimer.Start();
+                if (IsConnected)
+                {
+                    if (!_telemetryTimerInitialized)
+                    {
+                        updateTimer.Elapsed += async (s, e) => await SafeTelemetryAsync();
+                        _telemetryTimerInitialized = true;
+                    }
+                    updateTimer.Start();
+                }
                 ConnectionName = _baseUri.AbsoluteUri;
             }
             catch
@@ -148,6 +185,63 @@ namespace MakerPrompt.Shared.Services
             return LastTelemetry;
         }
 
+        public async Task<IReadOnlyList<PrinterCamera>> GetCamerasAsync(CancellationToken cancellationToken = default)
+        {
+            if (!IsConnected || _baseUri is null)
+            {
+                return Array.Empty<PrinterCamera>();
+            }
+
+            try
+            {
+                using var response = await Client.GetAsync("/server/webcams/list", cancellationToken).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Array.Empty<PrinterCamera>();
+                }
+
+                await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+                var result = await JsonSerializer.DeserializeAsync<WebcamListResponse>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var webcams = result?.Result?.Webcams ?? new List<WebcamEntry>();
+
+                var cameras = new List<PrinterCamera>();
+                foreach (var cam in webcams)
+                {
+                    if (!cam.Enabled)
+                    {
+                        continue;
+                    }
+
+                    var streamUrl = NormalizeUrl(_baseUri, cam.StreamUrl);
+                    var snapshotUrl = NormalizeUrl(_baseUri, cam.SnapshotUrl);
+
+                    if (string.IsNullOrWhiteSpace(streamUrl) && string.IsNullOrWhiteSpace(snapshotUrl))
+                    {
+                        continue;
+                    }
+                    Console.WriteLine($"[Moonraker] baseUri={_baseUri}, raw={cam.StreamUrl}, normalized={streamUrl}");
+
+                    cameras.Add(new PrinterCamera
+                    {
+                        Id = string.IsNullOrWhiteSpace(cam.Uid) ? cam.Name ?? string.Empty : cam.Uid,
+                        DisplayName = string.IsNullOrWhiteSpace(cam.Name) ? "Webcam" : cam.Name!,
+                        StreamUrl = streamUrl,
+                        SnapshotUrl = snapshotUrl,
+                        IsEnabled = cam.Enabled,
+                        Location = cam.Location
+                    });
+                }
+
+                return cameras;
+            }
+            catch
+            {
+                // Discovery failures should not surface to the UI; absence of
+                // cameras simply means the webcam card is not shown.
+                return Array.Empty<PrinterCamera>();
+            }
+        }
+
         public async Task<List<FileEntry>> GetFilesAsync()
         {
             if (!IsConnected) return [];
@@ -164,6 +258,40 @@ namespace MakerPrompt.Shared.Services
                     ModifiedDate = f.ModifiedDate,
                     IsAvailable = f.Permissions.Contains("rw"),
                 }).ToList();
+        }
+
+        public async Task<Stream?> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
+        {
+            if (!IsConnected) return null;
+            if (string.IsNullOrWhiteSpace(fullPath)) return null;
+
+            try
+            {
+                // Moonraker's file API expects: /server/files/{root}/{filename}
+                // We currently list from the "gcodes" root and store FileEntry.FullPath
+                // as the path relative to that root.
+                var relativePath = fullPath.TrimStart('/');
+
+                // If a root was accidentally included, strip a leading "gcodes/" once
+                if (relativePath.StartsWith("gcodes/", StringComparison.OrdinalIgnoreCase))
+                {
+                    relativePath = relativePath.Substring("gcodes/".Length);
+                }
+
+                var requestUri = $"/server/files/gcodes/{relativePath}";
+
+                var response = await Client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null;
+                }
+
+                return await response.Content.ReadAsStreamAsync(cancellationToken);
+            }
+            catch
+            {
+                return null;
+            }
         }
         public async Task<bool> AuthenticateAsync(string username, string password)
         {
@@ -347,27 +475,25 @@ namespace MakerPrompt.Shared.Services
         public async Task<Dictionary<string, string>> GetGcodeHelpAsync()
         {
             if (!IsConnected)
-            {
                 return new Dictionary<string, string>();
-            }
 
             try
             {
                 var response = await Client.GetAsync("/printer/gcode/help", _cts.Token);
                 if (!response.IsSuccessStatusCode)
+                    return new Dictionary<string, string>();
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                if (!doc.RootElement.TryGetProperty("result", out var root) ||
+                    root.ValueKind != JsonValueKind.Object)
                 {
                     return new Dictionary<string, string>();
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(json);
-                var root = doc.RootElement.GetProperty("result");
-
                 var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var prop in root.EnumerateObject())
-                {
                     dict[prop.Name] = prop.Value.GetString() ?? string.Empty;
-                }
 
                 return dict;
             }
@@ -421,6 +547,42 @@ namespace MakerPrompt.Shared.Services
 
             [JsonIgnore]
             public bool IsDirectory => Size == 0;
+        }
+
+        private sealed record WebcamListResponse
+        {
+            [JsonPropertyName("result")]
+            public WebcamResult? Result { get; set; }
+        }
+
+        private sealed record WebcamResult
+        {
+            [JsonPropertyName("webcams")]
+            public List<WebcamEntry> Webcams { get; set; } = new();
+        }
+
+        private sealed record WebcamEntry
+        {
+            [JsonPropertyName("name")]
+            public string? Name { get; set; }
+
+            [JsonPropertyName("location")]
+            public string? Location { get; set; }
+
+            [JsonPropertyName("service")]
+            public string? Service { get; set; }
+
+            [JsonPropertyName("enabled")]
+            public bool Enabled { get; set; }
+
+            [JsonPropertyName("stream_url")]
+            public string? StreamUrl { get; set; }
+
+            [JsonPropertyName("snapshot_url")]
+            public string? SnapshotUrl { get; set; }
+
+            [JsonPropertyName("uid")]
+            public string? Uid { get; set; }
         }
 
     }

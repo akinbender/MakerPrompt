@@ -4,7 +4,6 @@
 @inject PrinterStorageProvider PrinterStorage
 @inject ToastService ToastService
 @inherits ConnectionComponentBase
-@implements IAsyncDisposable
 
 <div class="card p-0 h-100 d-flex flex-column">
     <div class="card-header d-flex align-items-center">
@@ -139,9 +138,9 @@
         }
     }
 
-    public async ValueTask DisposeAsync()
+    public new async ValueTask DisposeAsync()
     {
         GCodeDoc.Changed -= OnDocChanged;
-        await Task.CompletedTask;
+        await base.DisposeAsync();
     }
 }

@@ -55,16 +55,24 @@ export function initializeViewer(container, gcodeContent) {
         }
     });
 
+    const rect = container.getBoundingClientRect();
+    const width = rect.width || container.clientWidth || 800;
+    const height = rect.height || container.clientHeight || 600;
+
     const renderer = new gcodeViewer.GCodeRenderer(
         gcodeContent,
-        800,
-        600,
+        width,
+        height,
         new gcodeViewer.Color(0x808080),
     );
 
-    container.append(
-        renderer.element(),
-    );
+    const element = renderer.element();
+    element.style.width = "100%";
+    element.style.height = "100%";
+    element.style.maxWidth = "100%";
+    element.style.maxHeight = "100%";
+
+    container.append(element);
 
     renderer.render();
     viewers.set(container, renderer);

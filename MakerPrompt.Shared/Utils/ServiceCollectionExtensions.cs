@@ -15,6 +15,7 @@ namespace MakerPrompt.Shared.Utils
             services.AddScoped<IAppConfigurationService, P>();
             services.AddSingleton<ISerialService, L>();
             services.AddSingleton<PrinterCommunicationServiceFactory>();
+            services.AddScoped<IPrinterCameraProvider, PrinterCameraProvider>();
             services.AddScoped<PrinterStorageProvider>();
             services.AddSingleton<GCodeDocumentService>();
             services.AddSingleton<MakerPromptJsInterop>();
