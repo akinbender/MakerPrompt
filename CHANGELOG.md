@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.3.0"></a>
+## [0.3.0](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.0) (2026-01-13)
+
+### Features
+
+* camera view (not working) ([0b4b8ad](https://www.github.com/akinbender/MakerPrompt/commit/0b4b8ada14c138091bbb0bca634ca689e863fc7b))
+
+### Bug Fixes
+
+* cameraview ([627670d](https://www.github.com/akinbender/MakerPrompt/commit/627670da9fd134e0ffa082d437c5f2265a79905a))
+* file transfer ([12ec7d4](https://www.github.com/akinbender/MakerPrompt/commit/12ec7d4694cc8a5897dabe3842788505b57a9ec6))
+* gcode viewer ([6409e12](https://www.github.com/akinbender/MakerPrompt/commit/6409e123f824e4cfbe985106ff6572741ffa3f7a))
+
 <a name="0.2.0"></a>
 ## [0.2.0](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.2.0) (2026-01-09)
 
