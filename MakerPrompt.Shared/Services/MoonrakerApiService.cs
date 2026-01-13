@@ -14,7 +14,7 @@ namespace MakerPrompt.Shared.Services
 {
     public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
-        private readonly CancellationTokenSource _cts = new();
+        private CancellationTokenSource _cts = new();
         private readonly HttpMessageHandler? _customHandler;
         private HttpClient? _httpClient;
         private Uri _baseUri = null!;
@@ -58,11 +58,19 @@ namespace MakerPrompt.Shared.Services
             return url;
         }
 
+        private bool _telemetryTimerInitialized;
+
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (IsConnected) return IsConnected;
 
             if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Api == null) throw new ArgumentException();
+
+            if (_cts.IsCancellationRequested)
+            {
+                _cts.Dispose();
+                _cts = new CancellationTokenSource();
+            }
 
             _baseUri = new Uri(connectionSettings.Api.Url);
             ConfigureClient(connectionSettings.Api);
@@ -77,8 +85,15 @@ namespace MakerPrompt.Shared.Services
             {
                 var response = await Client.GetAsync("/printer/info", _cts.Token);
                 IsConnected = response.IsSuccessStatusCode;
-                updateTimer.Elapsed += async (s, e) => await SafeTelemetryAsync();
-                updateTimer.Start();
+                if (IsConnected)
+                {
+                    if (!_telemetryTimerInitialized)
+                    {
+                        updateTimer.Elapsed += async (s, e) => await SafeTelemetryAsync();
+                        _telemetryTimerInitialized = true;
+                    }
+                    updateTimer.Start();
+                }
                 ConnectionName = _baseUri.AbsoluteUri;
             }
             catch
