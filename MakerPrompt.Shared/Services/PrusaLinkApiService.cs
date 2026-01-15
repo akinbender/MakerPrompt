@@ -234,26 +234,44 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
     private void ConfigureClient(ApiConnectionSettings settings)
     {
         _baseUri = new Uri(settings.Url);
-
-        if (_customHandler != null)
+        // In Blazor WebAssembly (browser) we cannot use HttpClientHandler.Credentials or
+        // most handler-specific features. Instead, rely on the platform HttpClient and
+        // send Basic auth via headers when credentials are supplied.
+        if (OperatingSystem.IsBrowser())
         {
-            _httpClient ??= new HttpClient(_customHandler, false);
-            _ownsClient = false;
+            if (_customHandler != null)
+            {
+                _httpClient ??= new HttpClient(_customHandler, false);
+                _ownsClient = false;
+            }
+            else
+            {
+                _httpClient ??= new HttpClient();
+                _ownsClient = true;
+            }
         }
         else
         {
-            _httpClient?.Dispose();
-            var handler = new HttpClientHandler();
-            if (!string.IsNullOrEmpty(settings.UserName) || !string.IsNullOrEmpty(settings.Password))
+            if (_customHandler != null)
             {
-#pragma warning disable CA1416
-                handler.Credentials = new NetworkCredential(settings.UserName, settings.Password);
-                handler.PreAuthenticate = true;
-#pragma warning restore CA1416
+                _httpClient ??= new HttpClient(_customHandler, false);
+                _ownsClient = false;
             }
+            else
+            {
+                _httpClient?.Dispose();
+                var handler = new HttpClientHandler();
+                if (!string.IsNullOrEmpty(settings.UserName) || !string.IsNullOrEmpty(settings.Password))
+                {
+#pragma warning disable CA1416
+                    handler.Credentials = new NetworkCredential(settings.UserName, settings.Password);
+                    handler.PreAuthenticate = true;
+#pragma warning restore CA1416
+                }
 
-            _httpClient = new HttpClient(handler);
-            _ownsClient = true;
+                _httpClient = new HttpClient(handler);
+                _ownsClient = true;
+            }
         }
 
         Client.BaseAddress = _baseUri;

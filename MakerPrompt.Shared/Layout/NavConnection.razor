@@ -80,7 +80,7 @@
                                 </div>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button @(ActiveTab == PrinterConnectionType.PrusaLink ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.PrusaLink)" disabled="disabled" title="fast fertig">
+                                        <button class="accordion-button @(ActiveTab == PrinterConnectionType.PrusaLink ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.PrusaLink)">
                                             @PrinterConnectionType.PrusaLink.GetDisplayName()
                                         </button>
                                     </h2>
