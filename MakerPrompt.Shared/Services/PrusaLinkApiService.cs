@@ -254,7 +254,8 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         {
             if (_customHandler != null)
             {
-                _httpClient ??= new HttpClient(_customHandler, false);
+                _httpClient?.Dispose();
+                _httpClient = new HttpClient(_customHandler, false);
                 _ownsClient = false;
             }
             else
