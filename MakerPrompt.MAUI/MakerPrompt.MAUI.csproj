@@ -16,7 +16,7 @@
         <ApplicationId>com.makerprompt.maui</ApplicationId>
 		<ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
 		<ApplicationVersion>$(Version)</ApplicationVersion>
-		<Version>0.3.5</Version>
+		<Version>0.3.6</Version>
 
 			<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
         <WindowsPackageType>None</WindowsPackageType>
