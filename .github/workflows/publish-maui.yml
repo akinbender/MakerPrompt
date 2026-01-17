@@ -121,12 +121,20 @@ jobs:
         files: MakerPrompt.MAUI/bin/Release/net10.0-maccatalyst/maccatalyst-arm64/publish
         dest: maccatalyst-arm64-release.zip
 
-    - name: Release (MacCatalyst assets)
+    - name: Release MacCatalyst x64 asset
       uses: softprops/action-gh-release@v2
-      if: github.ref_type == 'tag' && (steps.publish_maccatalyst_x64.outcome == 'success' || steps.publish_maccatalyst_arm64.outcome == 'success')
+      if: github.ref_type == 'tag' && steps.publish_maccatalyst_x64.outcome == 'success'
       with:
         body_path: ${{ github.workspace }}/CHANGELOG.md
         make_latest: true
         files: |
           maccatalyst-x64-release.zip
+
+    - name: Release MacCatalyst arm64 asset
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag' && steps.publish_maccatalyst_arm64.outcome == 'success'
+      with:
+        body_path: ${{ github.workspace }}/CHANGELOG.md
+        make_latest: true
+        files: |
           maccatalyst-arm64-release.zip

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
         <PropertyGroup>
         <TargetFrameworks>net10.0-android;net10.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0;net10.0-windows10.0.22000.0</TargetFrameworks>
@@ -73,7 +73,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.3.9" />
 		<PackageReference Include="System.IO.Ports" Version="10.0.2" />
         <PackageReference Include="UsbSerialForAndroid.Net" Version="1.0.4" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
-        <PackageReference Include="UsbSerialForMacOS" Version="0.9.4" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'" />
+        <PackageReference Include="UsbSerialForMacOS" Version="0.9.5" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'" />
 	</ItemGroup>
 
     <ItemGroup>
