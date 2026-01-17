@@ -100,38 +100,25 @@ jobs:
     - name: Publish MAUI MacCatalyst x64
       id: publish_maccatalyst_x64
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64 -p:CreatePackage=false -o ${{ env.OUTPUT_DIR }}/maccatalyst-x64/ -v diag
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64 -p:CreatePackage=false
 
     - name: Publish MAUI MacCatalyst arm64
       id: publish_maccatalyst_arm64
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64 -p:CreatePackage=false -o ${{ env.OUTPUT_DIR }}/maccatalyst-arm64/ -v diag
-
-    - name: List publish output (MacCatalyst job)
-      run: |
-        echo "Workspace root:"
-        pwd
-        echo "Top-level contents:"
-        ls
-        echo "Recursive listing of publish directory (if exists):"
-        if [ -d "${{ env.OUTPUT_DIR }}" ]; then
-          ls -R ${{ env.OUTPUT_DIR }}
-        else
-          echo "${{ env.OUTPUT_DIR }} directory does not exist"
-        fi
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64 -p:CreatePackage=false
 
     - name: Zip MacCatalyst x64 Release
       if: steps.publish_maccatalyst_x64.outcome == 'success'
       uses: vimtor/action-zip@v1.2
       with:
-        files: ${{ env.OUTPUT_DIR }}/maccatalyst-x64
+        files: ${{ env.MAUI_PROJECT_DIR }}/bin/Release/net10.0-maccatalyst/maccatalyst-x64
         dest: maccatalyst-x64-release.zip
 
     - name: Zip MacCatalyst arm64 Release
       if: steps.publish_maccatalyst_arm64.outcome == 'success'
       uses: vimtor/action-zip@v1.2
       with:
-        files: ${{ env.OUTPUT_DIR }}/maccatalyst-arm64
+        files: ${{ env.MAUI_PROJECT_DIR }}/bin/Release/net10.0-maccatalyst/maccatalyst-arm64
         dest: maccatalyst-arm64-release.zip
 
     - name: Release MacCatalyst x64 asset
