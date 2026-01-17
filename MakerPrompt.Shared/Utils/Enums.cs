@@ -45,8 +45,10 @@ namespace MakerPrompt.Shared.Utils
             Serial,
             [Display(Name = "Moonraker")]
             Moonraker,
-            [Display(Name = "PrusaLink")]
-            PrusaLink
+			[Display(Name = "PrusaLink")]
+			PrusaLink,
+			[Display(Name = "Bambu Lab")]
+			BambuLab
         }
 
         public enum PrinterStatus

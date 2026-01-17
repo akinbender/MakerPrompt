@@ -12,9 +12,12 @@ namespace MakerPrompt.Shared.Utils
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
 
-            services.AddScoped<IAppConfigurationService, P>();
-            services.AddSingleton<ISerialService, L>();
-            services.AddSingleton<PrinterCommunicationServiceFactory>();
+			services.AddScoped<IAppConfigurationService, P>();
+			services.AddSingleton<ISerialService, L>();
+			services.AddSingleton<PrusaLinkApiService>();
+			services.AddSingleton<MoonrakerApiService>();
+			services.AddSingleton<BambuLabApiService>();
+			services.AddSingleton<PrinterCommunicationServiceFactory>();
             services.AddScoped<IPrinterCameraProvider, PrinterCameraProvider>();
             services.AddScoped<PrinterStorageProvider>();
             services.AddSingleton<GCodeDocumentService>();
