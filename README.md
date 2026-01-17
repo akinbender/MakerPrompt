@@ -15,11 +15,36 @@ In our 3D-lab @[x-hain](https://x-hain.de) hackspace we have several printers fr
 - **Prusalink**: Implemented but untested, so atm disabled
 - **Moonraker**: Partially tested (no auth) on K1 Max
 
+### Feature / Client Matrix
+
+| Functionality                              | Web (WASM) | MAUI Windows | MAUI macOS | MAUI Android |
+|--------------------------------------------|------------|-------------|-----------|-------------|
+| Local serial connection & telemetry        | ✅         | ✅          | ⚠️        | ⚠️ |
+| G-code command prompt / console            | ✅         | ✅          | ⚠️        | ⚠️ |
+| Dashboard (status + control tabs)          | ✅         | ✅          | ⚠️        | ⚠️ |
+| Motion & printer control panel             | ✅         | ✅          | ⚠️        | ⚠️ |
+| PID tuning                                 | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
+| Thermal model calibration                  | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
+| Printer file explorer (printer storage)    | ✅         | ✅          | ⚠️        | ⚠️ |
+| Start print from printer storage           | ✅         | ✅          | ⚠️        | ⚠️ |
+| Copy printer files to app storage          | ✅         | ✅          | ⚠️        | ⚠️ |
+| Local app storage explorer                 | ✅         | ✅          | ⚠️        | ⚠️ |
+| G-code viewer                              | ✅         | ✅          | ⚠️        | ⚠️ |
+| Moonraker connection                       | ✅         | ✅          | ⚠️        | ⚠️ |
+| PrusaLink connection                       | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
+| Webcam viewer (Moonraker, future PrusaLink)| ✅         | ❌          | ⚠️        | ⚠️ |
+| BrailleRAP text→Braille G-code tools       | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
+| Theme selection (light/dark etc.)          | ✅         | ✅          | ⚠️        | ⚠️ |
+| Localization / culture switching           | ✅         | ✅          | ⚠️        | ⚠️ |
+| Calculators (price, steps/mm, lead screw)  | ✅         | ✅          | ⚠️        | ⚠️ |
+
+Legend: ✅= implemented and PoC, ❌= known issues, ⚠️= probably implemented but not yet fully validated on this client / platform.
+
 ## TODOs
 - [ ] TEST & BUGFIX
 - [x] Add logo
 - [x] Versioning
-- [ ] Enable PrusaLink
+- [x] Enable PrusaLink
 - [ ] PrusaLink webcam?
 - [x] Fix Web serial telemety update
 - [x] Fix CommandPrompt usage
