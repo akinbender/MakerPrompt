@@ -97,16 +97,25 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.MAUI_PROJECT }}
 
-    - name: Publish MAUI MacCatalyst
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -p:CreatePackage=false
+    - name: Publish MAUI MacCatalyst x64
+      id: publish_maccatalyst_x64
+      continue-on-error: true
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64 -p:CreatePackage=false
+
+    - name: Publish MAUI MacCatalyst arm64
+      id: publish_maccatalyst_arm64
+      continue-on-error: true
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64 -p:CreatePackage=false
 
     - name: Zip MacCatalyst x64 Release
+      if: steps.publish_maccatalyst_x64.outcome == 'success'
       uses: vimtor/action-zip@v1.2
       with:
         files: MakerPrompt.MAUI/bin/Release/net10.0-maccatalyst/maccatalyst-x64/publish
         dest: maccatalyst-x64-release.zip
 
     - name: Zip MacCatalyst arm64 Release
+      if: steps.publish_maccatalyst_arm64.outcome == 'success'
       uses: vimtor/action-zip@v1.2
       with:
         files: MakerPrompt.MAUI/bin/Release/net10.0-maccatalyst/maccatalyst-arm64/publish
@@ -114,7 +123,7 @@ jobs:
 
     - name: Release (MacCatalyst assets)
       uses: softprops/action-gh-release@v2
-      if: github.ref_type == 'tag'
+      if: github.ref_type == 'tag' && (steps.publish_maccatalyst_x64.outcome == 'success' || steps.publish_maccatalyst_arm64.outcome == 'success')
       with:
         body_path: ${{ github.workspace }}/CHANGELOG.md
         make_latest: true
