@@ -29,7 +29,6 @@ jobs:
         dotnet workload install maui
         dotnet workload install maui-desktop
         dotnet workload install maui-android
-        dotnet workload install maui-maccatalyst
 
     - name: Restore dependencies
       run: dotnet restore ${{ env.MAUI_PROJECT }}
@@ -46,10 +45,6 @@ jobs:
     - name: Publish MAUI Android
       continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-android -o ${{ env.OUTPUT_DIR }}/android
-
-    - name: Publish MAUI MacCatalyst
-      continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -p:CreatePackage=false
 
 
     - name: Zip Windows 10 Release
@@ -70,12 +65,6 @@ jobs:
         files: ${{ env.OUTPUT_DIR }}/android
         dest: android-release.zip
 
-    - name: Zip MacCatalyst Release
-      uses: vimtor/action-zip@v1.2
-      with:
-        files: MakerPrompt.MAUI/bin/Release/net10.0-maccatalyst
-        dest: maccatalyst-release.zip
-
     - name: Release
       uses: softprops/action-gh-release@v2
       if: github.ref_type == 'tag'
@@ -86,4 +75,50 @@ jobs:
            windows10-release.zip
            windows11-release.zip
            android-release.zip
-           maccatalyst-release.zip
+
+  build-maccatalyst:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Install MAUI workloads
+      run: |
+        dotnet workload install maui
+        dotnet workload install maui-maccatalyst
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.MAUI_PROJECT }}
+
+    - name: Publish MAUI MacCatalyst x64
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64 -p:CreatePackage=false
+
+    - name: Publish MAUI MacCatalyst arm64
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64 -p:CreatePackage=false
+
+    - name: Zip MacCatalyst x64 Release
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: MakerPrompt.MAUI/bin/Release/net10.0-maccatalyst/maccatalyst-x64/publish
+        dest: maccatalyst-x64-release.zip
+
+    - name: Zip MacCatalyst arm64 Release
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: MakerPrompt.MAUI/bin/Release/net10.0-maccatalyst/maccatalyst-arm64/publish
+        dest: maccatalyst-arm64-release.zip
+
+    - name: Release (MacCatalyst assets)
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
+      with:
+        body_path: ${{ github.workspace }}/CHANGELOG.md
+        make_latest: true
+        files: |
+          maccatalyst-x64-release.zip
+          maccatalyst-arm64-release.zip

@@ -33,7 +33,7 @@ In our 3D-lab @[x-hain](https://x-hain.de) hackspace we have several printers fr
 | Moonraker connection                       | ✅         | ✅          | ⚠️        | ⚠️ |
 | PrusaLink connection                       | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
 | Webcam viewer (Moonraker, future PrusaLink)| ✅         | ❌          | ⚠️        | ⚠️ |
-| BrailleRAP text→Braille G-code tools       | ✅         | ✅          | ⚠️        | ⚠️ |
+| BrailleRAP text→Braille G-code tools       | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
 | Theme selection (light/dark etc.)          | ✅         | ✅          | ⚠️        | ⚠️ |
 | Localization / culture switching           | ✅         | ✅          | ⚠️        | ⚠️ |
 | Calculators (price, steps/mm, lead screw)  | ✅         | ✅          | ⚠️        | ⚠️ |
