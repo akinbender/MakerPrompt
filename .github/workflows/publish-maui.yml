@@ -97,11 +97,8 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.MAUI_PROJECT }}
 
-    - name: Publish MAUI MacCatalyst x64
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64 -p:CreatePackage=false
-
-    - name: Publish MAUI MacCatalyst arm64
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64 -p:CreatePackage=false
+    - name: Publish MAUI MacCatalyst
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -p:CreatePackage=false
 
     - name: Zip MacCatalyst x64 Release
       uses: vimtor/action-zip@v1.2
