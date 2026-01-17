@@ -1,15 +1,19 @@
 ﻿namespace MakerPrompt.Shared.Services
 {
     public class PrinterCommunicationServiceFactory(
-        ISerialService serialService) : IAsyncDisposable
+        ISerialService serialService,
+        PrusaLinkApiService prusaLinkApiService,
+        MoonrakerApiService moonrakerApiService,
+        BambuLabApiService bambuLabApiService) : IAsyncDisposable
     {
         public event EventHandler<bool>? ConnectionStateChanged;
         public bool IsConnected { get; private set; }
         public IPrinterCommunicationService? Current { get; private set; }
 
-        private readonly ISerialService serialService = serialService;
-        private readonly PrusaLinkApiService prusaLinkApiService = new();
-        private readonly MoonrakerApiService moonrakerApiService = new();
+		private readonly ISerialService serialService = serialService;
+		private readonly PrusaLinkApiService prusaLinkApiService = prusaLinkApiService;
+		private readonly MoonrakerApiService moonrakerApiService = moonrakerApiService;
+		private readonly BambuLabApiService bambuLabApiService = bambuLabApiService;
 
         public async Task ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
@@ -18,12 +22,13 @@
                 await Current.DisposeAsync();
             }
 
-            IPrinterCommunicationService service = connectionSettings.ConnectionType switch
+			IPrinterCommunicationService service = connectionSettings.ConnectionType switch
             {
                 PrinterConnectionType.Demo => new DemoPrinterService(),
                 PrinterConnectionType.Serial => serialService,
                 PrinterConnectionType.PrusaLink => prusaLinkApiService,
-                PrinterConnectionType.Moonraker => moonrakerApiService,
+				PrinterConnectionType.Moonraker => moonrakerApiService,
+				PrinterConnectionType.BambuLab => bambuLabApiService,
                 _ => throw new NotImplementedException(),
             };
 
@@ -46,9 +51,10 @@
         public async ValueTask DisposeAsync()
         {
             await DisconnectAsync();
-            await serialService.DisposeAsync();
-            await prusaLinkApiService.DisposeAsync();
-            await moonrakerApiService.DisposeAsync();
+			await serialService.DisposeAsync();
+			await prusaLinkApiService.DisposeAsync();
+			await moonrakerApiService.DisposeAsync();
+			await bambuLabApiService.DisposeAsync();
             GC.SuppressFinalize(this);
         }
     }
