@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.3.4"></a>
+## [0.3.4](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.4) (2026-01-17)
+
+### Bug Fixes
+
+* mac release ([e575301](https://www.github.com/akinbender/MakerPrompt/commit/e5753012761807c0bc2ed5f1038424ea3d89fb42))
+
 <a name="0.3.3"></a>
 ## [0.3.3](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.3) (2026-01-17)
 
