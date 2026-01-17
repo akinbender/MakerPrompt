@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.3.1"></a>
+## [0.3.1](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.1) (2026-01-17)
+
+### Bug Fixes
+
+* mac client app file ([762bbbd](https://www.github.com/akinbender/MakerPrompt/commit/762bbbd1a335acc7367e6ba855234db0622a91d1))
+* prusalink connectivity ([4adedd4](https://www.github.com/akinbender/MakerPrompt/commit/4adedd4ab60dbbeb412dabd088b51aca0d6c6d8e))
+
 <a name="0.3.0"></a>
 ## [0.3.0](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.0) (2026-01-13)
 
