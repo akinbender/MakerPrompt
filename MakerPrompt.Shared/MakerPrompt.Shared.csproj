@@ -12,10 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.1" />
-    <PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.2" />
+    <PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="10.0.2" />
     <PackageReference Include="Blazor.bootstrap" Version="3.5.0" />
   </ItemGroup>
 
