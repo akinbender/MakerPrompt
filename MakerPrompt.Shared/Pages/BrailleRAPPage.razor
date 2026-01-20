@@ -153,24 +153,18 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">@Localizer[Resources.BrailleRAP_Preview]</h5>
-                    @if (statistics.PageCount > 1)
-                    {
-                        <div class="btn-group" role="group" aria-label="@Localizer[Resources.BrailleRAP_PageNavigation]">
-                            <button class="btn btn-sm btn-outline-secondary" 
-                                    @onclick="PreviousPage" 
-                                    disabled="@(currentPage <= 0)">
-                                <i class="bi bi-chevron-left"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" disabled>
-                                @Localizer[Resources.BrailleRAP_Page] @(currentPage + 1) / @statistics.PageCount
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" 
-                                    @onclick="NextPage" 
-                                    disabled="@(currentPage >= statistics.PageCount - 1)">
-                                <i class="bi bi-chevron-right"></i>
-                            </button>
-                        </div>
-                    }
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary" 
+                                @onclick="GenerateGCodeAction" 
+                                disabled="@(string.IsNullOrEmpty(inputText))">
+                            <i class="bi bi-file-earmark-code"></i> @Localizer[Resources.BrailleRAP_GenerateGCode]
+                        </button>
+                        <button class="btn btn-outline-secondary" 
+                                @onclick="SendToPrinterAction" 
+                                disabled="@(!IsConnected || string.IsNullOrEmpty(generatedGCode))">
+                            <i class="bi bi-printer"></i> @Localizer[Resources.BrailleRAP_SendToPrinter]
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if (!string.IsNullOrEmpty(inputText))
@@ -195,29 +189,30 @@
                     {
                         <p class="text-muted text-center py-4">@Localizer[Resources.BrailleRAP_NoPreview]</p>
                     }
+                    @if (statistics.PageCount > 1)
+                    {
+                        <div class="d-flex gap-2 justify-content-end">
+                            <div class="btn-group" role="group" aria-label="@Localizer[Resources.BrailleRAP_PageNavigation]">
+                                <button class="btn btn-sm btn-outline-secondary" 
+                                        @onclick="PreviousPage" 
+                                        disabled="@(currentPage <= 0)">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" disabled>
+                                    @Localizer[Resources.BrailleRAP_Page] @(currentPage + 1) / @statistics.PageCount
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" 
+                                        @onclick="NextPage" 
+                                        disabled="@(currentPage >= statistics.PageCount - 1)">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Action Buttons -->
-    <div class="row">
-        <div class="col-12 mb-3">
-            <div class="d-flex gap-2 justify-content-end">
-                <button class="btn btn-primary" 
-                        @onclick="GenerateGCodeAction" 
-                        disabled="@(string.IsNullOrEmpty(inputText))">
-                    <i class="bi bi-file-earmark-code"></i> @Localizer[Resources.BrailleRAP_GenerateGCode]
-                </button>
-                <button class="btn btn-success" 
-                        @onclick="SendToPrinterAction" 
-                        disabled="@(!IsConnected || string.IsNullOrEmpty(generatedGCode))">
-                    <i class="bi bi-printer"></i> @Localizer[Resources.BrailleRAP_SendToPrinter]
-                </button>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 @code {
