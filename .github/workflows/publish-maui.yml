@@ -101,12 +101,12 @@ jobs:
     - name: Publish MAUI MacCatalyst x64
       id: publish_maccatalyst_x64
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64 -p:CreatePackage=false
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64
 
     - name: Publish MAUI MacCatalyst arm64
       id: publish_maccatalyst_arm64
       continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64 -p:CreatePackage=false
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64
 
     - name: Zip MacCatalyst x64 Release
       if: steps.publish_maccatalyst_x64.outcome == 'success'
