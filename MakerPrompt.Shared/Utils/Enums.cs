@@ -47,7 +47,7 @@ namespace MakerPrompt.Shared.Utils
             Moonraker,
 			[Display(Name = "PrusaLink")]
 			PrusaLink,
-			[Display(Name = "Bambu Lab")]
+			[Display(Name = "BambuLab")]
 			BambuLab
         }
 

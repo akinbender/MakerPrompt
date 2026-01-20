@@ -107,6 +107,20 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button @(ActiveTab == PrinterConnectionType.BambuLab ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(PrinterConnectionType.BambuLab)" disabled="disabled">
+                                            @PrinterConnectionType.BambuLab.GetDisplayName()
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse @(ActiveTab == PrinterConnectionType.BambuLab ? "show" : "collapse")">
+                                        <div class="accordion-body">
+                                            <input type="text" class="form-control mb-2" placeholder="Url" @bind="ApiConnectionSettings.Url">
+                                            <input type="text" class="form-control mb-2" placeholder="Username.." @bind="ApiConnectionSettings.UserName">
+                                            <input type="text" class="form-control mb-2" placeholder="Password.." @bind="ApiConnectionSettings.Password">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="d-flex align-items-end">
                                 <button class="btn btn-sm ms-auto @ConnectButtonClass"
