@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.3.10"></a>
+## [0.3.10](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.10) (2026-01-21)
+
+### Bug Fixes
+
+* release ([db952e3](https://www.github.com/akinbender/MakerPrompt/commit/db952e332e210d92e3d2f80de29dad189d8060ee))
+
 <a name="0.3.9"></a>
 ## [0.3.9](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.9) (2026-01-20)
 
