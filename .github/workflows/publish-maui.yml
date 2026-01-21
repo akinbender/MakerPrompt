@@ -108,19 +108,25 @@ jobs:
       continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64
 
-    - name: Zip MacCatalyst x64 Release
+    - name: Create MacCatalyst x64 DMG
       if: steps.publish_maccatalyst_x64.outcome == 'success'
-      uses: vimtor/action-zip@v1.2
-      with:
-        files: ${{ env.MAUI_PROJECT_DIR }}/bin/Release/net10.0-maccatalyst/maccatalyst-x64
-        dest: maccatalyst-x64-release.zip
+      run: |
+        APP_DIR="${{ env.MAUI_PROJECT_DIR }}bin/Release/net10.0-maccatalyst/maccatalyst-x64"
+        hdiutil create \
+          -volname "MakerPrompt" \
+          -srcfolder "$APP_DIR/MakerPrompt.app" \
+          -ov -format UDZO \
+          "makerprompt-maccatalyst-x64.dmg"
 
-    - name: Zip MacCatalyst arm64 Release
+    - name: Create MacCatalyst arm64 DMG
       if: steps.publish_maccatalyst_arm64.outcome == 'success'
-      uses: vimtor/action-zip@v1.2
-      with:
-        files: ${{ env.MAUI_PROJECT_DIR }}/bin/Release/net10.0-maccatalyst/maccatalyst-arm64
-        dest: maccatalyst-arm64-release.zip
+      run: |
+        APP_DIR="${{ env.MAUI_PROJECT_DIR }}bin/Release/net10.0-maccatalyst/maccatalyst-arm64"
+        hdiutil create \
+          -volname "MakerPrompt" \
+          -srcfolder "$APP_DIR/MakerPrompt.app" \
+          -ov -format UDZO \
+          "makerprompt-maccatalyst-arm64.dmg"
 
     - name: Release MacCatalyst x64 asset
       uses: softprops/action-gh-release@v2
@@ -129,7 +135,7 @@ jobs:
         body_path: ${{ github.workspace }}/CHANGELOG.md
         make_latest: true
         files: |
-          maccatalyst-x64-release.zip
+          makerprompt-maccatalyst-x64.dmg
 
     - name: Release MacCatalyst arm64 asset
       uses: softprops/action-gh-release@v2
@@ -138,4 +144,4 @@ jobs:
         body_path: ${{ github.workspace }}/CHANGELOG.md
         make_latest: true
         files: |
-          maccatalyst-arm64-release.zip
+          makerprompt-maccatalyst-arm64.dmg
