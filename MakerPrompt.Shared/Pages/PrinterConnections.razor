@@ -1,0 +1,284 @@
+@page "/printers/connections"
+@inject PrinterConnectionManager ConnectionManager
+@inject ISerialService SerialService
+@inject ToastService ToastService
+@implements IDisposable
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Printer Connections</h4>
+    <button class="btn btn-sm btn-primary" @onclick="StartCreate">Add Connection</button>
+</div>
+
+@if (showEditor)
+{
+    <div class="card mb-3">
+        <div class="card-header">@(isEditMode ? "Edit Connection" : "New Connection")</div>
+        <div class="card-body">
+            <div class="row g-2 mb-2">
+                <div class="col-md-4">
+                    <label class="form-label">Name</label>
+                    <input class="form-control" @bind="editor.Name" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" @bind="editor.PrinterType" disabled="@isEditMode">
+                        <option value="@PrinterConnectionType.Demo">Demo</option>
+                        <option value="@PrinterConnectionType.Serial">Serial</option>
+                        <option value="@PrinterConnectionType.PrusaLink">PrusaLink</option>
+                        <option value="@PrinterConnectionType.Moonraker">Moonraker</option>
+                        <option value="@PrinterConnectionType.BambuLab">BambuLab</option>
+                    </select>
+                </div>
+                <div class="col-md-2 form-check mt-4">
+                    <input class="form-check-input" type="checkbox" id="enabledFlag" @bind="editor.Enabled" />
+                    <label class="form-check-label" for="enabledFlag">Enabled</label>
+                </div>
+                <div class="col-md-2 form-check mt-4">
+                    <input class="form-check-input" type="checkbox" id="autoFlag" @bind="editor.AutoConnect" />
+                    <label class="form-check-label" for="autoFlag">Auto-connect</label>
+                </div>
+            </div>
+
+            @if (editor.PrinterType == PrinterConnectionType.Serial)
+            {
+                <div class="row g-2 mb-2">
+                    <div class="col-md-8">
+                        <label class="form-label">Serial Port</label>
+                        <div class="input-group">
+                            <select class="form-select" @bind="editor.SerialPortName">
+                                <option value="">Select port</option>
+                                @foreach (var port in serialPorts)
+                                {
+                                    <option value="@port">@port</option>
+                                }
+                            </select>
+                            <button class="btn btn-outline-secondary" type="button" @onclick="RefreshPortsAsync">Refresh</button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Baud Rate</label>
+                        <input class="form-control" type="number" @bind="editor.BaudRate" />
+                    </div>
+                </div>
+            }
+            else if (editor.PrinterType == PrinterConnectionType.PrusaLink || editor.PrinterType == PrinterConnectionType.Moonraker || editor.PrinterType == PrinterConnectionType.BambuLab)
+            {
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Address</label>
+                        <input class="form-control" @bind="editor.Address" placeholder="http://printer.local" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Username / Serial</label>
+                        <input class="form-control" @bind="editor.UserName" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Password / Access Code</label>
+                        <input class="form-control" @bind="editor.Password" />
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-sm btn-outline-secondary" @onclick="CancelEdit">Cancel</button>
+                <button class="btn btn-sm btn-success" @onclick="SaveAsync">Save</button>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Connection</th>
+                <th>Enabled</th>
+                <th>Auto</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var definition in definitions)
+            {
+                var state = runtimeStates.GetValueOrDefault(definition.Id);
+                <tr>
+                    <td>@definition.Name</td>
+                    <td>@definition.PrinterType.GetDisplayName()</td>
+                    <td>
+                        <span class="badge @(state?.IsConnected == true ? "text-bg-success" : "text-bg-secondary")">
+                            @(state?.IsConnected == true ? "Connected" : "Disconnected")
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(state?.LastError))
+                        {
+                            <small class="text-danger d-block">@state.LastError</small>
+                        }
+                    </td>
+                    <td>
+                        <input type="checkbox" checked="@definition.Enabled" @onchange="(e => ToggleEnabledAsync(definition, e))" />
+                    </td>
+                    <td>@definition.AutoConnect</td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" @onclick="() => StartEdit(definition)">Edit</button>
+                            <button class="btn btn-outline-danger" @onclick="() => DeleteAsync(definition.Id)">Delete</button>
+                            @if (state?.IsConnected == true)
+                            {
+                                <button class="btn btn-warning" @onclick="() => DisconnectAsync(definition.Id)">Disconnect</button>
+                                <button class="btn btn-outline-success" @onclick="() => SetActive(definition.Id)">Set Active</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success" @onclick="() => ConnectAsync(definition.Id)" disabled="@(!definition.Enabled)">Connect</button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private List<PrinterConnectionDefinition> definitions = new();
+    private Dictionary<Guid, PrinterConnectionRuntimeState> runtimeStates = new();
+    private List<string> serialPorts = new();
+
+    private bool showEditor;
+    private bool isEditMode;
+    private PrinterConnectionDefinition editor = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConnectionManager.InitializeAsync();
+        ConnectionManager.StatesChanged += HandleStatesChanged;
+
+        await RefreshPortsAsync();
+        ReloadFromManager();
+    }
+
+    private async Task RefreshPortsAsync()
+    {
+        if (!await SerialService.CheckSupportedAsync())
+        {
+            serialPorts = [];
+            return;
+        }
+
+        serialPorts = [.. await SerialService.GetAvailablePortsAsync()];
+    }
+
+    private void StartCreate()
+    {
+        editor = new PrinterConnectionDefinition
+        {
+            Name = "Printer",
+            Enabled = true,
+            AutoConnect = false,
+            BaudRate = 115200
+        };
+
+        isEditMode = false;
+        showEditor = true;
+    }
+
+    private void StartEdit(PrinterConnectionDefinition definition)
+    {
+        editor = new PrinterConnectionDefinition
+        {
+            Id = definition.Id,
+            Name = definition.Name,
+            PrinterType = definition.PrinterType,
+            Address = definition.Address,
+            UserName = definition.UserName,
+            Password = definition.Password,
+            SerialPortName = definition.SerialPortName,
+            BaudRate = definition.BaudRate,
+            Enabled = definition.Enabled,
+            AutoConnect = definition.AutoConnect
+        };
+
+        isEditMode = true;
+        showEditor = true;
+    }
+
+    private void CancelEdit()
+    {
+        showEditor = false;
+        isEditMode = false;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(editor.Name))
+        {
+            ToastService.Notify(new(ToastType.Warning, "Name is required."));
+            return;
+        }
+
+        await ConnectionManager.UpsertDefinitionAsync(editor);
+
+        if (!editor.Enabled)
+        {
+            await ConnectionManager.SetEnabledAsync(editor.Id, false);
+        }
+
+        showEditor = false;
+        isEditMode = false;
+        ReloadFromManager();
+        ToastService.Notify(new(ToastType.Success, "Connection saved."));
+    }
+
+    private async Task DeleteAsync(Guid connectionId)
+    {
+        await ConnectionManager.DeleteDefinitionAsync(connectionId);
+        ReloadFromManager();
+        ToastService.Notify(new(ToastType.Info, "Connection deleted."));
+    }
+
+    private async Task ConnectAsync(Guid connectionId)
+    {
+        var connected = await ConnectionManager.ConnectAsync(connectionId);
+        ReloadFromManager();
+        ToastService.Notify(new(connected ? ToastType.Success : ToastType.Danger, connected ? "Connected." : "Failed to connect."));
+    }
+
+    private async Task DisconnectAsync(Guid connectionId)
+    {
+        await ConnectionManager.DisconnectAsync(connectionId);
+        ReloadFromManager();
+    }
+
+    private async Task ToggleEnabledAsync(PrinterConnectionDefinition definition, ChangeEventArgs args)
+    {
+        var enabled = args.Value as bool? ?? false;
+        await ConnectionManager.SetEnabledAsync(definition.Id, enabled);
+        ReloadFromManager();
+    }
+
+    private void SetActive(Guid connectionId)
+    {
+        ConnectionManager.SetActivePrinter(connectionId);
+        ReloadFromManager();
+    }
+
+    private void HandleStatesChanged(object? sender, IReadOnlyDictionary<Guid, PrinterConnectionRuntimeState> e)
+    {
+        runtimeStates = new Dictionary<Guid, PrinterConnectionRuntimeState>(e);
+        definitions = [.. ConnectionManager.ConnectionDefinitions.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)];
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ReloadFromManager()
+    {
+        definitions = [.. ConnectionManager.ConnectionDefinitions.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)];
+        runtimeStates = new Dictionary<Guid, PrinterConnectionRuntimeState>(ConnectionManager.RuntimeStates);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        ConnectionManager.StatesChanged -= HandleStatesChanged;
+    }
+}

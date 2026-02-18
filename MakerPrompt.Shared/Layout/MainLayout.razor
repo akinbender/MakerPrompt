@@ -44,10 +44,14 @@
     [Inject]
     private LocalizedTitleService TitleService { get; set; } = null!;
 
-    protected override void OnInitialized()
+    [Inject]
+    private PrinterCommunicationServiceFactory PrinterServiceFactory { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await PrinterServiceFactory.InitializeAsync();
         TitleService.OnTitleChanged += HandleTitleChanged;
+        await base.OnInitializedAsync();
     }
 
     private void HandleTitleChanged()

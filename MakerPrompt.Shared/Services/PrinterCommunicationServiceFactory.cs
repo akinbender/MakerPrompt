@@ -1,60 +1,56 @@
 ﻿namespace MakerPrompt.Shared.Services
 {
     public class PrinterCommunicationServiceFactory(
-        ISerialService serialService,
-        PrusaLinkApiService prusaLinkApiService,
-        MoonrakerApiService moonrakerApiService,
-        BambuLabApiService bambuLabApiService) : IAsyncDisposable
+        PrinterConnectionManager connectionManager) : IAsyncDisposable
     {
         public event EventHandler<bool>? ConnectionStateChanged;
-        public bool IsConnected { get; private set; }
-        public IPrinterCommunicationService? Current { get; private set; }
+        private bool _lastConnected;
+        private IPrinterCommunicationService? _lastCurrent;
 
-		private readonly ISerialService serialService = serialService;
-		private readonly PrusaLinkApiService prusaLinkApiService = prusaLinkApiService;
-		private readonly MoonrakerApiService moonrakerApiService = moonrakerApiService;
-		private readonly BambuLabApiService bambuLabApiService = bambuLabApiService;
+        public bool IsConnected => Current?.IsConnected == true;
+        public IPrinterCommunicationService? ActivePrinter => connectionManager.ActivePrinter;
+        public IPrinterCommunicationService? Current => ActivePrinter;
 
         public async Task ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
-            if (Current != null && Current.ConnectionType != connectionSettings.ConnectionType)
-            {
-                await Current.DisposeAsync();
-            }
-
-			IPrinterCommunicationService service = connectionSettings.ConnectionType switch
-            {
-                PrinterConnectionType.Demo => new DemoPrinterService(),
-                PrinterConnectionType.Serial => serialService,
-                PrinterConnectionType.PrusaLink => prusaLinkApiService,
-				PrinterConnectionType.Moonraker => moonrakerApiService,
-				PrinterConnectionType.BambuLab => bambuLabApiService,
-                _ => throw new NotImplementedException(),
-            };
-
-            if (await service.ConnectAsync(connectionSettings))
-            {
-                Current = service;
-                IsConnected = Current.IsConnected;
-                ConnectionStateChanged?.Invoke(this, IsConnected);
-            }
+            await connectionManager.ConnectLegacyAsync(connectionSettings);
+            RaiseIfStateChanged();
         }
 
         public async Task DisconnectAsync()
         {
-            if (Current == null) return;
-            await Current.DisconnectAsync();
-            IsConnected = Current.IsConnected;
-            ConnectionStateChanged?.Invoke(this, IsConnected);
+            await connectionManager.DisconnectActiveAsync();
+            RaiseIfStateChanged();
+        }
+
+        public Task InitializeAsync()
+        {
+            connectionManager.StatesChanged -= OnManagerStatesChanged;
+            connectionManager.StatesChanged += OnManagerStatesChanged;
+            return connectionManager.InitializeAsync();
+        }
+
+        private void OnManagerStatesChanged(object? sender, IReadOnlyDictionary<Guid, PrinterConnectionRuntimeState> e)
+        {
+            RaiseIfStateChanged();
+        }
+
+        private void RaiseIfStateChanged()
+        {
+            var current = Current;
+            var connected = current?.IsConnected == true;
+            if (!ReferenceEquals(_lastCurrent, current) || _lastConnected != connected)
+            {
+                _lastCurrent = current;
+                _lastConnected = connected;
+                ConnectionStateChanged?.Invoke(this, connected);
+            }
         }
 
         public async ValueTask DisposeAsync()
         {
+            connectionManager.StatesChanged -= OnManagerStatesChanged;
             await DisconnectAsync();
-			await serialService.DisposeAsync();
-			await prusaLinkApiService.DisposeAsync();
-			await moonrakerApiService.DisposeAsync();
-			await bambuLabApiService.DisposeAsync();
             GC.SuppressFinalize(this);
         }
     }

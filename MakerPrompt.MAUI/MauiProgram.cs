@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using MakerPrompt.MAUI.Services;
 using MakerPrompt.MAUI.Storage;
 using MakerPrompt.Shared.Infrastructure;
+using MakerPrompt.Shared.Services;
 
 namespace MakerPrompt.MAUI
 {
@@ -37,6 +38,8 @@ namespace MakerPrompt.MAUI
                 .AddSupportedUICultures(supportedCultures);
             builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, SerialService>();
             builder.Services.AddScoped<IAppLocalStorageProvider, MauiAppLocalStorageProvider>();
+            builder.Services.AddScoped<IAppDataProtectionService, AesGcmAppDataProtectionService>();
+            builder.Services.AddScoped<IAppEncryptionKeyStore, MauiSecureStorageEncryptionKeyStore>();
             return builder.Build();
         }
     }

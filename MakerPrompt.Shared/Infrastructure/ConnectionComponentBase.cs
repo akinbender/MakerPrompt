@@ -6,6 +6,8 @@ namespace MakerPrompt.Shared.Infrastructure
 {
     public abstract class ConnectionComponentBase : ComponentBase, IAsyncDisposable
     {
+        private IPrinterCommunicationService? _telemetrySource;
+
         [Inject]
         public required MakerPromptJsInterop JS { get; set; }
 
@@ -28,10 +30,7 @@ namespace MakerPrompt.Shared.Infrastructure
         {
             IsConnected = PrinterServiceFactory.IsConnected;
             PrinterServiceFactory.ConnectionStateChanged += HandleConnectionChanged;
-            if (PrinterServiceFactory.Current != null)
-            {
-                PrinterServiceFactory.Current.TelemetryUpdated += OnTelemetryUpdated;
-            }
+            UpdateTelemetrySubscription();
 
             base.OnInitialized();
         }
@@ -41,26 +40,37 @@ namespace MakerPrompt.Shared.Infrastructure
         protected virtual void HandleConnectionChanged(object? sender, bool connected)
         {
             IsConnected = connected;
-            if (PrinterServiceFactory.Current != null)
-            {
-                if (IsConnected)
-                {
-                    PrinterServiceFactory.Current.TelemetryUpdated += OnTelemetryUpdated;
-                }
-                else
-                {
-                    PrinterServiceFactory.Current.TelemetryUpdated -= OnTelemetryUpdated;
-                }
-            }
+            UpdateTelemetrySubscription();
             StateHasChanged();
+        }
+
+        private void UpdateTelemetrySubscription()
+        {
+            if (_telemetrySource != null)
+            {
+                _telemetrySource.TelemetryUpdated -= OnTelemetryUpdated;
+                _telemetrySource = null;
+            }
+
+            if (!IsConnected)
+            {
+                return;
+            }
+
+            var current = PrinterServiceFactory.Current;
+            if (current != null)
+            {
+                current.TelemetryUpdated += OnTelemetryUpdated;
+                _telemetrySource = current;
+            }
         }
 
         public async ValueTask DisposeAsync()
         {
             PrinterServiceFactory.ConnectionStateChanged -= HandleConnectionChanged;
-            if (PrinterServiceFactory.Current != null)
+            if (_telemetrySource != null)
             {
-                PrinterServiceFactory.Current.TelemetryUpdated -= OnTelemetryUpdated;
+                _telemetrySource.TelemetryUpdated -= OnTelemetryUpdated;
             }
             GC.SuppressFinalize(this);
         }

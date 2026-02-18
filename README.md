@@ -17,43 +17,38 @@ In our 3D-lab @[x-hain](https://x-hain.de) hackspace we have several printers fr
 
 ### Feature / Client Matrix
 
-| Functionality                              | Web (WASM) | MAUI Windows | MAUI macOS | MAUI Android |
-|--------------------------------------------|------------|-------------|-----------|-------------|
-| Local serial connection & telemetry        | ✅         | ✅          | ⚠️        | ⚠️ |
-| G-code command prompt / console            | ✅         | ✅          | ⚠️        | ⚠️ |
-| Dashboard (status + control tabs)          | ✅         | ✅          | ⚠️        | ⚠️ |
-| Motion & printer control panel             | ✅         | ✅          | ⚠️        | ⚠️ |
-| PID tuning                                 | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
-| Thermal model calibration                  | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
-| Printer file explorer (printer storage)    | ✅         | ✅          | ⚠️        | ⚠️ |
-| Start print from printer storage           | ✅         | ✅          | ⚠️        | ⚠️ |
-| Copy printer files to app storage          | ✅         | ✅          | ⚠️        | ⚠️ |
-| Local app storage explorer                 | ✅         | ✅          | ⚠️        | ⚠️ |
-| G-code viewer                              | ✅         | ✅          | ⚠️        | ⚠️ |
-| Moonraker connection                       | ✅         | ✅          | ⚠️        | ⚠️ |
-| PrusaLink connection                       | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
-| Webcam viewer (Moonraker, future PrusaLink)| ✅         | ❌          | ⚠️        | ⚠️ |
-| BrailleRAP text→Braille G-code tools       | ⚠️         | ⚠️          | ⚠️        | ⚠️ |
-| Theme selection (light/dark etc.)          | ✅         | ✅          | ⚠️        | ⚠️ |
-| Localization / culture switching           | ✅         | ✅          | ⚠️        | ⚠️ |
-| Calculators (price, steps/mm, lead screw)  | ✅         | ✅          | ⚠️        | ⚠️ |
+Each client column lists support per connection type in the order `S / M / P / B`:
 
-Legend: ✅= implemented and PoC, ❌= known issues, ⚠️= probably implemented but not yet fully validated on this client / platform.
+- `S` = Serial
+- `M` = Moonraker
+- `P` = PrusaLink
+- `B` = BambuLab
+
+| Functionality                              | Web (WASM)      | MAUI Windows      | MAUI macOS        |
+|--------------------------------------------|------------------|-------------------|-------------------|
+|                                       |  S / M / P / B  | S / M / P /  B    | S / M / P / B    |
+| Connection                                 | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| G-code command prompt / console            | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Dashboard (status + control tabs)          | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Motion & printer control panel             | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| PID tuning                                 | ⚠️ / ⚠️ / ⚠️ / ⚠️ | ⚠️ / ⚠️ / ⚠️ / ⚠️ | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Thermal model calibration                  | ⚠️ / ⚠️ / ⚠️ / ⚠️ | ⚠️ / ⚠️ / ⚠️ / ⚠️ | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Printer file explorer (printer storage)    | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Start print from printer storage           | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Copy printer files to app storage          | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Local app storage explorer                 | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| G-code viewer                              | ✅ / ✅ / ✅ / ✅ | ✅ / ✅ / ✅ / ✅  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Webcam viewer                              | ✅ / ✅ / ✅ / ✅ | ❌ / ❌ / ❌ / ❌  | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| BrailleRAP text→Braille G-code tools       | ⚠️ / ⚠️ / ⚠️ / ⚠️ | ⚠️ / ⚠️ / ⚠️ / ⚠️ | ⚠️ / ⚠️ / ⚠️ / ⚠️ |
+| Theme selection                            | ✅ | ✅ | ✅ |
+| Localization / culture switching           | ✅ | ✅ | ✅ |
+| RepRap Calculators                         | ✅ | ✅ | ✅ |
+
+
+Legend: ✅= implemented and PoC, ❌= known issues, ⚠️= probably implemented but not yet fully validated on this client / platform; sequence in each cell is `S / M / P / B` as described above.
 
 ## TODOs
 - [ ] TEST & BUGFIX
-- [x] Add logo
-- [x] Versioning
-- [x] Enable PrusaLink
-- [ ] PrusaLink webcam?
-- [x] Fix Web serial telemety update
-- [x] Fix CommandPrompt usage
-- [x] Fix ControlPanel coordinate axis movement
-- [x] Implement File list component
-- [x] Add Android&Macos support
-- [x] Moonraker GCode list
-- [x] Moonraker Webcam
-- [x] Expand language support? (es, pl, fr)
 - [ ] Mention used open source projects
 
 The BrailleRAP integration is based on logic from [AccessBrailleRAP](https://github.com/braillerap/AccessBrailleRAP) and adapted for the MakerPrompt architecture.

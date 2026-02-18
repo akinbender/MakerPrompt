@@ -1,0 +1,84 @@
+@page "/printers/dashboard"
+@inject PrinterConnectionManager ConnectionManager
+@implements IDisposable
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Multi-Printer Dashboard</h4>
+    <a class="btn btn-sm btn-outline-primary" href="printers/connections">Manage Connections</a>
+</div>
+
+@if (activeStates.Count == 0)
+{
+    <div class="alert alert-info">No active printers. Connect one or more printers from the connections page.</div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var state in activeStates)
+        {
+            <div class="col-xl-4 col-lg-6 col-md-12">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <strong>@state.Name</strong>
+                        <span class="badge @(state.IsConnected ? "text-bg-success" : "text-bg-secondary")">
+                            @(state.IsConnected ? "Connected" : "Disconnected")
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2"><strong>Type:</strong> @state.PrinterType.GetDisplayName()</p>
+                        <p class="mb-2">
+                            <strong>Job:</strong>
+                            @(state.IsPrinting || state.Telemetry.SDCard.Printing ? "Printing" : state.Telemetry.Status.GetDisplayName())
+                        </p>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="border rounded p-2 mb-2">
+                                    <small class="text-muted">Hotend</small>
+                                    <div>@state.Telemetry.HotendTemp.ToString("F1") / @state.Telemetry.HotendTarget.ToString("F1") °C</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-2 mb-2">
+                                    <small class="text-muted">Bed</small>
+                                    <div>@state.Telemetry.BedTemp.ToString("F1") / @state.Telemetry.BedTarget.ToString("F1") °C</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-1"><strong>Position:</strong> X @state.Telemetry.Position.X.ToString("F1") / Y @state.Telemetry.Position.Y.ToString("F1") / Z @state.Telemetry.Position.Z.ToString("F1")</p>
+                        <p class="mb-0"><strong>Last Update:</strong> @state.LastUpdatedUtc.LocalDateTime.ToString("g")</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<PrinterConnectionRuntimeState> activeStates = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConnectionManager.InitializeAsync();
+        ConnectionManager.StatesChanged += HandleStatesChanged;
+        ReloadStates();
+    }
+
+    private void HandleStatesChanged(object? sender, IReadOnlyDictionary<Guid, PrinterConnectionRuntimeState> e)
+    {
+        ReloadStates(e);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ReloadStates(IReadOnlyDictionary<Guid, PrinterConnectionRuntimeState>? states = null)
+    {
+        var runtime = states ?? ConnectionManager.RuntimeStates;
+        activeStates = [.. runtime.Values
+            .Where(x => x.IsConnected)
+            .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)];
+    }
+
+    public void Dispose()
+    {
+        ConnectionManager.StatesChanged -= HandleStatesChanged;
+    }
+}

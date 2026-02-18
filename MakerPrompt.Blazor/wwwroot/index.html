@@ -80,6 +80,55 @@
             set: (value) => window.localStorage['BlazorCulture'] = value
         };
     </script>
+    <script>
+        function toBase64(bytes) {
+            let binary = '';
+            const chunkSize = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                const chunk = bytes.subarray(i, i + chunkSize);
+                binary += String.fromCharCode.apply(null, chunk);
+            }
+            return btoa(binary);
+        }
+
+        function fromBase64(base64) {
+            return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        }
+
+        window.makerPromptCrypto = {
+            encrypt: async (plaintext, base64Key) => {
+                const enc = new TextEncoder();
+                const keyBytes = fromBase64(base64Key);
+                const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, ['encrypt']);
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const cipherBuffer = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, enc.encode(plaintext));
+                const cipherBytes = new Uint8Array(cipherBuffer);
+
+                return JSON.stringify({
+                    v: 1,
+                    iv: toBase64(iv),
+                    ct: toBase64(cipherBytes)
+                });
+            },
+            decrypt: async (payload, base64Key) => {
+                try {
+                    const envelope = JSON.parse(payload);
+                    if (!envelope || envelope.v !== 1 || !envelope.iv || !envelope.ct) {
+                        return null;
+                    }
+
+                    const keyBytes = fromBase64(base64Key);
+                    const iv = fromBase64(envelope.iv);
+                    const cipherBytes = fromBase64(envelope.ct);
+                    const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, ['decrypt']);
+                    const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, cipherBytes);
+                    return new TextDecoder().decode(plainBuffer);
+                } catch {
+                    return null;
+                }
+            }
+        };
+    </script>
 </body>
 
 </html>
