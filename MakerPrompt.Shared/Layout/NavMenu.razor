@@ -1,63 +1,62 @@
-﻿<div class="col-md-3 col-lg-2 bg-body-secondary sidebar p-0">
-    <div class="offcanvas-md offcanvas-end bg-body-tertiary h-100" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-        <div class="offcanvas-header">
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button>
-        </div> 
-        <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto h-100"> 
-            <ul class="nav flex-column mb-auto pt-3"> 
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        @Resources.PageTitle_Homepage
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="cheatsheet">
-                        @Resources.PageTitle_GCodeList
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="files">
-                        @Resources.Dashboard_FileExplorer
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="calculators">
-                        @Resources.PageTitle_Calculators
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="braillerap">
-                        @Resources.PageTitle_BrailleRAP
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="about">
-                        @Resources.PageTitle_About
-                    </NavLink>
-                </li>
-            </ul> 
-            <hr/>
-            <div class="nav-item px-3">
-                <p class="text-break">@($"v{Version}")</p>
-            </div>
-        </div> 
+﻿<nav class="sidebar @(Collapsed ? "sidebar--collapsed" : "")">
+    <div class="d-flex flex-column h-100 py-2">
+        <ul class="nav flex-column px-2 mb-auto">
+            <li class="nav-item">
+                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="" Match="NavLinkMatch.All">
+                    <i class="bi bi-house sidebar-icon"></i>
+                    <span class="sidebar-label">@Resources.PageTitle_Homepage</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="cheatsheet">
+                    <i class="bi bi-list-ul sidebar-icon"></i>
+                    <span class="sidebar-label">@Resources.PageTitle_GCodeList</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="files">
+                    <i class="bi bi-folder sidebar-icon"></i>
+                    <span class="sidebar-label">@Resources.Dashboard_FileExplorer</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="calculators">
+                    <i class="bi bi-calculator sidebar-icon"></i>
+                    <span class="sidebar-label">@Resources.PageTitle_Calculators</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="braillerap">
+                    <i class="bi bi-grid-3x3-gap sidebar-icon"></i>
+                    <span class="sidebar-label">@Resources.PageTitle_BrailleRAP</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="about">
+                    <i class="bi bi-info-circle sidebar-icon"></i>
+                    <span class="sidebar-label">@Resources.PageTitle_About</span>
+                </NavLink>
+            </li>
+        </ul>
+        <hr class="mx-2 my-1" />
+        <div class="px-2 d-flex align-items-center gap-2">
+            <button class="btn btn-link sidebar-toggle-btn flex-shrink-0 px-3 py-2 rounded" @onclick="OnToggle" title="Toggle navigation">
+                <i class="bi @(Collapsed ? "bi-chevron-double-right" : "bi-chevron-double-left") sidebar-icon"></i>
+            </button>
+            <small class="sidebar-label text-muted" style="font-size:0.75rem;">@($"v{Version}")</small>
+        </div>
     </div>
-</div>
+</nav>
 
 @code {
-    private string Version = "v0.0.0-alpha";
-    private bool collapseNavMenu = true;
+    [Parameter] public bool Collapsed { get; set; }
+    [Parameter] public EventCallback OnToggle { get; set; }
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string Version = "0.0.0";
 
     protected override void OnInitialized()
     {
         var assembly = Assembly.GetEntryAssembly();
         Version = assembly?.GetName()?.Version?.ToString(3) ?? Version;
-    }
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
     }
 }

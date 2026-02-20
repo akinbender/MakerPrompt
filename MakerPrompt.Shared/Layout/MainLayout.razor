@@ -3,39 +3,33 @@
 @implements IDisposable
 
 <header class="navbar sticky-top bg-body-secondary text-body flex-md-nowrap p-0 shadow">
-    <a href="/" class="navbar-brand bg-body-tertiary col-md-3 col-lg-2 d-flex align-items-center me-0 px-2">
-            <img class="ms-2" width="40" height="32" aria-hidden="true" src="_content/MakerPrompt.Shared/logo.svg" onerror="this.src='_content/MakerPrompt.Shared/favicon.png'" />
-            <span>MakerPrompt</span>
-        </a>
+    <a href="/" class="navbar-brand bg-body-tertiary d-flex align-items-center me-0 px-2 @(_navCollapsed ? "brand--collapsed" : "")">
+        <img class="ms-2" width="40" height="32" aria-hidden="true" src="_content/MakerPrompt.Shared/logo.svg" onerror="this.src='_content/MakerPrompt.Shared/favicon.png'" />
+        <span class="brand-label">MakerPrompt</span>
+    </a>
     <NavConnection />
 </header>
 
-<div class="container-fluid" style="height: 93%;">
-    <div class="row h-100">
-        <NavMenu />
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 overflow-y-auto h-100">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">@TitleService.CurrentTitle</h1>
+<div class="layout-body">
+    <NavMenu Collapsed="_navCollapsed" OnToggle="ToggleSidebar" />
+    <main class="layout-main h-100">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom px-4">
+            <h1 class="h2">@TitleService.CurrentTitle</h1>
+        </div>
+        <div class="layout-content">
+            <div class="layout-page">
+                @Body
             </div>
-            <div class="row min-vh-100">
-                <div class="col-lg-7 col-md-12">
-                    <div class="container-fluid vh-100 overflow-y-auto">
-                        @Body
-                    </div>
+            <div class="layout-right">
+                <div class="layout-right-top">
+                    <CommandPrompt />
                 </div>
-                <div class="col-lg-5 col-md-12">
-                    <div class="container-fluid vh-100">
-                        <div class="row h-50 mb-3">
-                            <CommandPrompt />
-                        </div>
-                        <div class="row h-50">
-                            <GCodeViewer />
-                        </div>
-                    </div>
+                <div class="layout-right-bottom">
+                    <GCodeViewer />
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 </div>
 
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.BottomRight" />
@@ -43,6 +37,10 @@
 @code {
     [Inject]
     private LocalizedTitleService TitleService { get; set; } = null!;
+
+    private bool _navCollapsed = false;
+
+    private void ToggleSidebar() => _navCollapsed = !_navCollapsed;
 
     protected override void OnInitialized()
     {
