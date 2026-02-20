@@ -8,6 +8,7 @@
 @inject IStringLocalizer<Resources> localizer
 @inject NavigationManager Navigation
 @inject ToastService ToastService
+@inject ILogger<NavConnection> Logger
 @implements IDisposable
 
 <nav class="navbar navbar-expand px-2">
@@ -197,6 +198,11 @@
         {
             AvailablePorts = (await SerialService.GetAvailablePortsAsync()).ToList();
         }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to enumerate serial ports");
+            ToastService.Notify(new(ToastType.Warning, "Could not refresh ports", ex.Message));
+        }
         finally
         {
             IsBusy = false;
@@ -232,6 +238,11 @@
 
                 await ServiceFactory.ConnectAsync(connectionSettings);
             }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Connection toggle failed");
+            ToastService.Notify(new(ToastType.Danger, "Connection failed", ex.Message));
         }
         finally
         {

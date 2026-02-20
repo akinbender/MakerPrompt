@@ -1,6 +1,8 @@
+using BlazorBootstrap;
 using MakerPrompt.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace MakerPrompt.Shared.Infrastructure
 {
@@ -15,8 +17,31 @@ namespace MakerPrompt.Shared.Infrastructure
         [Inject]
         public required PrinterCommunicationServiceFactory PrinterServiceFactory { get; set; }
 
+        [Inject]
+        private ILogger<ConnectionComponentBase> Logger { get; set; } = null!;
+
+        [Inject]
+        private ToastService ToastService { get; set; } = null!;
+
         protected bool IsConnected { get; set; }
         protected string ConnectionDisabledAttribute => IsConnected ? string.Empty : "disabled";
+
+        /// <summary>
+        /// Executes a printer command, catches any exception, logs it, and surfaces
+        /// a toast — so subclasses never need individual try/catch blocks.
+        /// </summary>
+        protected async Task RunAsync(Func<Task> action, string errorTitle = "Command failed")
+        {
+            try
+            {
+                await action();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Printer command failed: {Title}", errorTitle);
+                ToastService.Notify(new ToastMessage(ToastType.Danger, errorTitle, ex.Message));
+            }
+        }
 
         private void OnTelemetryUpdated(object? sender, PrinterTelemetry e)
         {
