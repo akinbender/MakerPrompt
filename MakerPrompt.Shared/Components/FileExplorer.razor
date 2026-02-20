@@ -99,7 +99,10 @@
         var printerService = PrinterServiceFactory.Current;
         if (printerService != null)
         {
-            _files = await printerService.GetFilesAsync() ?? new List<FileEntry>();
+            await RunAsync(async () =>
+            {
+                _files = await printerService.GetFilesAsync() ?? new List<FileEntry>();
+            }, "Failed to load files");
         }
         else
         {
@@ -140,28 +143,35 @@
     private Task StartPrintAsync()
     {
         if (selectedFile == null || PrinterServiceFactory.Current == null)
-        {
             return Task.CompletedTask;
-        }
-
-        return PrinterServiceFactory.Current.StartPrint(selectedFile);
+        var file = selectedFile;
+        var printer = PrinterServiceFactory.Current;
+        return RunAsync(() => printer.StartPrint(file), "Failed to start print");
     }
 
-    private async Task CopySelectedToApp()
+    private Task CopySelectedToApp()
     {
-        if (selectedFile == null) return;
-        await using var stream = await PrinterStorage.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
-        if (stream == Stream.Null) return;
-        await AppStorage.SaveFileAsync(Path.GetFileName(selectedFile.FullPath), stream);
+        if (selectedFile == null) return Task.CompletedTask;
+        var file = selectedFile;
+        return RunAsync(async () =>
+        {
+            await using var stream = await PrinterStorage.OpenReadAsync(file.FullPath) ?? Stream.Null;
+            if (stream == Stream.Null) return;
+            await AppStorage.SaveFileAsync(Path.GetFileName(file.FullPath), stream);
+        }, "Failed to copy file");
     }
 
-    private async Task OpenSelectedPrinter()
+    private Task OpenSelectedPrinter()
     {
-        if (selectedFile == null) return;
-        await using var stream = await PrinterStorage.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
-        if (stream == Stream.Null) return;
-        using var reader = new StreamReader(stream);
-        var content = await reader.ReadToEndAsync();
-        GCodeDoc.SetGCode(content);
+        if (selectedFile == null) return Task.CompletedTask;
+        var file = selectedFile;
+        return RunAsync(async () =>
+        {
+            await using var stream = await PrinterStorage.OpenReadAsync(file.FullPath) ?? Stream.Null;
+            if (stream == Stream.Null) return;
+            using var reader = new StreamReader(stream);
+            var content = await reader.ReadToEndAsync();
+            GCodeDoc.SetGCode(content);
+        }, "Failed to open file");
     }
 }
