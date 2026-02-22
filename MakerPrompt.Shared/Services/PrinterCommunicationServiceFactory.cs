@@ -4,7 +4,8 @@
         ISerialService serialService,
         PrusaLinkApiService prusaLinkApiService,
         MoonrakerApiService moonrakerApiService,
-        BambuLabApiService bambuLabApiService) : IAsyncDisposable
+        BambuLabApiService bambuLabApiService,
+        OctoPrintApiService octoPrintApiService) : IAsyncDisposable
     {
         public event EventHandler<bool>? ConnectionStateChanged;
         public bool IsConnected { get; private set; }
@@ -14,6 +15,7 @@
 		private readonly PrusaLinkApiService prusaLinkApiService = prusaLinkApiService;
 		private readonly MoonrakerApiService moonrakerApiService = moonrakerApiService;
 		private readonly BambuLabApiService bambuLabApiService = bambuLabApiService;
+		private readonly OctoPrintApiService octoPrintApiService = octoPrintApiService;
 
         public async Task ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
@@ -29,6 +31,7 @@
                 PrinterConnectionType.PrusaLink => prusaLinkApiService,
 				PrinterConnectionType.Moonraker => moonrakerApiService,
 				PrinterConnectionType.BambuLab => bambuLabApiService,
+				PrinterConnectionType.OctoPrint => octoPrintApiService,
                 _ => throw new NotImplementedException(),
             };
 
@@ -48,6 +51,18 @@
             ConnectionStateChanged?.Invoke(this, IsConnected);
         }
 
+        /// <summary>
+        /// Called by PrinterConnectionManager to keep this factory in sync with the
+        /// currently active managed printer. Preserves backward compatibility with
+        /// all existing single-printer UI components that read factory.Current.
+        /// </summary>
+        public void SetManagedCurrent(IPrinterCommunicationService? service)
+        {
+            Current = service;
+            IsConnected = service?.IsConnected ?? false;
+            ConnectionStateChanged?.Invoke(this, IsConnected);
+        }
+
         public async ValueTask DisposeAsync()
         {
             await DisconnectAsync();
@@ -55,6 +70,7 @@
 			await prusaLinkApiService.DisposeAsync();
 			await moonrakerApiService.DisposeAsync();
 			await bambuLabApiService.DisposeAsync();
+			await octoPrintApiService.DisposeAsync();
             GC.SuppressFinalize(this);
         }
     }

@@ -44,6 +44,12 @@ namespace MakerPrompt.Shared.Services
                     PrinterConnectionType.PrusaLink when current is PrusaLinkApiService prusa =>
                         await prusa.GetCamerasAsync(cancellationToken).ConfigureAwait(false),
 
+                    PrinterConnectionType.OctoPrint when current is OctoPrintApiService octoprint =>
+                        await octoprint.GetCamerasAsync(cancellationToken).ConfigureAwait(false),
+
+                    PrinterConnectionType.BambuLab when current is BambuLabApiService bambu =>
+                        await bambu.GetCamerasAsync(cancellationToken).ConfigureAwait(false),
+
                     _ => Array.Empty<PrinterCamera>()
                 };
             }

@@ -10,6 +10,10 @@
     [Parameter] public bool EnableDelete { get; set; } = true;
     [Parameter] public bool EnableOpen { get; set; } = true;
     [Parameter] public bool EnableCopy { get; set; } = true;
+    /// <summary>
+    /// File path prefixes to hide from the listing (e.g. internal config files).
+    /// </summary>
+    [Parameter] public IReadOnlyList<string> HiddenPrefixes { get; set; } = Array.Empty<string>();
 
     private List<FileEntry> _files = new();
     private bool _isLoading;
@@ -24,7 +28,10 @@
     {
         _isLoading = true;
         StateHasChanged();
-        _files = await Provider.ListFilesAsync();
+        var all = await Provider.ListFilesAsync();
+        _files = HiddenPrefixes.Count > 0
+            ? all.Where(f => !HiddenPrefixes.Any(prefix => f.FullPath.Contains(prefix, StringComparison.OrdinalIgnoreCase))).ToList()
+            : all;
         _isLoading = false;
         StateHasChanged();
     }

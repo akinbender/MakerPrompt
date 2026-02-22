@@ -48,7 +48,9 @@ namespace MakerPrompt.Shared.Utils
 			[Display(Name = "PrusaLink")]
 			PrusaLink,
 			[Display(Name = "BambuLab")]
-			BambuLab
+			BambuLab,
+			[Display(Name = "OctoPrint")]
+			OctoPrint
         }
 
         public enum PrinterStatus

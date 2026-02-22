@@ -690,4 +690,118 @@
   <data name="CommandPrompt_ShowTelemetry" xml:space="preserve">
     <value>Show telemetry output</value>
   </data>
+  <data name="Fleet_Title" xml:space="preserve">
+    <value>Fleet</value>
+  </data>
+  <data name="Fleet_NoPrinters" xml:space="preserve">
+    <value>No printers configured. Add one to get started.</value>
+  </data>
+  <data name="Fleet_AddPrinter" xml:space="preserve">
+    <value>Add Printer</value>
+  </data>
+  <data name="Fleet_EditPrinter" xml:space="preserve">
+    <value>Edit Printer</value>
+  </data>
+  <data name="Fleet_ManagePrinters" xml:space="preserve">
+    <value>Manage Printers</value>
+  </data>
+  <data name="Fleet_DeletePrinter" xml:space="preserve">
+    <value>Delete Printer</value>
+  </data>
+  <data name="Fleet_PrinterName" xml:space="preserve">
+    <value>Printer Name</value>
+  </data>
+  <data name="Fleet_ConnectionType" xml:space="preserve">
+    <value>Connection Type</value>
+  </data>
+  <data name="Fleet_AutoConnect" xml:space="preserve">
+    <value>Auto-connect on startup</value>
+  </data>
+  <data name="Fleet_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Fleet_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Fleet_Connecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="Fleet_Disconnecting" xml:space="preserve">
+    <value>Disconnecting...</value>
+  </data>
+  <data name="Fleet_SetActive" xml:space="preserve">
+    <value>Set as active</value>
+  </data>
+  <data name="Fleet_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Fleet_Printers" xml:space="preserve">
+    <value>Printers</value>
+  </data>
+  <data name="Fleet_DeleteConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this printer?</value>
+  </data>
+  <data name="Fleet_Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="Fleet_Camera" xml:space="preserve">
+    <value>Camera</value>
+  </data>
+  <data name="PageTitle_Fleet" xml:space="preserve">
+    <value>Fleet</value>
+  </data>
+  <data name="PrintQueue_Title" xml:space="preserve">
+    <value>Print Queue</value>
+  </data>
+  <data name="PrintQueue_NoFiles" xml:space="preserve">
+    <value>No files available. Connect a printer to browse files.</value>
+  </data>
+  <data name="PrintQueue_SelectPrinter" xml:space="preserve">
+    <value>Send to printer</value>
+  </data>
+  <data name="PrintQueue_StartPrint" xml:space="preserve">
+    <value>Start Print</value>
+  </data>
+  <data name="PrintQueue_NoPrintersAvailable" xml:space="preserve">
+    <value>No idle printers available</value>
+  </data>
+  <data name="PrintQueue_PrintStarted" xml:space="preserve">
+    <value>Print started</value>
+  </data>
+  <data name="PrintQueue_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="PrintQueue_NoProjects" xml:space="preserve">
+    <value>No projects yet. Create one to start organizing prints.</value>
+  </data>
+  <data name="PrintQueue_NewProject" xml:space="preserve">
+    <value>New Project</value>
+  </data>
+  <data name="PrintQueue_ProjectName" xml:space="preserve">
+    <value>Project Name</value>
+  </data>
+  <data name="PrintQueue_UploadFiles" xml:space="preserve">
+    <value>Upload G-code</value>
+  </data>
+  <data name="PrintQueue_DeleteProject" xml:space="preserve">
+    <value>Delete Project</value>
+  </data>
+  <data name="PrintQueue_RemoveJob" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="PrintQueue_SendToPrinter" xml:space="preserve">
+    <value>Send to Printer</value>
+  </data>
+  <data name="PrintQueue_Queued" xml:space="preserve">
+    <value>Queued</value>
+  </data>
+  <data name="PrintQueue_Printing" xml:space="preserve">
+    <value>Printing</value>
+  </data>
+  <data name="PrintQueue_Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="PrintQueue_Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
 </root>

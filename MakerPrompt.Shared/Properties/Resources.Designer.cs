@@ -1778,5 +1778,347 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("Theme_Light", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fleet.
+        /// </summary>
+        public static string Fleet_Title {
+            get {
+                return ResourceManager.GetString("Fleet_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No printers configured. Add one to get started..
+        /// </summary>
+        public static string Fleet_NoPrinters {
+            get {
+                return ResourceManager.GetString("Fleet_NoPrinters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Printer.
+        /// </summary>
+        public static string Fleet_AddPrinter {
+            get {
+                return ResourceManager.GetString("Fleet_AddPrinter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Printer.
+        /// </summary>
+        public static string Fleet_EditPrinter {
+            get {
+                return ResourceManager.GetString("Fleet_EditPrinter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage Printers.
+        /// </summary>
+        public static string Fleet_ManagePrinters {
+            get {
+                return ResourceManager.GetString("Fleet_ManagePrinters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Printer.
+        /// </summary>
+        public static string Fleet_DeletePrinter {
+            get {
+                return ResourceManager.GetString("Fleet_DeletePrinter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printer Name.
+        /// </summary>
+        public static string Fleet_PrinterName {
+            get {
+                return ResourceManager.GetString("Fleet_PrinterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection Type.
+        /// </summary>
+        public static string Fleet_ConnectionType {
+            get {
+                return ResourceManager.GetString("Fleet_ConnectionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-connect on startup.
+        /// </summary>
+        public static string Fleet_AutoConnect {
+            get {
+                return ResourceManager.GetString("Fleet_AutoConnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Fleet_Save {
+            get {
+                return ResourceManager.GetString("Fleet_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Fleet_Cancel {
+            get {
+                return ResourceManager.GetString("Fleet_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting....
+        /// </summary>
+        public static string Fleet_Connecting {
+            get {
+                return ResourceManager.GetString("Fleet_Connecting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disconnecting....
+        /// </summary>
+        public static string Fleet_Disconnecting {
+            get {
+                return ResourceManager.GetString("Fleet_Disconnecting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set as active.
+        /// </summary>
+        public static string Fleet_SetActive {
+            get {
+                return ResourceManager.GetString("Fleet_SetActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string Fleet_Active {
+            get {
+                return ResourceManager.GetString("Fleet_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printers.
+        /// </summary>
+        public static string Fleet_Printers {
+            get {
+                return ResourceManager.GetString("Fleet_Printers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this printer?.
+        /// </summary>
+        public static string Fleet_DeleteConfirm {
+            get {
+                return ResourceManager.GetString("Fleet_DeleteConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progress.
+        /// </summary>
+        public static string Fleet_Progress {
+            get {
+                return ResourceManager.GetString("Fleet_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Camera.
+        /// </summary>
+        public static string Fleet_Camera {
+            get {
+                return ResourceManager.GetString("Fleet_Camera", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fleet.
+        /// </summary>
+        public static string PageTitle_Fleet {
+            get {
+                return ResourceManager.GetString("PageTitle_Fleet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Print Queue.
+        /// </summary>
+        public static string PrintQueue_Title {
+            get {
+                return ResourceManager.GetString("PrintQueue_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No files available. Connect a printer to browse files..
+        /// </summary>
+        public static string PrintQueue_NoFiles {
+            get {
+                return ResourceManager.GetString("PrintQueue_NoFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send to printer.
+        /// </summary>
+        public static string PrintQueue_SelectPrinter {
+            get {
+                return ResourceManager.GetString("PrintQueue_SelectPrinter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Print.
+        /// </summary>
+        public static string PrintQueue_StartPrint {
+            get {
+                return ResourceManager.GetString("PrintQueue_StartPrint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No idle printers available.
+        /// </summary>
+        public static string PrintQueue_NoPrintersAvailable {
+            get {
+                return ResourceManager.GetString("PrintQueue_NoPrintersAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Print started.
+        /// </summary>
+        public static string PrintQueue_PrintStarted {
+            get {
+                return ResourceManager.GetString("PrintQueue_PrintStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string PrintQueue_Refresh {
+            get {
+                return ResourceManager.GetString("PrintQueue_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No projects yet. Create one to start organizing prints..
+        /// </summary>
+        public static string PrintQueue_NoProjects {
+            get {
+                return ResourceManager.GetString("PrintQueue_NoProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Project.
+        /// </summary>
+        public static string PrintQueue_NewProject {
+            get {
+                return ResourceManager.GetString("PrintQueue_NewProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Name.
+        /// </summary>
+        public static string PrintQueue_ProjectName {
+            get {
+                return ResourceManager.GetString("PrintQueue_ProjectName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upload G-code.
+        /// </summary>
+        public static string PrintQueue_UploadFiles {
+            get {
+                return ResourceManager.GetString("PrintQueue_UploadFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Project.
+        /// </summary>
+        public static string PrintQueue_DeleteProject {
+            get {
+                return ResourceManager.GetString("PrintQueue_DeleteProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        public static string PrintQueue_RemoveJob {
+            get {
+                return ResourceManager.GetString("PrintQueue_RemoveJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send to Printer.
+        /// </summary>
+        public static string PrintQueue_SendToPrinter {
+            get {
+                return ResourceManager.GetString("PrintQueue_SendToPrinter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queued.
+        /// </summary>
+        public static string PrintQueue_Queued {
+            get {
+                return ResourceManager.GetString("PrintQueue_Queued", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printing.
+        /// </summary>
+        public static string PrintQueue_Printing {
+            get {
+                return ResourceManager.GetString("PrintQueue_Printing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string PrintQueue_Completed {
+            get {
+                return ResourceManager.GetString("PrintQueue_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed.
+        /// </summary>
+        public static string PrintQueue_Failed {
+            get {
+                return ResourceManager.GetString("PrintQueue_Failed", resourceCulture);
+            }
+        }
     }
 }

@@ -1,0 +1,482 @@
+@* ─────────────────────────────────────────────────────────────────────
+   NavPrinters — Multi-printer navbar component.
+   Replaces the old NavConnection single-dropdown with a toolbar button
+   that opens a BlazorBootstrap modal showing all saved printers with
+   Add/Edit/Delete/Connect/Disconnect controls.
+   
+   Design inspired by PrintQue multi-printer dashboard UX.
+   ───────────────────────────────────────────────────────────────────── *@
+@using MakerPrompt.Shared.Infrastructure
+@using static MakerPrompt.Shared.Utils.Enums
+@inject PrinterConnectionManager ConnectionManager
+@inject ISerialService SerialService
+@inject IStringLocalizer<Resources> localizer
+@inject ToastService ToastService
+@inject ILogger<NavPrinters> Logger
+@implements IDisposable
+
+<nav class="navbar navbar-expand px-2">
+    <div class="container-fluid">
+        <div class="me-2">
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button class="btn btn-sm btn-outline-light d-flex align-items-center gap-1" @onclick="OpenPrintersModal" title="@localizer[Resources.Fleet_Printers]">
+                            <i class="bi bi-printer"></i>
+                            <span class="d-none d-md-inline">@NavButtonLabel</span>
+                            @if (_connectedCount > 0)
+                            {
+                                <span class="badge bg-success ms-1">@_connectedCount</span>
+                            }
+                        </button>
+                    </li>
+                    <CultureSelector />
+                    <ThemeSelector />
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/akinbender/MakerPrompt" target="_blank" rel="noopener noreferrer" title="GitHub">
+                            <i class="bi bi-github"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item d-md-none">
+                        <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@* ── Printers Management Modal ── *@
+<Modal @ref="_printersModal" Title="@localizer[Resources.Fleet_Printers]" Size="ModalSize.Large">
+    <BodyTemplate>
+        @if (!_showAddEditForm)
+        {
+            @* ── Printer List ── *@
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">@localizer[Resources.Fleet_Printers]</h6>
+                <button class="btn btn-sm btn-primary" @onclick="ShowAddForm">
+                    <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
+                </button>
+            </div>
+
+            @if (!ConnectionManager.Printers.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-1"></i>@localizer[Resources.Fleet_NoPrinters]
+                </div>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var printer in ConnectionManager.Printers)
+                    {
+                        <div class="list-group-item d-flex flex-column p-3 @(printer.IsActive ? "border-primary" : "")">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi @GetStatusIcon(printer) @GetStatusColor(printer)" style="font-size: 1.2rem;"></i>
+                                    <div>
+                                        <strong>@printer.Definition.Name</strong>
+                                        @if (printer.IsActive)
+                                        {
+                                            <span class="badge bg-primary ms-1">@localizer[Resources.Fleet_Active]</span>
+                                        }
+                                        <br />
+                                        <small class="text-muted">@printer.Definition.ConnectionType.GetDisplayName()</small>
+                                        @if (printer.Definition.AutoConnect)
+                                        {
+                                            <small class="text-muted ms-1"><i class="bi bi-arrow-repeat" title="Auto-connect"></i></small>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    @if (!printer.IsActive && printer.Status != PrinterStatus.Disconnected)
+                                    {
+                                        <button class="btn btn-sm btn-outline-primary" @onclick="() => SetActive(printer.Definition.Id)" title="@localizer[Resources.Fleet_SetActive]">
+                                            <i class="bi bi-star"></i>
+                                        </button>
+                                    }
+                                    @if (printer.IsBusy)
+                                    {
+                                        <button class="btn btn-sm btn-secondary" disabled>
+                                            <span class="spinner-border spinner-border-sm"></span>
+                                        </button>
+                                    }
+                                    else if (printer.Status == PrinterStatus.Disconnected || printer.Status == PrinterStatus.Error)
+                                    {
+                                        <button class="btn btn-sm btn-success" @onclick="() => ConnectPrinter(printer.Definition.Id)" title="@localizer[Resources.NavConnection_Connect]">
+                                            <i class="bi bi-plug"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-danger" @onclick="() => DisconnectPrinter(printer.Definition.Id)" title="@localizer[Resources.NavConnection_Disconnect]">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    }
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => ShowEditForm(printer.Definition)" title="@localizer[Resources.Fleet_EditPrinter]">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePrinter(printer.Definition.Id)" title="@localizer[Resources.Fleet_DeletePrinter]">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(printer.LastError))
+                            {
+                                <div class="alert alert-warning mt-2 mb-0 py-1 px-2">
+                                    <small><i class="bi bi-exclamation-triangle me-1"></i>@printer.LastError</small>
+                                </div>
+                            }
+                            @if (printer.Status != PrinterStatus.Disconnected && printer.Status != PrinterStatus.Error)
+                            {
+                                <div class="mt-2 d-flex gap-3">
+                                    <small><i class="bi bi-thermometer-half"></i> @($"{printer.Telemetry.HotendTemp:F0}°C / {printer.Telemetry.HotendTarget:F0}°C")</small>
+                                    <small><i class="bi bi-align-bottom"></i> @($"{printer.Telemetry.BedTemp:F0}°C / {printer.Telemetry.BedTarget:F0}°C")</small>
+                                    @if (printer.Telemetry.SDCard.Printing)
+                                    {
+                                        <small><i class="bi bi-play-circle"></i> @($"{printer.Telemetry.SDCard.Progress:F0}%")</small>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            @* ── Add/Edit Form ── *@
+            <div class="mb-3">
+                <button class="btn btn-sm btn-outline-secondary" @onclick="HideAddEditForm">
+                    <i class="bi bi-arrow-left me-1"></i>Back
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">@localizer[Resources.Fleet_PrinterName]</label>
+                <input type="text" class="form-control" @bind="_editDefinition.Name" placeholder="My 3D Printer" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">@localizer[Resources.Fleet_ConnectionType]</label>
+                <select class="form-select" @bind="_editConnectionType">
+                    @foreach (var ct in _connectionTypes)
+                    {
+                        <option value="@ct">@ct.GetDisplayName()</option>
+                    }
+                </select>
+            </div>
+
+            @if (_editConnectionType == PrinterConnectionType.Serial)
+            {
+                <div class="mb-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Port</span>
+                        <select class="form-select" @bind="_editSerialSettings.PortName">
+                            <option value="">@localizer[Resources.NavConnection_SelectPort]</option>
+                            @foreach (var port in _availablePorts)
+                            {
+                                <option value="@port">@port</option>
+                            }
+                        </select>
+                        <button class="btn btn-outline-secondary" type="button" @onclick="RefreshPortsAsync">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="input-group input-group-sm">
+                        <select class="form-select" @bind="_editSerialSettings.BaudRate">
+                            @foreach (var rate in BaudRates)
+                            {
+                                <option value="@rate">@rate</option>
+                            }
+                        </select>
+                        <span class="input-group-text">bps</span>
+                    </div>
+                </div>
+            }
+            else if (_editConnectionType == PrinterConnectionType.Demo)
+            {
+                <div class="alert alert-info">
+                    <p class="mb-0">@localizer[Resources.NavConnection_DemoServiceDescription]</p>
+                </div>
+            }
+            else
+            {
+                @* API-based backends: PrusaLink, Moonraker, OctoPrint, BambuLab *@
+                <div class="mb-3">
+                    <label class="form-label">URL</label>
+                    <input type="text" class="form-control" @bind="_editApiSettings.Url" placeholder="http://192.168.1.100" />
+                </div>
+
+                @if (_editConnectionType == PrinterConnectionType.BambuLab)
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Serial Number</label>
+                        <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Enter printer serial number" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Access Code</label>
+                        <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter access code" />
+                    </div>
+                }
+                else if (_editConnectionType == PrinterConnectionType.OctoPrint)
+                {
+                    <div class="mb-3">
+                        <label class="form-label">API Key</label>
+                        <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter OctoPrint API key" />
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Username" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password / API Key</label>
+                        <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Password or API key" />
+                    </div>
+                }
+            }
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="autoConnect" @bind="_editDefinition.AutoConnect" />
+                <label class="form-check-label" for="autoConnect">@localizer[Resources.Fleet_AutoConnect]</label>
+            </div>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        @if (_showAddEditForm)
+        {
+            <button class="btn btn-secondary" @onclick="HideAddEditForm">@localizer[Resources.Fleet_Cancel]</button>
+            <button class="btn btn-primary" @onclick="SavePrinterAsync">@localizer[Resources.Fleet_Save]</button>
+        }
+        else
+        {
+            <button class="btn btn-secondary" @onclick="ClosePrintersModal">Close</button>
+        }
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private Modal _printersModal = default!;
+    private int _connectedCount;
+    private bool _showAddEditForm;
+    private bool _isEditing;
+
+    // Edit state
+    private PrinterConnectionDefinition _editDefinition = new();
+    private ApiConnectionSettings _editApiSettings = new();
+    private SerialConnectionSettings _editSerialSettings = new();
+    private PrinterConnectionType _editConnectionType = PrinterConnectionType.Demo;
+    private List<string> _availablePorts = new();
+
+    private readonly List<int> BaudRates = [9600, 19200, 38400, 57600, 115200, 250000];
+    private readonly PrinterConnectionType[] _connectionTypes = Enum.GetValues<PrinterConnectionType>();
+
+    private string NavButtonLabel
+    {
+        get
+        {
+            var active = ConnectionManager.ActivePrinter;
+            if (active?.Service?.IsConnected == true)
+                return active.Definition.Name;
+            return localizer[Resources.Fleet_Printers];
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        ConnectionManager.PrintersChanged += HandlePrintersChanged;
+        UpdateConnectedCount();
+    }
+
+    private void HandlePrintersChanged(object? sender, EventArgs e)
+    {
+        UpdateConnectedCount();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateConnectedCount()
+    {
+        _connectedCount = ConnectionManager.Printers.Count(p =>
+            p.Status != PrinterStatus.Disconnected && p.Status != PrinterStatus.Error);
+    }
+
+    private async Task OpenPrintersModal()
+    {
+        _showAddEditForm = false;
+        await _printersModal.ShowAsync();
+    }
+
+    private async Task ClosePrintersModal()
+    {
+        await _printersModal.HideAsync();
+    }
+
+    private void ShowAddForm()
+    {
+        _isEditing = false;
+        _editDefinition = new PrinterConnectionDefinition();
+        _editApiSettings = new ApiConnectionSettings();
+        _editSerialSettings = new SerialConnectionSettings();
+        _editConnectionType = PrinterConnectionType.Demo;
+        _showAddEditForm = true;
+    }
+
+    private void ShowEditForm(PrinterConnectionDefinition definition)
+    {
+        _isEditing = true;
+        _editDefinition = new PrinterConnectionDefinition
+        {
+            Id = definition.Id,
+            Name = definition.Name,
+            ConnectionType = definition.ConnectionType,
+            AutoConnect = definition.AutoConnect,
+            Color = definition.Color,
+            Notes = definition.Notes,
+            CreatedAt = definition.CreatedAt,
+            LastConnectedAt = definition.LastConnectedAt
+        };
+        _editConnectionType = definition.ConnectionType;
+        _editApiSettings = definition.Settings.Api is not null
+            ? new ApiConnectionSettings(definition.Settings.Api.Url, definition.Settings.Api.UserName, definition.Settings.Api.Password)
+            : new ApiConnectionSettings();
+        _editSerialSettings = definition.Settings.Serial is not null
+            ? new SerialConnectionSettings { PortName = definition.Settings.Serial.PortName, BaudRate = definition.Settings.Serial.BaudRate }
+            : new SerialConnectionSettings();
+        _showAddEditForm = true;
+    }
+
+    private void HideAddEditForm()
+    {
+        _showAddEditForm = false;
+    }
+
+    private async Task SavePrinterAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_editDefinition.Name))
+        {
+            ToastService.Notify(new ToastMessage(ToastType.Warning, "Printer name is required"));
+            return;
+        }
+
+        _editDefinition.ConnectionType = _editConnectionType;
+        _editDefinition.Settings = _editConnectionType switch
+        {
+            PrinterConnectionType.Serial => new PrinterConnectionSettings(_editSerialSettings),
+            PrinterConnectionType.Demo => new PrinterConnectionSettings(),
+            _ => new PrinterConnectionSettings(_editApiSettings, _editConnectionType)
+        };
+
+        try
+        {
+            if (_isEditing)
+            {
+                await ConnectionManager.UpdatePrinterAsync(_editDefinition);
+                ToastService.Notify(new ToastMessage(ToastType.Success, "Printer updated"));
+            }
+            else
+            {
+                await ConnectionManager.AddPrinterAsync(_editDefinition);
+                ToastService.Notify(new ToastMessage(ToastType.Success, "Printer added"));
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save printer definition");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Failed to save printer", ex.Message));
+        }
+
+        _showAddEditForm = false;
+    }
+
+    private async Task ConnectPrinter(Guid id)
+    {
+        try
+        {
+            await ConnectionManager.ConnectPrinterAsync(id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to connect printer");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Connection failed", ex.Message));
+        }
+    }
+
+    private async Task DisconnectPrinter(Guid id)
+    {
+        try
+        {
+            await ConnectionManager.DisconnectPrinterAsync(id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to disconnect printer");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Disconnect failed", ex.Message));
+        }
+    }
+
+    private void SetActive(Guid id)
+    {
+        ConnectionManager.SetActivePrinter(id);
+    }
+
+    private async Task DeletePrinter(Guid id)
+    {
+        try
+        {
+            await ConnectionManager.RemovePrinterAsync(id);
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Printer removed"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete printer");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Delete failed", ex.Message));
+        }
+    }
+
+    private async Task RefreshPortsAsync()
+    {
+        try
+        {
+            _availablePorts = (await SerialService.GetAvailablePortsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to enumerate serial ports");
+            ToastService.Notify(new ToastMessage(ToastType.Warning, "Could not refresh ports", ex.Message));
+        }
+    }
+
+    private static string GetStatusIcon(ManagedPrinterState printer)
+    {
+        return printer.Status switch
+        {
+            PrinterStatus.Connected => "bi-check-circle-fill",
+            PrinterStatus.Printing => "bi-play-circle-fill",
+            PrinterStatus.Paused => "bi-pause-circle-fill",
+            PrinterStatus.Error => "bi-exclamation-circle-fill",
+            _ => "bi-dash-circle"
+        };
+    }
+
+    private static string GetStatusColor(ManagedPrinterState printer)
+    {
+        return printer.Status switch
+        {
+            PrinterStatus.Connected => "text-success",
+            PrinterStatus.Printing => "text-primary",
+            PrinterStatus.Paused => "text-warning",
+            PrinterStatus.Error => "text-danger",
+            _ => "text-muted"
+        };
+    }
+
+    public void Dispose()
+    {
+        ConnectionManager.PrintersChanged -= HandlePrintersChanged;
+    }
+}

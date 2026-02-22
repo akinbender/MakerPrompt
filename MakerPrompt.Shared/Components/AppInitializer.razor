@@ -1,0 +1,33 @@
+@* 
+    App-level initializer — ensures PrinterConnectionManager and PrintProjectService
+    are loaded and auto-connect runs. Place in App.razor or Routes.razor wrapping the Router.
+*@
+@inject PrinterConnectionManager ConnectionManager
+@inject PrintProjectService ProjectService
+@inject ILogger<AppInitializer> Logger
+
+@ChildContent
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _initialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_initialized)
+        {
+            _initialized = true;
+            try
+            {
+                await ConnectionManager.InitializeAsync();
+                await ProjectService.InitializeAsync();
+                _ = ConnectionManager.AutoConnectAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to initialize app services");
+            }
+        }
+    }
+}

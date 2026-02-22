@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MakerPrompt.Shared.Utils;
+using MakerPrompt.Shared.Services;
 using Microsoft.AspNetCore.Builder;
 using MakerPrompt.MAUI.Services;
 using MakerPrompt.MAUI.Storage;
@@ -37,6 +38,11 @@ namespace MakerPrompt.MAUI
                 .AddSupportedUICultures(supportedCultures);
             builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, SerialService>();
             builder.Services.AddScoped<IAppLocalStorageProvider, MauiAppLocalStorageProvider>();
+            // MAUI: Use AES-256-GCM encryption for stored credentials
+            var deviceId = DeviceInfo.Current.Idiom.ToString();
+            var deviceName = DeviceInfo.Current.Name ?? "default";
+            builder.Services.AddSingleton<IConnectionEncryptionService>(
+                new AesConnectionEncryptionService($"MakerPrompt-{deviceId}-{deviceName}"));
             return builder.Build();
         }
     }

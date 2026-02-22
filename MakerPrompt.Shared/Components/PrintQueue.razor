@@ -1,0 +1,398 @@
+@* ─────────────────────────────────────────────────────────────────────
+   PrintQueue — Project-based print job manager.
+
+   Upload G-code files, organize them into project folders, and dispatch
+   individual jobs to any connected idle printer in the fleet.
+   ───────────────────────────────────────────────────────────────────── *@
+@using MakerPrompt.Shared.Infrastructure
+@using static MakerPrompt.Shared.Utils.Enums
+@inject PrintProjectService ProjectService
+@inject PrinterConnectionManager ConnectionManager
+@inject IStringLocalizer<Resources> localizer
+@inject ToastService ToastService
+@inject ILogger<PrintQueue> Logger
+@implements IDisposable
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-list-task"></i>
+            <strong>@localizer[Resources.PrintQueue_Title]</strong>
+        </div>
+        <div class="d-flex gap-1">
+            @if (_showNewProjectInput)
+            {
+                <div class="input-group input-group-sm" style="width: auto;">
+                    <input type="text" class="form-control" style="max-width: 180px;"
+                           @bind="_newProjectName" @bind:event="oninput"
+                           placeholder="@localizer[Resources.PrintQueue_ProjectName]"
+                           @onkeypress="HandleNewProjectKeyPress" />
+                    <button class="btn btn-outline-success" @onclick="CreateProjectAsync"
+                            disabled="@string.IsNullOrWhiteSpace(_newProjectName)">
+                        <i class="bi bi-check"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="() => _showNewProjectInput = false">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            }
+            else
+            {
+                <button class="btn btn-sm btn-outline-primary" @onclick="() => _showNewProjectInput = true">
+                    <i class="bi bi-folder-plus me-1"></i>@localizer[Resources.PrintQueue_NewProject]
+                </button>
+            }
+        </div>
+    </div>
+    <div class="card-body p-0">
+        @if (!ProjectService.Projects.Any())
+        {
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-folder2-open" style="font-size: 2rem;"></i>
+                <p class="mt-2 mb-0">@localizer[Resources.PrintQueue_NoProjects]</p>
+            </div>
+        }
+        else
+        {
+            <div class="accordion accordion-flush" id="printQueueAccordion">
+                @foreach (var project in ProjectService.Projects)
+                {
+                    var collapseId = $"pq-{project.Id:N}";
+                    var headerId = $"pqh-{project.Id:N}";
+                    var isExpanded = _expandedProjectId == project.Id;
+                    var jobCounts = GetJobCounts(project);
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@headerId">
+                            <button class="accordion-button @(isExpanded ? "" : "collapsed") py-2"
+                                    type="button"
+                                    @onclick="() => ToggleProject(project.Id)">
+                                <div class="d-flex align-items-center gap-2 w-100 me-2">
+                                    <i class="bi bi-folder2"></i>
+                                    <strong>@project.Name</strong>
+                                    <span class="badge bg-secondary ms-auto">@project.Jobs.Count files</span>
+                                    @if (jobCounts.printing > 0)
+                                    {
+                                        <span class="badge bg-primary">@jobCounts.printing printing</span>
+                                    }
+                                    @if (jobCounts.completed > 0)
+                                    {
+                                        <span class="badge bg-success">@jobCounts.completed done</span>
+                                    }
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="@collapseId" class="accordion-collapse @(isExpanded ? "show" : "collapse")">
+                            <div class="accordion-body p-2">
+                                @* ── Project actions ── *@
+                                <div class="d-flex gap-1 mb-2 flex-wrap">
+                                    <label class="btn btn-sm btn-outline-primary mb-0">
+                                        <i class="bi bi-upload me-1"></i>@localizer[Resources.PrintQueue_UploadFiles]
+                                        <InputFile class="d-none" OnChange="e => UploadFilesAsync(project.Id, e)" multiple />
+                                    </label>
+                                    <button class="btn btn-sm btn-outline-danger ms-auto"
+                                            @onclick="() => DeleteProjectAsync(project.Id)">
+                                        <i class="bi bi-trash me-1"></i>@localizer[Resources.PrintQueue_DeleteProject]
+                                    </button>
+                                </div>
+
+                                @if (!project.Jobs.Any())
+                                {
+                                    <p class="text-muted small mb-0 text-center py-2">
+                                        @localizer[Resources.PrintQueue_NoFiles]
+                                    </p>
+                                }
+                                else
+                                {
+                                    <div class="list-group list-group-flush">
+                                        @foreach (var job in project.Jobs)
+                                        {
+                                            <div class="list-group-item px-2 py-2">
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <i class="bi bi-file-earmark-code text-muted"></i>
+                                                    <div class="flex-grow-1" style="min-width: 0;">
+                                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                            <span class="text-truncate" style="max-width: 200px;" title="@job.FileName">@job.FileName</span>
+                                                            <span class="badge @GetJobStatusBadge(job.Status)">@GetJobStatusText(job.Status)</span>
+                                                        </div>
+                                                        <div>
+                                                            @if (job.Size > 0)
+                                                            {
+                                                                <small class="text-muted">@FormatFileSize(job.Size)</small>
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(job.AssignedPrinterName))
+                                                            {
+                                                                <small class="text-muted ms-2">
+                                                                    <i class="bi bi-printer"></i> @job.AssignedPrinterName
+                                                                </small>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex gap-1 flex-shrink-0">
+                                                        @if (job.Status == PrintJobStatus.Queued && _idlePrinters.Any())
+                                                        {
+                                                            <div class="input-group input-group-sm" style="width: auto;">
+                                                                <select class="form-select form-select-sm" style="min-width: 100px;"
+                                                                        @bind="@_jobTargetPrinter[job.Id]">
+                                                                    @foreach (var p in _idlePrinters)
+                                                                    {
+                                                                        <option value="@p.Definition.Id">@p.Definition.Name</option>
+                                                                    }
+                                                                </select>
+                                                                <button class="btn btn-outline-success"
+                                                                        @onclick="() => SendToPrinterAsync(project.Id, job)"
+                                                                        disabled="@_sendingJobs.Contains(job.Id)">
+                                                                    @if (_sendingJobs.Contains(job.Id))
+                                                                    {
+                                                                        <span class="spinner-border spinner-border-sm"></span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <i class="bi bi-printer"></i>
+                                                                    }
+                                                                </button>
+                                                            </div>
+                                                        }
+                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                @onclick="() => RemoveJobAsync(project.Id, job.Id)"
+                                                                title="@localizer[Resources.PrintQueue_RemoveJob]">
+                                                            <i class="bi bi-x"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ManagedPrinterState> _idlePrinters = new();
+    private Guid? _expandedProjectId;
+    private bool _showNewProjectInput;
+    private string _newProjectName = string.Empty;
+    private readonly Dictionary<Guid, Guid> _jobTargetPrinter = new();
+    private readonly HashSet<Guid> _sendingJobs = new();
+
+    protected override void OnInitialized()
+    {
+        ProjectService.ProjectsChanged += HandleProjectsChanged;
+        ConnectionManager.PrintersChanged += HandlePrintersChanged;
+        RefreshIdlePrinters();
+        InitJobTargets();
+    }
+
+    private async void HandleProjectsChanged(object? sender, EventArgs e)
+    {
+        InitJobTargets();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void HandlePrintersChanged(object? sender, EventArgs e)
+    {
+        RefreshIdlePrinters();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void RefreshIdlePrinters()
+    {
+        _idlePrinters = ConnectionManager.Printers
+            .Where(p => p.Service?.IsConnected == true && p.Status == PrinterStatus.Connected)
+            .ToList();
+    }
+
+    private void InitJobTargets()
+    {
+        var defaultPrinterId = _idlePrinters.FirstOrDefault()?.Definition.Id ?? Guid.Empty;
+        foreach (var project in ProjectService.Projects)
+        {
+            foreach (var job in project.Jobs)
+            {
+                _jobTargetPrinter.TryAdd(job.Id, defaultPrinterId);
+            }
+        }
+    }
+
+    private void ToggleProject(Guid projectId)
+    {
+        _expandedProjectId = _expandedProjectId == projectId ? null : projectId;
+    }
+
+    // ── New project ──
+    private async Task CreateProjectAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newProjectName)) return;
+        try
+        {
+            await ProjectService.AddProjectAsync(_newProjectName);
+            _newProjectName = string.Empty;
+            _showNewProjectInput = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to create project");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to create project"));
+        }
+    }
+
+    private void HandleNewProjectKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            _ = CreateProjectAsync();
+    }
+
+    // ── Delete project ──
+    private async Task DeleteProjectAsync(Guid projectId)
+    {
+        try
+        {
+            await ProjectService.DeleteProjectAsync(projectId);
+            if (_expandedProjectId == projectId)
+                _expandedProjectId = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete project");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to delete project"));
+        }
+    }
+
+    // ── Upload files ──
+    private async Task UploadFilesAsync(Guid projectId, InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles(20))
+        {
+            try
+            {
+                await using var stream = file.OpenReadStream(long.MaxValue);
+                await ProjectService.AddJobAsync(projectId, file.Name, stream);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to upload {File}", file.Name);
+                ToastService.Notify(new ToastMessage(ToastType.Danger, "Upload failed", file.Name));
+            }
+        }
+        InitJobTargets();
+    }
+
+    // ── Remove job ──
+    private async Task RemoveJobAsync(Guid projectId, Guid jobId)
+    {
+        try
+        {
+            await ProjectService.RemoveJobAsync(projectId, jobId);
+            _jobTargetPrinter.Remove(jobId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to remove job");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to remove job"));
+        }
+    }
+
+    // ── Send to printer ──
+    private async Task SendToPrinterAsync(Guid projectId, PrintJob job)
+    {
+        if (!_jobTargetPrinter.TryGetValue(job.Id, out var targetId)) return;
+        var target = _idlePrinters.FirstOrDefault(p => p.Definition.Id == targetId);
+        if (target?.Service == null) return;
+
+        _sendingJobs.Add(job.Id);
+        StateHasChanged();
+
+        try
+        {
+            // Read G-code content from storage
+            using var stream = await ProjectService.OpenJobFileAsync(projectId, job.Id);
+            if (stream == null)
+            {
+                ToastService.Notify(new ToastMessage(ToastType.Warning, "Warning", "File not found in storage"));
+                return;
+            }
+
+            using var reader = new StreamReader(stream);
+            var gcode = await reader.ReadToEndAsync();
+            var doc = new GCodeDoc(gcode);
+
+            // Mark as printing
+            await ProjectService.AssignJobAsync(projectId, job.Id, target.Definition.Id, target.Definition.Name);
+
+            // Start print
+            await target.Service.StartPrint(doc);
+
+            ToastService.Notify(new ToastMessage(
+                ToastType.Success,
+                localizer[Resources.PrintQueue_PrintStarted],
+                $"{job.FileName} → {target.Definition.Name}"));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to send print to {Printer}", target.Definition.Name);
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Print failed", ex.Message));
+            await ProjectService.UpdateJobStatusAsync(projectId, job.Id, PrintJobStatus.Failed);
+        }
+        finally
+        {
+            _sendingJobs.Remove(job.Id);
+            StateHasChanged();
+        }
+    }
+
+    // ── Helpers ──
+    private static (int queued, int printing, int completed, int failed) GetJobCounts(PrintProject project)
+    {
+        return (
+            project.Jobs.Count(j => j.Status == PrintJobStatus.Queued),
+            project.Jobs.Count(j => j.Status == PrintJobStatus.Printing),
+            project.Jobs.Count(j => j.Status == PrintJobStatus.Completed),
+            project.Jobs.Count(j => j.Status == PrintJobStatus.Failed)
+        );
+    }
+
+    private string GetJobStatusBadge(PrintJobStatus status)
+    {
+        return status switch
+        {
+            PrintJobStatus.Queued => "bg-secondary",
+            PrintJobStatus.Printing => "bg-primary",
+            PrintJobStatus.Completed => "bg-success",
+            PrintJobStatus.Failed => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetJobStatusText(PrintJobStatus status)
+    {
+        return status switch
+        {
+            PrintJobStatus.Queued => localizer[Resources.PrintQueue_Queued],
+            PrintJobStatus.Printing => localizer[Resources.PrintQueue_Printing],
+            PrintJobStatus.Completed => localizer[Resources.PrintQueue_Completed],
+            PrintJobStatus.Failed => localizer[Resources.PrintQueue_Failed],
+            _ => status.ToString()
+        };
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024)
+            return $"{bytes} B";
+        if (bytes < 1024 * 1024)
+            return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
+
+    public void Dispose()
+    {
+        ProjectService.ProjectsChanged -= HandleProjectsChanged;
+        ConnectionManager.PrintersChanged -= HandlePrintersChanged;
+    }
+}

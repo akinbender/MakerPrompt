@@ -17,7 +17,10 @@ namespace MakerPrompt.Shared.Utils
 			services.AddSingleton<PrusaLinkApiService>();
 			services.AddSingleton<MoonrakerApiService>();
 			services.AddSingleton<BambuLabApiService>();
+			services.AddSingleton<OctoPrintApiService>();
 			services.AddSingleton<PrinterCommunicationServiceFactory>();
+			services.AddScoped<PrinterConnectionManager>();
+            services.AddScoped<PrintProjectService>();
             services.AddScoped<IPrinterCameraProvider, PrinterCameraProvider>();
             services.AddScoped<PrinterStorageProvider>();
             services.AddSingleton<GCodeDocumentService>();

@@ -11,5 +11,9 @@
 </div>
 <div class="row"></div>
     <div class="col-md-12 mt-4">
-        <StorageExplorer Title="App storage" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" />
+        <StorageExplorer Title="App storage" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
+
+@code {
+    private static readonly string[] _hiddenPrefixes = ["MakerPrompt.PrinterConnections", "MakerPrompt.PrintProjects"];
+}
 </div>

@@ -2,7 +2,15 @@
 @inherits ConnectionComponentBase
 
 <div class="bg-body-tertiary rounded p-3 d-flex flex-column h-100">
-    <div class="d-flex align-items-center mb-2">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center gap-2">
+            @if (!string.IsNullOrEmpty(_activePrinterName))
+            {
+                <span class="badge bg-secondary">
+                    <i class="bi bi-terminal me-1"></i>@_activePrinterName
+                </span>
+            }
+        </div>
         <div class="form-check form-switch mb-0">
             <input class="form-check-input" type="checkbox" id="toggle-telemetry-echo" @bind="_showTelemetry" />
             <label class="form-check-label ms-2" for="toggle-telemetry-echo">
@@ -64,6 +72,10 @@
     private bool _expectTelemetryEcho;
     private bool _showTelemetry;
 
+    // Multi-printer: track which printer the terminal is attached to
+    private string _activePrinterName = string.Empty;
+    private string _lastPrinterConnectionName = string.Empty;
+
     private async Task SendCommand()
     {
         if (string.IsNullOrWhiteSpace(inputCommand) || PrinterServiceFactory.Current == null) return;
@@ -124,8 +136,24 @@
     protected override void HandleConnectionChanged(object? sender, bool connected)
     {
         base.HandleConnectionChanged(sender, connected);
-        var message = connected ? string.Format(Localizer[Resources.CommandPrompt_ConnectedMessage], PrinterServiceFactory.Current?.ConnectionName)
-                        : string.Format(Localizer[Resources.CommandPrompt_DisconnectedMessage], PrinterServiceFactory.Current?.ConnectionName);
+
+        var currentName = PrinterServiceFactory.Current?.ConnectionName ?? string.Empty;
+
+        // Detect printer switch — clear history and notify
+        if (connected && !string.IsNullOrEmpty(currentName) && currentName != _lastPrinterConnectionName && !string.IsNullOrEmpty(_lastPrinterConnectionName))
+        {
+            lock (_historyLock)
+            {
+                history.Clear();
+            }
+            AddSystemMessage($"Switched to {currentName}");
+        }
+
+        _lastPrinterConnectionName = currentName;
+        _activePrinterName = connected ? currentName : string.Empty;
+
+        var message = connected ? string.Format(Localizer[Resources.CommandPrompt_ConnectedMessage], currentName)
+                        : string.Format(Localizer[Resources.CommandPrompt_DisconnectedMessage], currentName);
         AddSystemMessage(message);
         InvokeAsync(StateHasChanged);
     }
