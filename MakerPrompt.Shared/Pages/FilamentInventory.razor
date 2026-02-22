@@ -1,0 +1,162 @@
+@page "/filament"
+@using MakerPrompt.Shared.Models
+@using MakerPrompt.Shared.Services
+@inject FilamentInventoryService InventoryService
+@inject ToastService ToastService
+@implements IDisposable
+
+<LocalizedTitle TitleKey="Filament Inventory" />
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Filament Inventory</h3>
+        <button class="btn btn-primary" @onclick="OpenAddModal">
+            <i class="bi bi-plus-circle me-1"></i> Add Spool
+        </button>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        @foreach (var spool in InventoryService.GetSpools())
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <strong>@spool.Name</strong>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => OpenEditModal(spool)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteSpool(spool.Id)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge bg-secondary me-1">@spool.Material</span>
+                            <span class="badge bg-info me-1">@spool.Color</span>
+                            <span class="badge bg-light text-dark">@spool.Brand</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted">Remaining</small>
+                            <strong>@($"{spool.RemainingWeightGrams:F0}g / {spool.TotalWeightGrams:F0}g")</strong>
+                        </div>
+                        <div class="progress mt-1" style="height: 8px;">
+                            <div class="progress-bar @(spool.RemainingWeightGrams < spool.TotalWeightGrams * 0.1 ? "bg-danger" : "bg-success")"
+                                 role="progressbar"
+                                 style="width: @($"{(spool.RemainingWeightGrams / spool.TotalWeightGrams) * 100:F0}%")">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<Modal @ref="_modal" Title="@(_isEditing ? "Edit Spool" : "Add Spool")">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" @bind="_editSpool.Name" />
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <label class="form-label">Material</label>
+                <input type="text" class="form-control" @bind="_editSpool.Material" />
+            </div>
+            <div class="col">
+                <label class="form-label">Color</label>
+                <input type="text" class="form-control" @bind="_editSpool.Color" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Brand</label>
+            <input type="text" class="form-control" @bind="_editSpool.Brand" />
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <label class="form-label">Total Weight (g)</label>
+                <input type="number" class="form-control" @bind="_editSpool.TotalWeightGrams" />
+            </div>
+            <div class="col">
+                <label class="form-label">Remaining Weight (g)</label>
+                <input type="number" class="form-control" @bind="_editSpool.RemainingWeightGrams" />
+            </div>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <button class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+        <button class="btn btn-primary" @onclick="SaveSpoolAsync">Save</button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private Modal _modal = default!;
+    private bool _isEditing;
+    private FilamentSpool _editSpool = new();
+
+    protected override void OnInitialized()
+    {
+        InventoryService.InventoryChanged += OnInventoryChanged;
+    }
+
+    public void Dispose()
+    {
+        InventoryService.InventoryChanged -= OnInventoryChanged;
+    }
+
+    private void OnInventoryChanged(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OpenAddModal()
+    {
+        _isEditing = false;
+        _editSpool = new FilamentSpool();
+        await _modal.ShowAsync();
+    }
+
+    private async Task OpenEditModal(FilamentSpool spool)
+    {
+        _isEditing = true;
+        _editSpool = new FilamentSpool
+        {
+            Id = spool.Id,
+            Name = spool.Name,
+            Material = spool.Material,
+            Color = spool.Color,
+            Brand = spool.Brand,
+            TotalWeightGrams = spool.TotalWeightGrams,
+            RemainingWeightGrams = spool.RemainingWeightGrams
+        };
+        await _modal.ShowAsync();
+    }
+
+    private async Task CloseModal()
+    {
+        await _modal.HideAsync();
+    }
+
+    private async Task SaveSpoolAsync()
+    {
+        if (_isEditing)
+        {
+            await InventoryService.UpdateSpoolAsync(_editSpool);
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Spool Updated", "Filament spool updated successfully."));
+        }
+        else
+        {
+            await InventoryService.AddSpoolAsync(_editSpool);
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Spool Added", "Filament spool added successfully."));
+        }
+        await _modal.HideAsync();
+    }
+
+    private async Task DeleteSpool(Guid id)
+    {
+        await InventoryService.DeleteSpoolAsync(id);
+        ToastService.Notify(new ToastMessage(ToastType.Success, "Spool Deleted", "Filament spool deleted successfully."));
+    }
+}

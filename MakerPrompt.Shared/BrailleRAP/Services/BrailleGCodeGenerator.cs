@@ -1,5 +1,4 @@
 using MakerPrompt.Shared.BrailleRAP.Models;
-using System.Text;
 
 namespace MakerPrompt.Shared.BrailleRAP.Services
 {

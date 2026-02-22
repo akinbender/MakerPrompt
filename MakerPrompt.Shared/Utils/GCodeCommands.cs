@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace MakerPrompt.Shared.Utils
+﻿namespace MakerPrompt.Shared.Utils
 {
     internal class GCodeParameters
     {

@@ -23,7 +23,11 @@ namespace MakerPrompt.Shared.Services
         private readonly PrinterCommunicationServiceFactory _factory;
         private readonly ISerialService _serialService;
         private readonly ILogger<PrinterConnectionManager> _logger;
-        private readonly List<ManagedPrinterState> _printers = new();
+        private readonly FilamentInventoryService _filamentInventoryService;
+        private readonly AnalyticsService _analyticsService;
+        private readonly NotificationService _notificationService;
+        private readonly IAppConfigurationService _configService;
+        private readonly List<ManagedPrinterState> _printers = [];
         private readonly SemaphoreSlim _lock = new(1, 1);
 
         /// <summary>
@@ -51,13 +55,21 @@ namespace MakerPrompt.Shared.Services
             IConnectionEncryptionService encryption,
             PrinterCommunicationServiceFactory factory,
             ISerialService serialService,
-            ILogger<PrinterConnectionManager> logger)
+            ILogger<PrinterConnectionManager> logger,
+            FilamentInventoryService filamentInventoryService,
+            AnalyticsService analyticsService,
+            NotificationService notificationService,
+            IAppConfigurationService configService)
         {
             _storage = storage;
             _encryption = encryption;
             _factory = factory;
             _serialService = serialService;
             _logger = logger;
+            _filamentInventoryService = filamentInventoryService;
+            _analyticsService = analyticsService;
+            _notificationService = notificationService;
+            _configService = configService;
         }
 
         /// <summary>
@@ -241,11 +253,9 @@ namespace MakerPrompt.Shared.Services
                     state.Definition.LastConnectedAt = DateTime.UtcNow;
 
                     // Subscribe to telemetry
-                    service.TelemetryUpdated += (_, telemetry) =>
+                    service.TelemetryUpdated += async (_, telemetry) =>
                     {
-                        state.Telemetry = telemetry;
-                        state.Status = telemetry.Status;
-                        RaisePrintersChanged();
+                        await HandleTelemetryUpdateAsync(state, telemetry);
                     };
 
                     service.ConnectionStateChanged += (_, isConnected) =>
@@ -291,6 +301,83 @@ namespace MakerPrompt.Shared.Services
                 state.IsBusy = false;
                 RaisePrintersChanged();
             }
+        }
+
+        private async Task HandleTelemetryUpdateAsync(ManagedPrinterState state, PrinterTelemetry telemetry)
+        {
+            var previousStatus = state.Status;
+            state.Telemetry = telemetry;
+            state.Status = telemetry.Status;
+
+            // Track print job start
+            if (previousStatus != PrinterStatus.Printing && state.Status == PrinterStatus.Printing)
+            {
+                state.PrintStartTime = DateTime.UtcNow;
+                state.AccumulatedExtrusion = 0;
+
+                if (_configService.Configuration.EnableFilamentInventory && state.Definition.AssignedFilamentSpoolId == null)
+                {
+                    await _notificationService.NotifyAsync(NotificationLevel.Warning, "Print Started", "Print started without assigned filament.", state.Definition.Id);
+                }
+            }
+
+            // Track print job end
+            if (previousStatus == PrinterStatus.Printing && state.Status != PrinterStatus.Printing)
+            {
+                var duration = state.PrintStartTime.HasValue ? DateTime.UtcNow - state.PrintStartTime.Value : TimeSpan.Zero;
+                var filamentUsed = telemetry.FilamentUsed > 0 ? telemetry.FilamentUsed : state.AccumulatedExtrusion;
+
+                if (state.Status == PrinterStatus.Connected || state.Status == PrinterStatus.Disconnected)
+                {
+                    await _notificationService.NotifyAsync(NotificationLevel.Info, "Print Completed", $"Print job '{telemetry.PrintJobName}' completed.", state.Definition.Id);
+                }
+                else if (state.Status == PrinterStatus.Error)
+                {
+                    await _notificationService.NotifyAsync(NotificationLevel.Error, "Print Failed", $"Print job '{telemetry.PrintJobName}' failed.", state.Definition.Id);
+                }
+
+                if (state.Definition.AssignedFilamentSpoolId.HasValue && filamentUsed > 0)
+                {
+                    var spoolId = state.Definition.AssignedFilamentSpoolId.Value;
+
+                    if (_configService.Configuration.EnablePrintAnalytics)
+                    {
+                        var record = new PrintJobUsageRecord
+                        {
+                            PrinterId = state.Definition.Id,
+                            FilamentSpoolId = spoolId,
+                            JobName = telemetry.PrintJobName,
+                            Duration = duration,
+                            EstimatedFilamentUsedGrams = filamentUsed,
+                            ActualFilamentUsedGrams = filamentUsed
+                        };
+                        await _analyticsService.RecordUsageAsync(record);
+                    }
+
+                    if (_configService.Configuration.EnableFilamentInventory)
+                    {
+                        await _filamentInventoryService.DeductFilamentAsync(spoolId, filamentUsed);
+
+                        var spool = _filamentInventoryService.GetSpool(spoolId);
+                        if (spool != null)
+                        {
+                            if (spool.RemainingWeightGrams <= 0)
+                            {
+                                await _notificationService.NotifyAsync(NotificationLevel.Critical, "Spool Empty", $"Filament spool '{spool.Name}' is empty.", state.Definition.Id, spoolId);
+                            }
+                            else if (spool.RemainingWeightGrams < spool.TotalWeightGrams * 0.1) // 10% threshold
+                            {
+                                await _notificationService.NotifyAsync(NotificationLevel.Warning, "Low Filament", $"Filament spool '{spool.Name}' is running low.", state.Definition.Id, spoolId);
+                            }
+                        }
+                    }
+                }
+
+                state.PrintStartTime = null;
+                state.AccumulatedExtrusion = 0;
+            }
+
+            RaisePrintersChanged();
         }
 
         /// <summary>
@@ -382,20 +469,20 @@ namespace MakerPrompt.Shared.Services
                 var files = await _storage.ListFilesAsync();
                 var file = files.FirstOrDefault(f => f.FullPath.Contains(StorageKey));
                 if (file == null)
-                    return new List<PrinterConnectionDefinition>();
+                    return [];
 
                 using var stream = await _storage.OpenReadAsync(file.FullPath);
                 if (stream == null)
-                    return new List<PrinterConnectionDefinition>();
+                    return [];
 
                 using var reader = new StreamReader(stream);
                 var json = await reader.ReadToEndAsync();
-                return JsonSerializer.Deserialize<List<PrinterConnectionDefinition>>(json) ?? new();
+                return JsonSerializer.Deserialize<List<PrinterConnectionDefinition>>(json) ?? [];
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to load printer definitions");
-                return new List<PrinterConnectionDefinition>();
+                return [];
             }
         }
 

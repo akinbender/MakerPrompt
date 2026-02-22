@@ -1,4 +1,6 @@
-﻿<nav class="sidebar @(Collapsed ? "sidebar--collapsed" : "")">
+﻿@inject IAppConfigurationService ConfigService
+
+<nav class="sidebar @(Collapsed ? "sidebar--collapsed" : "")">
     <div class="d-flex flex-column h-100 py-2">
         <ul class="nav flex-column px-2 mb-auto">
             <li class="nav-item">
@@ -7,16 +9,28 @@
                     <span class="sidebar-label">@Resources.PageTitle_Fleet</span>
                 </NavLink>
             </li>
+            @if (ConfigService.Configuration.EnableFilamentInventory)
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="filament">
+                        <i class="bi bi-vinyl-fill sidebar-icon"></i>
+                        <span class="sidebar-label">Filament Inventory</span>
+                    </NavLink>
+                </li>
+            }
+            @if (ConfigService.Configuration.EnablePrintAnalytics)
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="analytics">
+                        <i class="bi bi-bar-chart-line sidebar-icon"></i>
+                        <span class="sidebar-label">Analytics</span>
+                    </NavLink>
+                </li>
+            }
             <li class="nav-item">
                 <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="cheatsheet">
                     <i class="bi bi-list-ul sidebar-icon"></i>
                     <span class="sidebar-label">@Resources.PageTitle_GCodeList</span>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="files">
-                    <i class="bi bi-folder sidebar-icon"></i>
-                    <span class="sidebar-label">@Resources.Dashboard_FileExplorer</span>
                 </NavLink>
             </li>
             <li class="nav-item">
@@ -35,6 +49,12 @@
                 <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="about">
                     <i class="bi bi-info-circle sidebar-icon"></i>
                     <span class="sidebar-label">@Resources.PageTitle_About</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="settings">
+                    <i class="bi bi-gear sidebar-icon"></i>
+                    <span class="sidebar-label">Settings</span>
                 </NavLink>
             </li>
         </ul>

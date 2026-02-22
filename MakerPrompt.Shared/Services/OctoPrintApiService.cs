@@ -1,8 +1,3 @@
-using System.Net.Http.Headers;
-using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
-
 namespace MakerPrompt.Shared.Services;
 
 /// <summary>

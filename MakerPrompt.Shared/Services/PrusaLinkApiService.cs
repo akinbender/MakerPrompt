@@ -1,14 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
-using static MakerPrompt.Shared.Utils.Enums;
-
-namespace MakerPrompt.Shared.Services;
+﻿namespace MakerPrompt.Shared.Services;
 
 public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommunicationService
 {

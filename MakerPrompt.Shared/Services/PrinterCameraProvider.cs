@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MakerPrompt.Shared.Models;
-
 namespace MakerPrompt.Shared.Services
 {
     public interface IPrinterCameraProvider

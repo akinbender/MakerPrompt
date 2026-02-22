@@ -2,7 +2,6 @@
 using System.Text;
 using MakerPrompt.Shared.Models;
 using MakerPrompt.Shared.Services;
-using MakerPrompt.Shared.Utils;
 using static MakerPrompt.Shared.Utils.Enums;
 
 namespace MakerPrompt.Tests;

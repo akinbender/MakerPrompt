@@ -1,0 +1,132 @@
+@page "/analytics"
+@using MakerPrompt.Shared.Models
+@using MakerPrompt.Shared.Services
+@inject AnalyticsService AnalyticsService
+@inject PrinterConnectionManager ConnectionManager
+@inject FilamentInventoryService InventoryService
+@implements IDisposable
+
+<LocalizedTitle TitleKey="Analytics" />
+
+<div class="container-fluid">
+    <h3 class="mb-4">Analytics Dashboard</h3>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+        <div class="col">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Print Time</h5>
+                    <h2 class="display-4">@Math.Floor(AnalyticsService.GetTotalPrintHours().TotalHours)h @AnalyticsService.GetTotalPrintHours().Minutes m</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Filament Consumed</h5>
+                    <h2 class="display-4">@($"{AnalyticsService.GetTotalFilamentConsumed() / 1000:F2} kg")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Print Jobs</h5>
+                    <h2 class="display-4">@AnalyticsService.GetRecords().Count</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <strong>Usage by Printer</strong>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var printer in ConnectionManager.Printers)
+                        {
+                            var consumed = AnalyticsService.GetFilamentConsumedByPrinter(printer.Definition.Id);
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @printer.Definition.Name
+                                <span class="badge bg-primary rounded-pill">@($"{consumed:F0} g")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <strong>Usage by Filament Spool</strong>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var spool in InventoryService.GetSpools())
+                        {
+                            var consumed = AnalyticsService.GetFilamentConsumedBySpool(spool.Id);
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @spool.Name
+                                <span class="badge bg-info rounded-pill">@($"{consumed:F0} g")</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <strong>Recent Print Jobs</strong>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Job Name</th>
+                            <th>Printer</th>
+                            <th>Duration</th>
+                            <th>Filament Used</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in AnalyticsService.GetRecords().OrderByDescending(r => r.Timestamp).Take(10))
+                        {
+                            var printerName = ConnectionManager.Printers.FirstOrDefault(p => p.Definition.Id == record.PrinterId)?.Definition.Name ?? "Unknown";
+                            <tr>
+                                <td>@record.Timestamp.ToLocalTime().ToString("g")</td>
+                                <td>@record.JobName</td>
+                                <td>@printerName</td>
+                                <td>@record.Duration.ToString(@"hh\:mm\:ss")</td>
+                                <td>@($"{(record.ActualFilamentUsedGrams > 0 ? record.ActualFilamentUsedGrams : record.EstimatedFilamentUsedGrams):F1} g")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        AnalyticsService.AnalyticsUpdated += OnAnalyticsUpdated;
+    }
+
+    public void Dispose()
+    {
+        AnalyticsService.AnalyticsUpdated -= OnAnalyticsUpdated;
+    }
+
+    private void OnAnalyticsUpdated(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

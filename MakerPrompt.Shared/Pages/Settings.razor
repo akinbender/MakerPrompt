@@ -1,0 +1,104 @@
+@page "/settings"
+@using MakerPrompt.Shared.Infrastructure
+@using MakerPrompt.Shared.Utils
+@inject IAppConfigurationService ConfigService
+@inject IAppLocalStorageProvider AppStorage
+@inject ToastService ToastService
+@implements IDisposable
+
+<LocalizedTitle TitleKey="Settings" />
+
+<div class="container-fluid">
+    <h3 class="mb-4">Settings</h3>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong>General</strong>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="farmName">Farm Name</label>
+                        <input type="text" class="form-control" id="farmName" @bind="_config.FarmName" placeholder="My Print Farm" />
+                        <div class="form-text">Optional name to display next to the logo.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong>Features</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="enableFilamentInventory" @bind="_config.EnableFilamentInventory" />
+                        <label class="form-check-label" for="enableFilamentInventory">Enable Filament Inventory</label>
+                        <div class="form-text">Track filament spools and their remaining weight.</div>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="enablePrintAnalytics" @bind="_config.EnablePrintAnalytics" />
+                        <label class="form-check-label" for="enablePrintAnalytics">Enable Print Analytics</label>
+                        <div class="form-text">Track print job history, duration, and filament usage.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong>Telemetry & Analytics</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="analyticsEnabled" @bind="_config.AnalyticsEnabled" />
+                        <label class="form-check-label" for="analyticsEnabled">Enable App Telemetry</label>
+                        <div class="form-text">Allow MakerPrompt to collect anonymous usage data to improve the app.</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" @onclick="SaveSettingsAsync">Save Settings</button>
+        </div>
+    </div>
+</div>
+
+<StorageExplorer Title="App storage" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
+
+@code {
+    private AppConfiguration _config = new();
+    private static readonly string[] _hiddenPrefixes = ["MakerPrompt.PrinterConnections", "MakerPrompt.PrintProjects"];
+
+    protected override void OnInitialized()
+    {
+        // Create a copy to edit
+        _config = new AppConfiguration
+        {
+            Theme = ConfigService.Configuration.Theme,
+            Language = ConfigService.Configuration.Language,
+            FarmName = ConfigService.Configuration.FarmName,
+            AnalyticsEnabled = ConfigService.Configuration.AnalyticsEnabled,
+            EnableFilamentInventory = ConfigService.Configuration.EnableFilamentInventory,
+            EnablePrintAnalytics = ConfigService.Configuration.EnablePrintAnalytics,
+            LastUpdated = ConfigService.Configuration.LastUpdated
+        };
+    }
+
+    private async Task SaveSettingsAsync()
+    {
+        ConfigService.Configuration.Theme = _config.Theme;
+        ConfigService.Configuration.Language = _config.Language;
+        ConfigService.Configuration.FarmName = _config.FarmName;
+        ConfigService.Configuration.AnalyticsEnabled = _config.AnalyticsEnabled;
+        ConfigService.Configuration.EnableFilamentInventory = _config.EnableFilamentInventory;
+        ConfigService.Configuration.EnablePrintAnalytics = _config.EnablePrintAnalytics;
+        ConfigService.Configuration.LastUpdated = DateTime.UtcNow;
+
+        await ConfigService.SaveConfigurationAsync();
+        ToastService.Notify(new ToastMessage(ToastType.Success, "Settings Saved", "Your settings have been saved successfully."));
+    }
+
+    public void Dispose()
+    {
+    }
+}

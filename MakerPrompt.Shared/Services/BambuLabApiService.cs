@@ -1,10 +1,4 @@
-using System.Net.Http.Headers;
 using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
 
 namespace MakerPrompt.Shared.Services;
 

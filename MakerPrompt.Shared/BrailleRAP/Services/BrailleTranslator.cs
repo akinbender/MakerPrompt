@@ -1,5 +1,3 @@
-using MakerPrompt.Shared.BrailleRAP.Models;
-
 namespace MakerPrompt.Shared.BrailleRAP.Services
 {
     /// <summary>

@@ -1,4 +1,6 @@
 ﻿@inherits ConnectionComponentBase
+@inject PrinterStorageProvider PrinterStorage
+@inject IAppLocalStorageProvider AppStorage
 
 <div class="row">
     <div class="col-lg-6 col-md-12">
@@ -53,7 +55,6 @@
                 </div>
             </div>
         </div>
-        
         <WebcamPanel />
     </div>
     <div class="col-lg-6 col-md-12">
@@ -128,6 +129,15 @@
                 </div>
             </div>
         </div>
+        <div class="card">
+            <h4 class="card-header">@Localizer[Resources.GCodeCategory_Calibration]</h4>
+            <div class="card-body">
+                <Calibration />
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <StorageExplorer Title="Printer storage" Provider="PrinterStorage" TargetProvider="AppStorage" EnableUpload="false" EnableDelete="true" EnableOpen="true" EnableCopy="true" />
     </div>
 </div>
 

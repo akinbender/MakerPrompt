@@ -11,6 +11,8 @@
 @using MakerPrompt.Shared.Infrastructure
 @using static MakerPrompt.Shared.Utils.Enums
 @inject PrinterConnectionManager ConnectionManager
+@inject FilamentInventoryService FilamentInventoryService
+@inject IAppConfigurationService ConfigService
 @inject ISerialService SerialService
 @inject IPrinterCameraProvider CameraProvider
 @inject IStringLocalizer<Resources> localizer
@@ -31,7 +33,7 @@
             <h5 class="mb-0">@_selectedPrinter.Definition.Name</h5>
             <span class="badge bg-success">@_selectedPrinter.Status.GetLocalizedDisplayName()</span>
         </div>
-        <Dashboard />
+        <ControlPanel />
     </div>
 }
 else
@@ -51,9 +53,6 @@ else
                 <div>
                     @localizer[Resources.Fleet_NoPrinters]
                     <br />
-                    <button class="btn btn-sm btn-outline-primary mt-2" @onclick="OpenAddModal">
-                        <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
-                    </button>
                 </div>
             </div>
         }
@@ -168,6 +167,27 @@ else
                                             </div>
                                         </div>
                                     }
+
+                                    @* ── Assigned Filament ── *@
+                                    @if (ConfigService.Configuration.EnableFilamentInventory && printer.Definition.AssignedFilamentSpoolId.HasValue)
+                                    {
+                                        var spool = FilamentInventoryService.GetSpool(printer.Definition.AssignedFilamentSpoolId.Value);
+                                        if (spool != null)
+                                        {
+                                            <div class="mt-3 pt-3 border-top">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted"><i class="bi bi-vinyl-fill me-1"></i>@spool.Name</small>
+                                                    <small class="text-muted">@($"{spool.RemainingWeightGrams:F0}g / {spool.TotalWeightGrams:F0}g")</small>
+                                                </div>
+                                                <div class="progress mt-1" style="height: 4px;">
+                                                    <div class="progress-bar @(spool.RemainingWeightGrams < spool.TotalWeightGrams * 0.1 ? "bg-danger" : "bg-info")"
+                                                         role="progressbar"
+                                                         style="width: @($"{(spool.RemainingWeightGrams / spool.TotalWeightGrams) * 100:F0}%")">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
                                 }
                             </div>
                         </div>
@@ -278,6 +298,20 @@ else
             <input class="form-check-input" type="checkbox" id="autoConnect" @bind="_editDefinition.AutoConnect" />
             <label class="form-check-label" for="autoConnect">@localizer[Resources.Fleet_AutoConnect]</label>
         </div>
+
+        @if (ConfigService.Configuration.EnableFilamentInventory)
+        {
+            <div class="mb-3">
+                <label class="form-label">Assigned Filament Spool</label>
+                <select class="form-select" @bind="_editDefinition.AssignedFilamentSpoolId">
+                    <option value="">None</option>
+                    @foreach (var spool in FilamentInventoryService.GetSpools())
+                    {
+                        <option value="@spool.Id">@spool.Name (@spool.Material - @spool.Color)</option>
+                    }
+                </select>
+            </div>
+        }
     </BodyTemplate>
     <FooterTemplate>
         <button class="btn btn-outline-secondary" @onclick="CloseAddEditModal">@localizer[Resources.Fleet_Cancel]</button>

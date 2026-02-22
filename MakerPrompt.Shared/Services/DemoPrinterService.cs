@@ -1,5 +1,3 @@
-using MakerPrompt.Shared.Models;
-
 namespace MakerPrompt.Shared.Services
 {
     public class DemoPrinterService : BasePrinterConnectionService, IPrinterCommunicationService

@@ -4,6 +4,9 @@
 *@
 @inject PrinterConnectionManager ConnectionManager
 @inject PrintProjectService ProjectService
+@inject FilamentInventoryService FilamentInventoryService
+@inject AnalyticsService AnalyticsService
+@inject NotificationService NotificationService
 @inject ILogger<AppInitializer> Logger
 
 @ChildContent
@@ -20,6 +23,9 @@
             _initialized = true;
             try
             {
+                await FilamentInventoryService.InitializeAsync();
+                await AnalyticsService.InitializeAsync();
+                await NotificationService.InitializeAsync();
                 await ConnectionManager.InitializeAsync();
                 await ProjectService.InitializeAsync();
                 _ = ConnectionManager.AutoConnectAsync();

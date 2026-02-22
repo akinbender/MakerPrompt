@@ -1,16 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using MakerPrompt.Shared.Infrastructure;
-using MakerPrompt.Shared.Models;
-using MakerPrompt.Shared.Utils;
-using static MakerPrompt.Shared.Utils.Enums;
-using System.IO;
-using MakerPrompt.Shared.Services;
-
-namespace MakerPrompt.Shared.Services
+﻿namespace MakerPrompt.Shared.Services
 {
     public class MoonrakerApiService : BasePrinterConnectionService, IPrinterCommunicationService
     {
@@ -202,7 +190,7 @@ namespace MakerPrompt.Shared.Services
 
                 await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
                 var result = await JsonSerializer.DeserializeAsync<WebcamListResponse>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var webcams = result?.Result?.Webcams ?? new List<WebcamEntry>();
+                var webcams = result?.Result?.Webcams ?? [];
 
                 var cameras = new List<PrinterCamera>();
                 foreach (var cam in webcams)
@@ -475,20 +463,20 @@ namespace MakerPrompt.Shared.Services
         public async Task<Dictionary<string, string>> GetGcodeHelpAsync()
         {
             if (!IsConnected)
-                return new Dictionary<string, string>();
+                return [];
 
             try
             {
                 var response = await Client.GetAsync("/printer/gcode/help", _cts.Token);
                 if (!response.IsSuccessStatusCode)
-                    return new Dictionary<string, string>();
+                    return [];
 
                 var json = await response.Content.ReadAsStringAsync();
                 using var doc = JsonDocument.Parse(json);
                 if (!doc.RootElement.TryGetProperty("result", out var root) ||
                     root.ValueKind != JsonValueKind.Object)
                 {
-                    return new Dictionary<string, string>();
+                    return [];
                 }
 
                 var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -499,7 +487,7 @@ namespace MakerPrompt.Shared.Services
             }
             catch
             {
-                return new Dictionary<string, string>();
+                return [];
             }
         }
 
@@ -558,7 +546,7 @@ namespace MakerPrompt.Shared.Services
         private sealed record WebcamResult
         {
             [JsonPropertyName("webcams")]
-            public List<WebcamEntry> Webcams { get; set; } = new();
+            public List<WebcamEntry> Webcams { get; set; } = [];
         }
 
         private sealed record WebcamEntry

@@ -40,5 +40,15 @@ namespace MakerPrompt.Shared.Models
         /// Whether this printer is currently the "active" printer (selected for single-printer views).
         /// </summary>
         public bool IsActive { get; set; }
+
+        /// <summary>
+        /// Tracks the accumulated E-axis extrusion for the current print job.
+        /// </summary>
+        public double AccumulatedExtrusion { get; set; }
+
+        /// <summary>
+        /// Tracks the start time of the current print job.
+        /// </summary>
+        public DateTime? PrintStartTime { get; set; }
     }
 }

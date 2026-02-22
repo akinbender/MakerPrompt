@@ -1,5 +1,4 @@
-﻿using MakerPrompt.Shared.Properties;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MakerPrompt.Shared.Models
 {

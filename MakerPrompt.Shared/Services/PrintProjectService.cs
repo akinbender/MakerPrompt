@@ -1,5 +1,3 @@
-using System.Text;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
 namespace MakerPrompt.Shared.Services
@@ -14,7 +12,7 @@ namespace MakerPrompt.Shared.Services
 
         private readonly IAppLocalStorageProvider _storage;
         private readonly ILogger<PrintProjectService> _logger;
-        private List<PrintProject> _projects = new();
+        private List<PrintProject> _projects = [];
         private bool _initialized;
 
         public IReadOnlyList<PrintProject> Projects => _projects.AsReadOnly();
@@ -45,7 +43,7 @@ namespace MakerPrompt.Shared.Services
                     {
                         using var reader = new StreamReader(stream);
                         var json = await reader.ReadToEndAsync();
-                        _projects = JsonSerializer.Deserialize<List<PrintProject>>(json) ?? new();
+                        _projects = JsonSerializer.Deserialize<List<PrintProject>>(json) ?? [];
                     }
                 }
             }

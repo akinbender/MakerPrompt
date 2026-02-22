@@ -50,5 +50,10 @@ namespace MakerPrompt.Shared.Models
         /// Timestamp of the last successful connection.
         /// </summary>
         public DateTime? LastConnectedAt { get; set; }
+
+        /// <summary>
+        /// The ID of the currently assigned filament spool.
+        /// </summary>
+        public Guid? AssignedFilamentSpoolId { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace MakerPrompt.Shared.Models
         /// <summary>
         /// The individual print jobs in this project.
         /// </summary>
-        public List<PrintJob> Jobs { get; set; } = new();
+        public List<PrintJob> Jobs { get; set; } = [];
     }
 
     /// <summary>

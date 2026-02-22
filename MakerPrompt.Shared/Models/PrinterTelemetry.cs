@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Numerics;
 
 namespace MakerPrompt.Shared.Models
 {
@@ -89,6 +88,27 @@ namespace MakerPrompt.Shared.Models
         {
             get => _fanSpeed;
             set => SetField(ref _fanSpeed, value, nameof(FanSpeed));
+        }
+
+        private string _printJobName = "";
+        public string PrintJobName
+        {
+            get => _printJobName;
+            set => SetField(ref _printJobName, value, nameof(PrintJobName));
+        }
+
+        private TimeSpan _printDuration;
+        public TimeSpan PrintDuration
+        {
+            get => _printDuration;
+            set => SetField(ref _printDuration, value, nameof(PrintDuration));
+        }
+
+        private double _filamentUsed;
+        public double FilamentUsed
+        {
+            get => _filamentUsed;
+            set => SetField(ref _filamentUsed, value, nameof(FilamentUsed));
         }
 
         public SDCardStatus SDCard { get; } = new();
