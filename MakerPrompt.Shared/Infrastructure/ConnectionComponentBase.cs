@@ -76,7 +76,7 @@ namespace MakerPrompt.Shared.Infrastructure
                     PrinterServiceFactory.Current.TelemetryUpdated -= OnTelemetryUpdated;
                 }
             }
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         }
 
         public async ValueTask DisposeAsync()

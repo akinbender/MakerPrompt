@@ -9,10 +9,8 @@
 <LocalizedTitle TitleKey="Settings" />
 
 <div class="container-fluid">
-    <h3 class="mb-4">Settings</h3>
-
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 col-sm-12">
             <div class="card mb-4">
                 <div class="card-header">
                     <strong>General</strong>
@@ -58,12 +56,17 @@
                 </div>
             </div>
 
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <StorageExplorer Title="App storage" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
             <button class="btn btn-primary" @onclick="SaveSettingsAsync">Save Settings</button>
         </div>
     </div>
 </div>
-
-<StorageExplorer Title="App storage" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
 
 @code {
     private AppConfiguration _config = new();

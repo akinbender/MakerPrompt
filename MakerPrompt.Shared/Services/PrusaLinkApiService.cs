@@ -121,6 +121,10 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         if (status.Job != null)
         {
             LastTelemetry.SDCard.Printing = status.Job.State?.Equals("PRINTING", StringComparison.OrdinalIgnoreCase) == true;
+            LastTelemetry.SDCard.Progress = status.Job.Progress ?? LastTelemetry.SDCard.Progress;
+
+            if (status.Job.TimePrinting.HasValue)
+                LastTelemetry.PrintDuration = TimeSpan.FromSeconds(status.Job.TimePrinting.Value);
         }
 
         if (status.Storage != null)
@@ -149,15 +153,36 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
             return [];
         }
 
-        return folder.Children.Select(child => new FileEntry
+        var storagePath = firstStorage.Path.TrimEnd('/');
+        var result = new List<FileEntry>();
+        CollectFiles(folder.Children, storagePath, result);
+        return result;
+    }
+
+    private static void CollectFiles(List<PrusaFileSystemEntry> entries, string parentPath, List<FileEntry> result)
+    {
+        foreach (var child in entries)
         {
-            FullPath = $"{firstStorage.Path}{child.Path ?? string.Empty}",
-            Size = child.Size ?? 0,
-            ModifiedDate = child.Timestamp.HasValue
-                ? DateTimeOffset.FromUnixTimeSeconds(child.Timestamp.Value).DateTime
-                : null,
-            IsAvailable = !child.ReadOnly
-        }).ToList();
+            if (string.Equals(child.Type, "FOLDER", StringComparison.OrdinalIgnoreCase))
+            {
+                if (child.Children != null)
+                {
+                    var folderPath = $"{parentPath}/{child.DisplayName ?? child.Name}";
+                    CollectFiles(child.Children, folderPath, result);
+                }
+                continue;
+            }
+
+            result.Add(new FileEntry
+            {
+                FullPath = $"{parentPath}/{child.DisplayName ?? child.Name}",
+                Size = child.Size ?? 0,
+                ModifiedDate = child.Timestamp.HasValue
+                    ? DateTimeOffset.FromUnixTimeSeconds(child.Timestamp.Value).DateTime
+                    : null,
+                IsAvailable = !child.ReadOnly
+            });
+        }
     }
 
     public Task SetHotendTemp(int targetTemp = 0) =>
@@ -298,6 +323,12 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         return await GetAsync<PrusaFileSystemEntry>(requestPath, cancellationToken);
     }
 
+    private static readonly JsonSerializerOptions s_jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+    };
+
     private async Task<T?> GetAsync<T>(string path, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, path);
@@ -308,7 +339,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         }
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        return await JsonSerializer.DeserializeAsync<T>(stream, cancellationToken: cancellationToken);
+        return await JsonSerializer.DeserializeAsync<T>(stream, s_jsonOptions, cancellationToken);
     }
 
     private async Task<HttpResponseMessage> SendWithRetryAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -403,12 +434,15 @@ public sealed class PrusaStatusPrinter
     public double? TargetBed { get; set; }
 
     [JsonPropertyName("axis_x")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public float? AxisX { get; set; }
 
     [JsonPropertyName("axis_y")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public float? AxisY { get; set; }
 
     [JsonPropertyName("axis_z")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public float? AxisZ { get; set; }
 
     [JsonPropertyName("flow")]
@@ -477,11 +511,22 @@ public sealed class PrusaFileSystemEntry
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
+    [JsonPropertyName("display_name")]
+    public string? DisplayName { get; set; }
+
     [JsonPropertyName("path")]
     public string? Path { get; set; }
 
+    // Some firmware versions use "ro", others use "read_only".
+    // PropertyNameCaseInsensitive + both properties covers all variants.
+    [JsonPropertyName("ro")]
+    public bool? Ro { get; set; }
+
     [JsonPropertyName("read_only")]
-    public bool ReadOnly { get; set; }
+    public bool? ReadOnlyFlag { get; set; }
+
+    [JsonIgnore]
+    public bool ReadOnly => Ro ?? ReadOnlyFlag ?? false;
 
     [JsonPropertyName("size")]
     public long? Size { get; set; }

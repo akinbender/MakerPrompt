@@ -39,7 +39,7 @@
                 <i class="bi bi-x-circle me-1"></i>@localizer[Resources.NavConnection_Disconnect]
             </button>
         </div>
-        <ControlPanel />
+        <ControlPanel @key="_selectedPrinterId" />
     </div>
 }
 else
@@ -361,9 +361,14 @@ else
         // Keep selected printer reference fresh
         if (_selectedPrinterId.HasValue)
         {
-            _selectedPrinter = ConnectionManager.Printers.FirstOrDefault(p => p.Definition.Id == _selectedPrinterId);
+            _selectedPrinter = ConnectionManager.Printers.ToList().FirstOrDefault(p => p.Definition.Id == _selectedPrinterId);
             if (_selectedPrinter == null)
                 _selectedPrinterId = null;
+            // When the selected printer just became connected (e.g. user hit Connect
+            // while its card was selected), sync factory.Current before the re-render
+            // creates the dashboard — otherwise the StorageExplorer reads stale data.
+            else if (_selectedPrinter.Service?.IsConnected == true && !_selectedPrinter.IsActive)
+                ConnectionManager.SetActivePrinter(_selectedPrinter.Definition.Id);
         }
 
         await RefreshCameraUrlsAsync();
@@ -400,7 +405,7 @@ else
     // ── Camera ──
     private async Task RefreshCameraUrlsAsync()
     {
-        foreach (var printer in ConnectionManager.Printers)
+        foreach (var printer in ConnectionManager.Printers.ToList())
         {
             if (printer.Service == null || !printer.Service.IsConnected)
             {

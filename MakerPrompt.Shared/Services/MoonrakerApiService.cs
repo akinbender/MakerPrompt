@@ -121,53 +121,96 @@
             if (!IsConnected) return LastTelemetry;
 
             // Get temperature data
-            var tempResponse = await Client.GetAsync("/printer/objects/query?heater_bed&extruder", _cts.Token);
-            if (tempResponse.IsSuccessStatusCode)
+            try
             {
-                var json = await tempResponse.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(json);
-                var root = doc.RootElement.GetProperty("result").GetProperty("status");
+                var tempResponse = await Client.GetAsync("/printer/objects/query?heater_bed&extruder", _cts.Token);
+                if (tempResponse.IsSuccessStatusCode)
+                {
+                    var json = await tempResponse.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(json);
+                    var root = doc.RootElement.GetProperty("result").GetProperty("status");
 
-                LastTelemetry.BedTemp = root.GetProperty("heater_bed").GetProperty("temperature").GetDouble();
-                LastTelemetry.BedTarget = root.GetProperty("heater_bed").GetProperty("target").GetDouble();
-                LastTelemetry.HotendTemp = root.GetProperty("extruder").GetProperty("temperature").GetDouble();
-                LastTelemetry.HotendTarget = root.GetProperty("extruder").GetProperty("target").GetDouble();
+                    LastTelemetry.BedTemp = root.GetProperty("heater_bed").GetProperty("temperature").GetDouble();
+                    LastTelemetry.BedTarget = root.GetProperty("heater_bed").GetProperty("target").GetDouble();
+                    LastTelemetry.HotendTemp = root.GetProperty("extruder").GetProperty("temperature").GetDouble();
+                    LastTelemetry.HotendTarget = root.GetProperty("extruder").GetProperty("target").GetDouble();
+                }
             }
+            catch { }
 
-            var motionResponse = await Client.GetAsync("/printer/objects/query?gcode_move,fan", _cts.Token);
-            if (motionResponse.IsSuccessStatusCode)
+            // Get motion and fan data (each object must be a separate query parameter)
+            try
             {
-                var json = await motionResponse.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(json);
-                var status = doc.RootElement.GetProperty("result").GetProperty("status");
+                var motionResponse = await Client.GetAsync("/printer/objects/query?gcode_move&fan", _cts.Token);
+                if (motionResponse.IsSuccessStatusCode)
+                {
+                    var json = await motionResponse.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(json);
+                    var status = doc.RootElement.GetProperty("result").GetProperty("status");
 
-                // Position data
-                var position = status.GetProperty("gcode_move").GetProperty("position");
-                LastTelemetry.Position = new Vector3(
-                    (float)position[0].GetDecimal(),
-                    (float)position[1].GetDecimal(),
-                    (float)position[2].GetDecimal()
-                );
-                // Speed and flow data
-                LastTelemetry.FeedRate = (int)status.GetProperty("gcode_move")
-                    .GetProperty("speed").GetDecimal();
-                LastTelemetry.FlowRate = (int)(status.GetProperty("gcode_move")
-                    .GetProperty("extrude_factor").GetDecimal() * 100);
+                    // Position data
+                    var position = status.GetProperty("gcode_move").GetProperty("position");
+                    LastTelemetry.Position = new Vector3(
+                        (float)position[0].GetDecimal(),
+                        (float)position[1].GetDecimal(),
+                        (float)position[2].GetDecimal()
+                    );
+                    // Speed and flow data
+                    LastTelemetry.FeedRate = (int)status.GetProperty("gcode_move")
+                        .GetProperty("speed").GetDecimal();
+                    LastTelemetry.FlowRate = (int)(status.GetProperty("gcode_move")
+                        .GetProperty("extrude_factor").GetDecimal() * 100);
 
-                // Fan speed
-                LastTelemetry.FanSpeed = (int)(status.GetProperty("fan")
-                    .GetProperty("speed").GetDecimal() * 100);
+                    // Fan speed
+                    LastTelemetry.FanSpeed = (int)(status.GetProperty("fan")
+                        .GetProperty("speed").GetDecimal() * 100);
+                }
             }
+            catch { }
 
-            // Get printer status
-            var statusResponse = await Client.GetAsync("/printer/objects/query?print_stats", _cts.Token);
-            if (statusResponse.IsSuccessStatusCode)
+            // Get printer status, print progress, and job info
+            try
             {
-                var json = await statusResponse.Content.ReadAsStringAsync();
-                LastTelemetry.Status = json.Contains("printing") ?
-                    PrinterStatus.Printing :
-                    PrinterStatus.Connected;
+                var statusResponse = await Client.GetAsync("/printer/objects/query?print_stats&virtual_sdcard", _cts.Token);
+                if (statusResponse.IsSuccessStatusCode)
+                {
+                    var json = await statusResponse.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(json);
+                    var status = doc.RootElement.GetProperty("result").GetProperty("status");
+
+                    if (status.TryGetProperty("print_stats", out var printStats))
+                    {
+                        var state = printStats.TryGetProperty("state", out var stateProp)
+                            ? stateProp.GetString() ?? ""
+                            : "";
+                        LastTelemetry.Status = state switch
+                        {
+                            "printing" => PrinterStatus.Printing,
+                            "paused" => PrinterStatus.Paused,
+                            "error" => PrinterStatus.Error,
+                            "complete" or "cancelled" or "standby" => PrinterStatus.Connected,
+                            _ => PrinterStatus.Connected
+                        };
+                        LastTelemetry.SDCard.Printing = state == "printing";
+
+                        if (printStats.TryGetProperty("filename", out var filenameProp))
+                            LastTelemetry.PrintJobName = filenameProp.GetString() ?? "";
+
+                        if (printStats.TryGetProperty("print_duration", out var durationProp))
+                            LastTelemetry.PrintDuration = TimeSpan.FromSeconds(durationProp.GetDouble());
+
+                        if (printStats.TryGetProperty("filament_used", out var filamentProp))
+                            LastTelemetry.FilamentUsed = filamentProp.GetDouble();
+                    }
+
+                    if (status.TryGetProperty("virtual_sdcard", out var sdcard))
+                    {
+                        if (sdcard.TryGetProperty("progress", out var progressProp))
+                            LastTelemetry.SDCard.Progress = progressProp.GetDouble() * 100;
+                    }
+                }
             }
+            catch { }
 
             RaiseTelemetryUpdated();
             return LastTelemetry;
