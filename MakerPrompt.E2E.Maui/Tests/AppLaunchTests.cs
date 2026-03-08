@@ -1,92 +1,92 @@
-using OpenQA.Selenium;
-using OpenQA.Selenium.Appium;
+using Microsoft.Playwright;
 using MakerPrompt.E2E.Maui.Fixtures;
 
 namespace MakerPrompt.E2E.Maui.Tests;
 
 /// <summary>
-/// Minimal MAUI desktop UI tests via Appium.
-/// Tests visible UI states only — does NOT attempt deep WebView DOM automation
-/// per project constraints. The MAUI app uses BlazorWebView, so native accessibility
-/// tree access is limited to the window shell.
-/// 
-/// These tests validate:
-///   1. App launches successfully
-///   2. Window is displayed and responsive
-///   3. Content renders (screenshot verification)
-///   4. App shuts down cleanly
+/// Verifies the MAUI app launches and the Blazor WebView renders correctly.
+/// All interaction goes through Playwright connected to WebView2 via CDP.
 /// </summary>
 [Collection("Appium")]
+[Trait("Category", "E2E-Maui")]
+[TestCaseOrderer("MakerPrompt.E2E.Maui.Fixtures.AlphabeticalOrderer", "MakerPrompt.E2E.Maui")]
 public class AppLaunchTests
 {
+    private static IPage Page => AppiumSetup.Page;
+
     [Fact]
     public void App_Launches_Successfully()
     {
-        Assert.NotNull(AppiumSetup.App);
+        // If the fixture wired up Page, the app started and CDP connected
+        Assert.NotNull(Page);
     }
 
     [Fact]
-    public void Window_Is_Displayed()
+    public async Task Page_Has_Title()
     {
-        var windowSize = AppiumSetup.App.Manage().Window.Size;
-        Assert.True(windowSize.Width > 0, "Window width should be positive");
-        Assert.True(windowSize.Height > 0, "Window height should be positive");
+        var title = await Page.TitleAsync();
+        Assert.False(string.IsNullOrWhiteSpace(title), "Page should have a title");
     }
 
     [Fact]
-    public void Window_Title_Contains_AppName()
+    public async Task Sidebar_Renders()
     {
-        var title = AppiumSetup.App.Title;
-        Assert.Contains("MakerPrompt", title, StringComparison.OrdinalIgnoreCase);
+        // Fixture already verified sidebar is visible; confirm it's still there
+        var sidebar = Page.Locator(".sidebar");
+        await sidebar.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        Assert.True(await sidebar.IsVisibleAsync(), "Sidebar should be visible after app launch");
     }
 
     [Fact]
-    public void Content_Renders_Screenshot()
+    public async Task Content_Renders_Screenshot()
     {
-        // Take a screenshot to verify the app rendered content.
-        // Visual inspection of screenshots is the primary verification
-        // for BlazorWebView content when deep DOM automation is not used.
-        var screenshot = AppiumSetup.App.GetScreenshot();
-        Assert.NotNull(screenshot);
-
         var path = Path.Combine(AppContext.BaseDirectory, "screenshots");
         Directory.CreateDirectory(path);
-        screenshot.SaveAsFile(Path.Combine(path, "app_launch.png"));
+        var filePath = Path.Combine(path, "app_launch.png");
+        await Page.ScreenshotAsync(new PageScreenshotOptions { Path = filePath });
+        Assert.True(File.Exists(filePath), "Screenshot file should exist");
     }
 
     [Fact]
-    public void Fleet_Button_Exists_In_AccessibilityTree()
+    public async Task Fleet_Page_Is_Default_Route()
     {
-        // Attempt to find the Fleet/Printer nav item via the Windows accessibility tree.
-        // BlazorWebView may or may not expose inner HTML elements — this is best-effort.
+        // Navigate away first so Fleet component remounts fresh — a previous
+        // test may have left it in ControlPanel view with a connected printer.
+        await AppiumSetup.NavigateAsync("/settings");
+        await Page.WaitForTimeoutAsync(300);
+        await AppiumSetup.NavigateAsync("/");
+        var addBtn = Page.Locator("button:has-text('Add Printer')");
+        await addBtn.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        Assert.True(await addBtn.IsVisibleAsync(), "Fleet page (default route) should have an Add Printer button");
+    }
+
+    [Fact]
+    public async Task App_Boots_Without_Console_Errors()
+    {
+        var consoleErrors = new List<string>();
+
+        Page.Console += Handler;
         try
         {
-            var element = AppiumSetup.App.FindElement(MobileBy.AccessibilityId("FleetNavLink"));
-            Assert.NotNull(element);
+            await AppiumSetup.NavigateAsync("/");
+            await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+
+            var realErrors = consoleErrors
+                .Where(e => !e.Contains("service-worker", StringComparison.OrdinalIgnoreCase))
+                .Where(e => !e.Contains("favicon", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            Assert.Empty(realErrors);
         }
-        catch (NoSuchElementException)
+        finally
         {
-            // Expected for BlazorWebView — the WebView2 control does not always
-            // expose inner DOM elements to the native accessibility tree.
-            // This test documents the limitation; it will pass once AutomationId
-            // attributes are added to MAUI shell elements or WebView accessibility improves.
-            Assert.True(true, "Fleet button not found in native accessibility tree (expected for BlazorWebView).");
+            Page.Console -= Handler;
         }
-    }
 
-    [Fact]
-    public void App_Responds_To_Window_Resize()
-    {
-        var original = AppiumSetup.App.Manage().Window.Size;
-
-        // Resize the window
-        AppiumSetup.App.Manage().Window.Size = new System.Drawing.Size(800, 600);
-        var resized = AppiumSetup.App.Manage().Window.Size;
-
-        Assert.True(resized.Width > 0);
-        Assert.True(resized.Height > 0);
-
-        // Restore original size
-        AppiumSetup.App.Manage().Window.Size = original;
+        void Handler(object? _, IConsoleMessage msg)
+        {
+            if (msg.Type == "error")
+                consoleErrors.Add(msg.Text);
+        }
     }
 }

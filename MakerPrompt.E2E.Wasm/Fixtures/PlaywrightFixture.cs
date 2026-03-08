@@ -4,20 +4,27 @@ using Microsoft.Playwright;
 namespace MakerPrompt.E2E.Wasm.Fixtures;
 
 /// <summary>
-/// Shared fixture that starts the Blazor WASM dev server and a Playwright browser.
-/// Used as an xUnit collection fixture so the server + browser are shared across all test classes.
+/// Shared fixture that starts the Blazor WASM dev server and a single Playwright browser.
+/// One browser + one page is reused across all tests in the collection.
 /// </summary>
 public class PlaywrightFixture : IAsyncLifetime
 {
     private Process? _serverProcess;
     private IPlaywright? _playwright;
     private IBrowser? _browser;
+    private IBrowserContext? _context;
 
     /// <summary>
     /// Base URL of the running Blazor WASM dev server.
     /// Override via E2E_BASE_URL environment variable.
     /// </summary>
     public string BaseUrl { get; private set; } = null!;
+
+    /// <summary>
+    /// Single shared page reused across all tests. Navigate to BaseUrl at
+    /// the start of each test to reset state.
+    /// </summary>
+    public IPage Page { get; private set; } = null!;
 
     public async Task InitializeAsync()
     {
@@ -43,30 +50,21 @@ public class PlaywrightFixture : IAsyncLifetime
         // Wait for the server to respond
         await WaitForServerAsync(BaseUrl, TimeSpan.FromSeconds(90));
 
-        // Create Playwright browser
-        // Default: headed (visible) so you can watch the test run like Selenium.
-        // Set E2E_HEADLESS=true for CI or to run without a visible browser.
+        // Create Playwright — one browser, one context, one page for the entire run
         var headless = Environment.GetEnvironmentVariable("E2E_HEADLESS") == "true";
         _playwright = await Playwright.CreateAsync();
         _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Headless = headless,
-            SlowMo = headless ? 0 : 300 // 300ms pause between actions so you can follow along
+            SlowMo = headless ? 0 : 300
         });
-    }
-
-    /// <summary>
-    /// Creates a fresh browser context + page for test isolation.
-    /// Caller is responsible for disposing the returned context.
-    /// </summary>
-    public async Task<IPage> NewPageAsync()
-    {
-        var context = await _browser!.NewContextAsync();
-        return await context.NewPageAsync();
+        _context = await _browser.NewContextAsync();
+        Page = await _context.NewPageAsync();
     }
 
     public async Task DisposeAsync()
     {
+        if (_context != null) await _context.DisposeAsync();
         if (_browser != null) await _browser.DisposeAsync();
         _playwright?.Dispose();
 

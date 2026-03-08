@@ -32,6 +32,12 @@
             </button>
             <h5 class="mb-0">@_selectedPrinter.Definition.Name</h5>
             <span class="badge bg-success">@_selectedPrinter.Status.GetLocalizedDisplayName()</span>
+            <button class="btn btn-sm btn-outline-danger ms-auto"
+                    @onclick="() => DisconnectAsync(_selectedPrinter.Definition.Id)"
+                    disabled="@_selectedPrinter.IsBusy"
+                    title="@localizer[Resources.NavConnection_Disconnect]">
+                <i class="bi bi-x-circle me-1"></i>@localizer[Resources.NavConnection_Disconnect]
+            </button>
         </div>
         <ControlPanel />
     </div>

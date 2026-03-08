@@ -2,9 +2,13 @@
 
 Two cross-platform E2E test projects for MakerPrompt.
 
+> **⚠️ Always target a specific project.** Never run bare `dotnet test` from the
+> solution root — it will launch both Playwright (browser) AND Appium (MAUI desktop)
+> simultaneously.
+
 ## MakerPrompt.E2E.Wasm — Playwright (Blazor WASM)
 
-Headless browser tests against the Blazor WASM host using the **Demo** printer backend.
+Headed browser tests against the Blazor WASM host using the **Demo** printer backend.
 
 ### Prerequisites
 
@@ -15,8 +19,12 @@ pwsh MakerPrompt.E2E.Wasm/bin/Debug/net10.0/playwright.ps1 install
 
 ### Run
 
-```
+```bash
+# Run WASM E2E tests only (opens Chromium)
 dotnet test MakerPrompt.E2E.Wasm
+
+# Or filter by trait from any scope
+dotnet test --filter "Category=E2E-Wasm"
 ```
 
 | Variable | Default | Purpose |
@@ -47,12 +55,17 @@ Native UI tests for the Windows MAUI host.
 2. **Appium** — `npm i -g appium`
 3. **Windows driver** — `appium driver install --source=npm appium-windows-driver`
 4. **WinAppDriver v1.2.1** — https://github.com/microsoft/WinAppDriver/releases/tag/v1.2.1
-5. **Build the MAUI app for Windows** — `dotnet build MakerPrompt.MAUI -f net10.0-windows10.0.19041.0`
+5. **Windows Developer Mode** — Settings → System → For developers → ON
+6. **Build the MAUI app for Windows** — `dotnet build MakerPrompt.MAUI -f net10.0-windows10.0.19041.0`
 
 ### Run
 
-```
+```bash
+# Run MAUI E2E tests only (launches the desktop app)
 dotnet test MakerPrompt.E2E.Maui
+
+# Or filter by trait from any scope
+dotnet test --filter "Category=E2E-Maui"
 ```
 
 | Variable | Default | Purpose |

@@ -59,8 +59,6 @@
         private async Task SetTheme(Theme theme)
         {
             await _jsModule!.InvokeVoidAsync("setTheme", theme.ToString().ToLower());
-            _configService.Configuration.Theme = theme;
-            await _configService.SaveConfigurationAsync();
         }
 
         private void UpdateNativeTheme(Theme theme)

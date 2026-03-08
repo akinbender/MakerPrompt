@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Prevents VS Test Explorer from running E2E.Wasm and E2E.Maui in parallel.
+  Appium + Playwright fight over resources when launched simultaneously.
+  
+  To use: Test Explorer → Settings gear → Configure Run Settings → Select Solution Wide runsettings File
+  Or: dotnet test -s test.runsettings
+-->
+<RunSettings>
+  <RunConfiguration>
+    <!-- Run test assemblies one at a time, not in parallel -->
+    <MaxCpuCount>1</MaxCpuCount>
+    <!-- Longer timeout for Appium session creation -->
+    <TestSessionTimeout>300000</TestSessionTimeout>
+  </RunConfiguration>
+</RunSettings>

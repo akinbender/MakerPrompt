@@ -6,31 +6,37 @@ namespace MakerPrompt.E2E.Wasm.Tests;
 /// <summary>
 /// End-to-end tests for the multi-printer fleet workflow using the Demo backend.
 /// Covers: add printer → connect → telemetry updates → disconnect.
+/// All tests share a single browser tab via the collection fixture.
+///
+/// IMPORTANT: After connecting a printer and clicking its card, Fleet switches
+/// from the card grid to an inline ControlPanel view. Tests must account for
+/// this view transition.
 /// </summary>
 [Collection("Playwright")]
+[Trait("Category", "E2E-Wasm")]
 public class FleetWorkflowTests(PlaywrightFixture fixture)
 {
     private readonly PlaywrightFixture _fixture = fixture;
+    private IPage Page => _fixture.Page;
 
     [Fact]
     public async Task Fleet_AddPrinter_Demo_Mode()
     {
-        var page = await _fixture.NewPageAsync();
-        await NavigateToFleetAsync(page);
+        await NavigateToFleetAsync();
 
         // Click "Add Printer"
-        await page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
+        await Page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
 
         // Modal should appear — fill in the name
-        var nameInput = page.Locator("input[placeholder='My 3D Printer']");
+        var nameInput = Page.Locator("input[placeholder='My 3D Printer']");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync("E2E Test Printer");
 
         // Demo is the default connection type — click Save
-        await page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
+        await Page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
 
         // Verify the printer card appears
-        var card = page.Locator(".card strong:has-text('E2E Test Printer')");
+        var card = Page.Locator(".card strong:has-text('E2E Test Printer')").First;
         await card.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         Assert.True(await card.IsVisibleAsync());
     }
@@ -38,104 +44,104 @@ public class FleetWorkflowTests(PlaywrightFixture fixture)
     [Fact]
     public async Task Fleet_ConnectMockPrinter()
     {
-        var page = await _fixture.NewPageAsync();
-        await NavigateToFleetAsync(page);
-        await AddDemoPrinterAsync(page, "Connect Test");
+        await NavigateToFleetAsync();
+        await AddDemoPrinterAsync("Connect Test");
+        await SelectAndConnectAsync("Connect Test");
 
-        // Click the card to select it (exposes action buttons)
-        await page.Locator(".card:has-text('Connect Test')").ClickAsync();
-
-        // Click the connect button (plug icon, outline-success)
-        var connectBtn = page.Locator(".card:has-text('Connect Test') button.btn-outline-success");
-        await connectBtn.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
-        await connectBtn.ClickAsync();
-
-        // Wait for the printer to show Connected status — temperature indicators appear
-        var tempIndicator = page.Locator(".card:has-text('Connect Test') .bi-thermometer-half");
-        await tempIndicator.WaitForAsync(new LocatorWaitForOptions { Timeout = 10_000 });
-        Assert.True(await tempIndicator.IsVisibleAsync());
+        // After connecting, the view switches to inline ControlPanel.
+        // Verify the connected status badge appears in the header.
+        var badge = Page.Locator(".badge.bg-success");
+        await badge.WaitForAsync(new LocatorWaitForOptions { Timeout = 10_000 });
+        Assert.True(await badge.IsVisibleAsync());
     }
 
     [Fact]
     public async Task Fleet_TelemetryUpdates()
     {
-        var page = await _fixture.NewPageAsync();
-        await NavigateToFleetAsync(page);
-        await AddDemoPrinterAsync(page, "Telemetry Test");
-        await ConnectPrinterAsync(page, "Telemetry Test");
+        await NavigateToFleetAsync();
+        await AddDemoPrinterAsync("Telemetry Test");
+        await SelectAndConnectAsync("Telemetry Test");
 
-        // After connecting, the Demo service sends telemetry with temperatures.
-        // Verify temperature text is rendered (e.g. "25.0°C")
-        var tempText = page.Locator(".card:has-text('Telemetry Test') strong", new PageLocatorOptions
+        // After connecting, the inline ControlPanel renders the Heating card
+        // with current temperature values (e.g. "C: 25.0") and °C labels.
+        var heatingCard = Page.Locator(".card-header", new PageLocatorOptions
         {
-            HasTextRegex = new System.Text.RegularExpressions.Regex(@"\d+\.\d+°C")
+            HasTextRegex = new System.Text.RegularExpressions.Regex("Heating|Temperature", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
         });
-        await tempText.First.WaitForAsync(new LocatorWaitForOptions { Timeout = 10_000 });
-        Assert.True(await tempText.First.IsVisibleAsync());
+        await heatingCard.WaitForAsync(new LocatorWaitForOptions { Timeout = 10_000 });
+        Assert.True(await heatingCard.IsVisibleAsync());
+
+        // Verify temperature value is rendered in the ControlPanel
+        var tempValue = Page.Locator(".input-group-text:has-text('C:')");
+        await tempValue.First.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
+        Assert.True(await tempValue.First.IsVisibleAsync());
     }
 
     [Fact]
     public async Task Fleet_DisconnectPrinter()
     {
-        var page = await _fixture.NewPageAsync();
-        await NavigateToFleetAsync(page);
-        await AddDemoPrinterAsync(page, "Disconnect Test");
-        await ConnectPrinterAsync(page, "Disconnect Test");
+        await NavigateToFleetAsync();
+        await AddDemoPrinterAsync("Disconnect Test");
+        await SelectAndConnectAsync("Disconnect Test");
 
-        // Click the card to select it (after connecting, Fleet shows ControlPanel inline)
-        // We need to go back to the fleet card view first
-        var backButton = page.Locator("button:has(.bi-arrow-left)");
-        if (await backButton.IsVisibleAsync())
-        {
-            await backButton.ClickAsync();
-        }
-
-        // Select the printer card
-        await page.Locator(".card:has-text('Disconnect Test')").ClickAsync();
-
-        // Click disconnect button (outline-danger with x-circle icon)
-        var disconnectBtn = page.Locator(".card:has-text('Disconnect Test') button.btn-outline-danger:has(.bi-x-circle)");
+        // After connecting, the inline ControlPanel header has a Disconnect button.
+        var disconnectBtn = Page.Locator("button.btn-outline-danger:has(.bi-x-circle)");
         await disconnectBtn.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await disconnectBtn.ClickAsync();
 
-        // After disconnect, the card should show the plug icon (disconnected state)
-        var disconnectedIcon = page.Locator(".card:has-text('Disconnect Test') .bi-plug.text-muted");
+        // After disconnect, the view returns to the card grid.
+        // The card should show the disconnected plug icon.
+        var disconnectedIcon = Page.Locator(".card:has-text('Disconnect Test') .bi-plug.text-muted").First;
         await disconnectedIcon.WaitForAsync(new LocatorWaitForOptions { Timeout = 10_000 });
         Assert.True(await disconnectedIcon.IsVisibleAsync());
     }
 
     // ── Helpers ──
 
-    private async Task NavigateToFleetAsync(IPage page)
+    /// <summary>
+    /// Navigates to the Fleet page with a clean slate (clears stored printers).
+    /// </summary>
+    private async Task NavigateToFleetAsync()
     {
-        await page.GotoAsync(_fixture.BaseUrl);
+        await Page.GotoAsync(_fixture.BaseUrl);
+        // Clear stored printers from previous tests so each test starts fresh
+        await Page.EvaluateAsync("() => localStorage.clear()");
+        await Page.ReloadAsync();
         // Wait for the Fleet page to be interactive
-        await page.Locator("button.btn-outline-primary:has-text('Add')").WaitForAsync(
+        await Page.Locator("button.btn-outline-primary:has-text('Add')").WaitForAsync(
             new LocatorWaitForOptions { Timeout = 30_000 });
     }
 
-    private static async Task AddDemoPrinterAsync(IPage page, string name)
+    private async Task AddDemoPrinterAsync(string name)
     {
-        await page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
-        var nameInput = page.Locator("input[placeholder='My 3D Printer']");
+        await Page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
+        var nameInput = Page.Locator("input[placeholder='My 3D Printer']");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync(name);
-        await page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
+        await Page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
         // Wait for the card to appear
-        await page.Locator($".card:has-text('{name}')").WaitForAsync(
+        await Page.Locator($".card:has-text('{name}')").First.WaitForAsync(
             new LocatorWaitForOptions { Timeout = 5_000 });
     }
 
-    private static async Task ConnectPrinterAsync(IPage page, string name)
+    /// <summary>
+    /// Selects a printer card and clicks Connect. After the Demo backend connects,
+    /// the view automatically switches to the inline ControlPanel. This helper
+    /// waits for that transition to complete.
+    /// </summary>
+    private async Task SelectAndConnectAsync(string name)
     {
-        // Select the card
-        await page.Locator($".card:has-text('{name}')").ClickAsync();
-        // Click connect
-        var connectBtn = page.Locator($".card:has-text('{name}') button.btn-outline-success");
+        // Click the card to select it (shows action buttons)
+        await Page.Locator($".card:has-text('{name}')").First.ClickAsync();
+
+        // Click the connect button on the card
+        var connectBtn = Page.Locator($".card:has-text('{name}') button.btn-outline-success").First;
         await connectBtn.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await connectBtn.ClickAsync();
-        // Wait for connected state (temperature indicator)
-        await page.Locator($".card:has-text('{name}') .bi-thermometer-half").WaitForAsync(
+
+        // After connecting, Fleet switches from card grid to inline ControlPanel.
+        // Wait for the connected status badge in the inline header.
+        await Page.Locator(".badge.bg-success").WaitForAsync(
             new LocatorWaitForOptions { Timeout = 10_000 });
     }
 }

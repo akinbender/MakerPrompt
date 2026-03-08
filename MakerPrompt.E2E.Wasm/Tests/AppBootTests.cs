@@ -5,49 +5,58 @@ namespace MakerPrompt.E2E.Wasm.Tests;
 
 /// <summary>
 /// Verifies the Blazor WASM app boots without errors.
+/// All tests share a single browser tab via the collection fixture.
 /// </summary>
 [Collection("Playwright")]
+[Trait("Category", "E2E-Wasm")]
 public class AppBootTests(PlaywrightFixture fixture)
 {
     private readonly PlaywrightFixture _fixture = fixture;
+    private IPage Page => _fixture.Page;
 
     [Fact]
     public async Task App_Boots_Without_Console_Errors()
     {
-        var page = await _fixture.NewPageAsync();
         var consoleErrors = new List<string>();
 
-        page.Console += (_, msg) =>
+        Page.Console += Handler;
+        try
+        {
+            await Page.GotoAsync(_fixture.BaseUrl);
+
+            // Wait for Blazor to finish loading — the sidebar nav should render
+            await Page.WaitForSelectorAsync(".sidebar", new PageWaitForSelectorOptions
+            {
+                Timeout = 30_000
+            });
+
+            // Filter out known benign errors (e.g. service worker, favicon)
+            var realErrors = consoleErrors
+                .Where(e => !e.Contains("service-worker", StringComparison.OrdinalIgnoreCase))
+                .Where(e => !e.Contains("favicon", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            Assert.Empty(realErrors);
+        }
+        finally
+        {
+            Page.Console -= Handler;
+        }
+
+        void Handler(object? _, IConsoleMessage msg)
         {
             if (msg.Type == "error")
                 consoleErrors.Add(msg.Text);
-        };
-
-        await page.GotoAsync(_fixture.BaseUrl);
-
-        // Wait for Blazor to finish loading — the sidebar nav should render
-        await page.WaitForSelectorAsync(".sidebar", new PageWaitForSelectorOptions
-        {
-            Timeout = 30_000
-        });
-
-        // Filter out known benign errors (e.g. service worker, favicon)
-        var realErrors = consoleErrors
-            .Where(e => !e.Contains("service-worker", StringComparison.OrdinalIgnoreCase))
-            .Where(e => !e.Contains("favicon", StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
-        Assert.Empty(realErrors);
+        }
     }
 
     [Fact]
     public async Task Fleet_Page_Is_Default_Route()
     {
-        var page = await _fixture.NewPageAsync();
-        await page.GotoAsync(_fixture.BaseUrl);
+        await Page.GotoAsync(_fixture.BaseUrl);
 
         // Fleet page renders at "/" — look for the Add Printer button
-        var addButton = page.Locator("button.btn-outline-primary", new PageLocatorOptions
+        var addButton = Page.Locator("button.btn-outline-primary", new PageLocatorOptions
         {
             HasTextRegex = new System.Text.RegularExpressions.Regex("Add", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
         });
