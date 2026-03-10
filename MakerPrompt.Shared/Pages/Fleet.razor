@@ -1,5 +1,4 @@
 @page "/fleet"
-@page "/"
 @* ─────────────────────────────────────────────────────────────────────
    Fleet Dashboard — Main landing page.
    
@@ -47,7 +46,7 @@ else
     <div class="container-fluid">
         @* ── Toolbar ── *@
         <div class="d-flex justify-content-end mb-3">
-            <button class="btn btn-outline-primary" @onclick="OpenAddModal">
+            <button class="btn btn-outline-primary" @onclick="OpenAddModal" data-testid="fleet-add-btn">
                 <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
             </button>
         </div>
@@ -214,7 +213,7 @@ else
     <BodyTemplate>
         <div class="mb-3">
             <label class="form-label">@localizer[Resources.Fleet_PrinterName]</label>
-            <input type="text" class="form-control" @bind="_editDefinition.Name" placeholder="My 3D Printer" />
+            <input type="text" class="form-control" id="printerName" @bind="_editDefinition.Name" placeholder="My 3D Printer" />
         </div>
 
         <div class="mb-3">
@@ -321,7 +320,7 @@ else
     </BodyTemplate>
     <FooterTemplate>
         <button class="btn btn-outline-secondary" @onclick="CloseAddEditModal">@localizer[Resources.Fleet_Cancel]</button>
-        <button class="btn btn-outline-primary" @onclick="SavePrinterAsync">@localizer[Resources.Fleet_Save]</button>
+        <button class="btn btn-outline-primary" @onclick="SavePrinterAsync" data-testid="fleet-save-printer-btn">@localizer[Resources.Fleet_Save]</button>
     </FooterTemplate>
 </Modal>
 

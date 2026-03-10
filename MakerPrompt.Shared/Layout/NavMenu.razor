@@ -3,12 +3,24 @@
 <nav class="sidebar @(Collapsed ? "sidebar--collapsed" : "")">
     <div class="d-flex flex-column h-100 py-2">
         <ul class="nav flex-column px-2 mb-auto">
-            <li class="nav-item">
-                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="" Match="NavLinkMatch.All">
-                    <i class="bi bi-printer sidebar-icon"></i>
-                    <span class="sidebar-label">@Resources.PageTitle_Fleet</span>
-                </NavLink>
-            </li>
+            @if (ConfigService.Configuration.FarmModeEnabled)
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="fleet" Match="NavLinkMatch.Prefix">
+                        <i class="bi bi-printer sidebar-icon"></i>
+                        <span class="sidebar-label">@Resources.PageTitle_Fleet</span>
+                    </NavLink>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="dashboard" Match="NavLinkMatch.Prefix">
+                        <i class="bi bi-speedometer2 sidebar-icon"></i>
+                        <span class="sidebar-label">Dashboard</span>
+                    </NavLink>
+                </li>
+            }
             @if (ConfigService.Configuration.EnableFilamentInventory)
             {
                 <li class="nav-item">
@@ -59,6 +71,14 @@
             </li>
         </ul>
         <hr class="mx-2 my-1" />
+        @if (ConfigService.Configuration.FarmModeEnabled && !string.IsNullOrWhiteSpace(ConfigService.Configuration.FarmName))
+        {
+            <div class="px-3 mb-1">
+                <small class="sidebar-label text-info fw-semibold" style="font-size:0.75rem;">
+                    <i class="bi bi-building sidebar-icon"></i> @ConfigService.Configuration.FarmName
+                </small>
+            </div>
+        }
         <div class="px-2 d-flex align-items-center gap-2">
             <button class="btn btn-link sidebar-toggle-btn flex-shrink-0 px-3 py-2 rounded" @onclick="OnToggle" title="Toggle navigation">
                 <i class="bi @(Collapsed ? "bi-chevron-double-right" : "bi-chevron-double-left") sidebar-icon"></i>

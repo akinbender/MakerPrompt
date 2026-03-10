@@ -110,6 +110,40 @@ namespace MakerPrompt.Shared.Services
         }
 
         /// <summary>
+        /// Disconnects all printers, clears state, and re-initializes from storage.
+        /// Used when switching farm configurations.
+        /// </summary>
+        public async Task ReloadAsync()
+        {
+            await _lock.WaitAsync();
+            try
+            {
+                foreach (var p in _printers.ToList())
+                {
+                    if (p.Service != null)
+                    {
+                        try
+                        {
+                            await p.Service.DisconnectAsync();
+                            await p.Service.DisposeAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error disconnecting printer {Name} during reload", p.Definition.Name);
+                        }
+                    }
+                }
+                _printers.Clear();
+            }
+            finally
+            {
+                _lock.Release();
+            }
+
+            await InitializeAsync();
+        }
+
+        /// <summary>
         /// Auto-connects all printers that have AutoConnect enabled.
         /// Should be called after InitializeAsync.
         /// </summary>

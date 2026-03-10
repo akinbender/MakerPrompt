@@ -51,17 +51,14 @@ public class AppBootTests(PlaywrightFixture fixture)
     }
 
     [Fact]
-    public async Task Fleet_Page_Is_Default_Route()
+    public async Task Dashboard_Is_Default_Route()
     {
         await Page.GotoAsync(_fixture.BaseUrl);
 
-        // Fleet page renders at "/" — look for the Add Printer button
-        var addButton = Page.Locator("button.btn-outline-primary", new PageLocatorOptions
-        {
-            HasTextRegex = new System.Text.RegularExpressions.Regex("Add", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
-        });
-
-        await addButton.WaitForAsync(new LocatorWaitForOptions { Timeout = 30_000 });
-        Assert.True(await addButton.IsVisibleAsync());
+        // Farm mode defaults to disabled, so "/" redirects to "/dashboard".
+        // Wait for the Dashboard welcome message to render.
+        var welcome = Page.Locator("h3:has-text('Welcome to MakerPrompt')");
+        await welcome.WaitForAsync(new LocatorWaitForOptions { Timeout = 30_000 });
+        Assert.True(await welcome.IsVisibleAsync());
     }
 }

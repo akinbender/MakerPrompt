@@ -79,6 +79,12 @@ public class ThemeAndLanguageTests
         var allItems = Page.Locator(".dropdown-menu:visible .dropdown-item");
         var count = await allItems.CountAsync();
         Assert.True(count >= 3, $"Theme dropdown should have at least 3 options, found {count}");
+
+        // Close the dropdown so subsequent tests start with a clean state.
+        // (Escape does not reliably dismiss Bootstrap dropdowns in WebView2 CDP;
+        //  clicking the toggle again is the safest close mechanism.)
+        await themeDropdown.ClickAsync();
+        await Page.WaitForTimeoutAsync(200);
     }
 
     // ── Language ──
@@ -87,7 +93,8 @@ public class ThemeAndLanguageTests
     public async Task Language_Dropdown_ShowsOptions()
     {
         await AppiumSetup.NavigateAsync("/settings");
-        await Page.Locator("h3").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        // The page title is rendered as <h1 class="h2"> in MainLayout — use h1 as readiness anchor.
+        await Page.Locator("h1").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         // The culture selector is the second dropdown in the navbar (first is theme OR culture)
         // Culture dropdown displays a two-letter language code
@@ -108,7 +115,7 @@ public class ThemeAndLanguageTests
     public async Task Language_SwitchToGerman_ChangesUI()
     {
         await AppiumSetup.NavigateAsync("/settings");
-        await Page.Locator("h3").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         // Open culture dropdown
         var cultureDropdown = Page.Locator(".navbar .dropdown-toggle").Nth(0);
@@ -128,7 +135,7 @@ public class ThemeAndLanguageTests
             // After reload, the page heading should be in German ("Einstellungen" = Settings)
             // Navigate to settings again since the reload might land on the default route
             await AppiumSetup.NavigateAsync("/settings");
-            var heading = Page.Locator("h3");
+            var heading = Page.Locator("h1");
             await heading.First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
             var text = await heading.First.InnerTextAsync();
             Assert.False(string.IsNullOrWhiteSpace(text), "Page heading should have content after language switch");

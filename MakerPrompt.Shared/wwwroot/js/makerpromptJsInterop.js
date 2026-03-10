@@ -108,3 +108,16 @@ export function scrollToBottom(element) {
 
     target.scrollTop = target.scrollHeight;
 }
+
+// Triggers a browser file download from an in-memory string.
+export function downloadFile(filename, content) {
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}

@@ -100,7 +100,7 @@ public class ThemeAndLanguageTests(PlaywrightFixture fixture)
     public async Task Language_Dropdown_ShowsOptions()
     {
         await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        await Page.Locator("h3").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         // Culture dropdown is in the navbar
         var dropdowns = Page.Locator(".navbar .dropdown-toggle");
@@ -119,7 +119,7 @@ public class ThemeAndLanguageTests(PlaywrightFixture fixture)
     public async Task Language_SwitchToGerman_ChangesUI()
     {
         await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        await Page.Locator("h3").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         // Open culture dropdown
         var cultureDropdown = Page.Locator(".navbar .dropdown-toggle").Nth(0);
@@ -136,7 +136,7 @@ public class ThemeAndLanguageTests(PlaywrightFixture fixture)
                 new PageWaitForLoadStateOptions { Timeout = 30_000 });
 
             // After reload the settings heading should be in German
-            var heading = Page.Locator("h3");
+            var heading = Page.Locator("h1");
             await heading.First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
             var text = await heading.First.InnerTextAsync();
             Assert.False(string.IsNullOrWhiteSpace(text),
@@ -164,7 +164,7 @@ public class ThemeAndLanguageTests(PlaywrightFixture fixture)
     public async Task Language_SwitchToTurkish_ChangesUI()
     {
         await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        await Page.Locator("h3").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1").First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         var cultureDropdown = Page.Locator(".navbar .dropdown-toggle").Nth(0);
         await cultureDropdown.ClickAsync();
@@ -178,7 +178,7 @@ public class ThemeAndLanguageTests(PlaywrightFixture fixture)
             await Page.WaitForLoadStateAsync(LoadState.NetworkIdle,
                 new PageWaitForLoadStateOptions { Timeout = 30_000 });
 
-            var heading = Page.Locator("h3");
+            var heading = Page.Locator("h1");
             await heading.First.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
             var text = await heading.First.InnerTextAsync();
             Assert.False(string.IsNullOrWhiteSpace(text),

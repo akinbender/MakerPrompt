@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Coverage settings for CI.
+  Used by: dotnet test --collect:"XPlat Code Coverage" --settings coverage.runsettings
+  
+  Targets MakerPrompt.Shared — the layer that contains all measurable logic.
+  Excludes: Program.cs, generated files, Razor-compiled UI, DTO-only classes.
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <!-- Emit Cobertura XML so Codecov can parse it -->
+          <Format>cobertura</Format>
+
+          <!-- Only measure the shared application library -->
+          <Include>[MakerPrompt.Shared]*</Include>
+
+          <!-- Exclude UI namespaces — pages, layout, and components are covered by E2E -->
+          <Exclude>
+            [MakerPrompt.Shared]MakerPrompt.Shared.Pages.*,
+            [MakerPrompt.Shared]MakerPrompt.Shared.Layout.*,
+            [MakerPrompt.Shared]MakerPrompt.Shared.Components.*,
+            [MakerPrompt.Shared]MakerPrompt.Shared.BrailleRAP.*
+          </Exclude>
+
+          <!-- Exclude generated and infrastructure-only files -->
+          <ExcludeByFile>
+            **/Program.cs,
+            **/*.Designer.cs,
+            **/*.g.cs,
+            **/*.g.i.cs,
+            **/*.razor.g.cs
+          </ExcludeByFile>
+
+          <!-- Exclude DTO / data-bag classes by attribute -->
+          <ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+
+          <SingleHit>false</SingleHit>
+          <UseSourceLink>true</UseSourceLink>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+          <DeterministicReport>true</DeterministicReport>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

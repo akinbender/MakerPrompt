@@ -108,7 +108,8 @@ public class PageNavigationTests
     public async Task Settings_Page_Loads()
     {
         await AppiumSetup.NavigateAsync("/settings");
-        var heading = Page.Locator("h3:has-text('Settings')");
+        // The page title is rendered as <h1 class="h2"> in MainLayout, not an h3.
+        var heading = Page.Locator("h1:has-text('Settings')");
         await heading.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
         Assert.True(await heading.IsVisibleAsync());
         await SaveScreenshot("settings");
@@ -118,7 +119,7 @@ public class PageNavigationTests
     public async Task Settings_Has_Feature_Toggles()
     {
         await AppiumSetup.NavigateAsync("/settings");
-        await Page.Locator("h3:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         var filamentToggle = Page.Locator("#enableFilamentInventory");
         Assert.True(await filamentToggle.IsVisibleAsync(), "Filament Inventory toggle should exist");
@@ -131,7 +132,7 @@ public class PageNavigationTests
     public async Task Settings_Has_Save_Button()
     {
         await AppiumSetup.NavigateAsync("/settings");
-        await Page.Locator("h3:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         var saveBtn = Page.Locator("button.btn-primary:has-text('Save')");
         Assert.True(await saveBtn.IsVisibleAsync(), "Save Settings button should exist");
@@ -142,7 +143,7 @@ public class PageNavigationTests
     [Fact]
     public async Task Fleet_Page_Loads()
     {
-        await AppiumSetup.NavigateAsync("/");
+        await AppiumSetup.NavigateAsync("/fleet");
         var addBtn = Page.Locator("button:has-text('Add Printer')");
         await addBtn.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
         Assert.True(await addBtn.IsVisibleAsync(), "Fleet page should have an Add Printer button");
@@ -157,12 +158,16 @@ public class PageNavigationTests
         await AppiumSetup.NavigateAsync("/");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
-        var navLinks = new[] { "", "cheatsheet", "calculators", "about", "settings" };
+        var navLinks = new[] { "cheatsheet", "calculators", "about", "settings" };
         foreach (var href in navLinks)
         {
             var link = Page.Locator($".sidebar a[href='{href}']");
             Assert.True(await link.CountAsync() >= 1, $"Sidebar should have a link to '/{href}'");
         }
+
+        // Dashboard or Fleet link depending on farm mode
+        var homeLink = Page.Locator(".sidebar a[href='dashboard'], .sidebar a[href='fleet']");
+        Assert.True(await homeLink.CountAsync() >= 1, "Sidebar should have a Dashboard or Fleet link");
     }
 
     [Fact]

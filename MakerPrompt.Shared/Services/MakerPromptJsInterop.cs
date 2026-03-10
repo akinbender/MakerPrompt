@@ -31,6 +31,12 @@ namespace MakerPrompt.Shared.Services
             await jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
         }
 
+        public async ValueTask DownloadFileAsync(string filename, string content)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("downloadFile", filename, content);
+        }
+
         public async ValueTask<string> ReadFromClipboard()
         {
             return await jsRuntime.InvokeAsync<string>("navigator.clipboard.readText");

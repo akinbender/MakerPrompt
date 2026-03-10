@@ -2,8 +2,11 @@
 @using MakerPrompt.Shared.Infrastructure
 @using MakerPrompt.Shared.Utils
 @inject IAppConfigurationService ConfigService
+@inject FarmConfigurationService FarmService
+@inject MakerPromptJsInterop JsInterop
 @inject IAppLocalStorageProvider AppStorage
 @inject ToastService ToastService
+@inject ILogger<Settings> Logger
 @implements IDisposable
 
 <LocalizedTitle TitleKey="Settings" />
@@ -26,6 +29,59 @@
 
             <div class="card mb-4">
                 <div class="card-header">
+                    <strong>Farm Mode</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="farmModeEnabled" @bind="_config.FarmModeEnabled" />
+                        <label class="form-check-label" for="farmModeEnabled">Enable Farm Mode</label>
+                        <div class="form-text">When enabled, the Fleet page is the default landing page and farm management features are active. When disabled, a single-printer Dashboard is the default.</div>
+                    </div>
+
+                    @if (_config.FarmModeEnabled)
+                    {
+                        <hr />
+                        <h6>Farm Configurations</h6>
+                        <div class="mb-3">
+                            <div class="input-group input-group-sm">
+                                <select class="form-select" @bind="_selectedFarmId">
+                                    <option value="">— select a farm —</option>
+                                    @foreach (var farm in FarmService.Farms)
+                                    {
+                                        <option value="@farm.Id">@farm.Name</option>
+                                    }
+                                </select>
+                                <button class="btn btn-outline-primary" type="button" @onclick="SwitchFarmAsync" disabled="@(_selectedFarmId == null)" title="Switch" data-testid="farm-switch-btn">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" type="button" @onclick="DeleteFarmAsync" disabled="@(_selectedFarmId == null)" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" id="farmNewName" placeholder="New farm name" @bind="_newFarmName" />
+                                <button class="btn btn-outline-success" type="button" @onclick="CreateFarmAsync" disabled="@(string.IsNullOrWhiteSpace(_newFarmName))" data-testid="farm-create-btn">
+                                    <i class="bi bi-plus-circle me-1"></i>Create
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="ExportFarmAsync" disabled="@(_selectedFarmId == null)" data-testid="farm-export-btn">
+                                <i class="bi bi-download me-1"></i>Export
+                            </button>
+                            <label class="btn btn-sm btn-outline-secondary mb-0" data-testid="farm-import-label">
+                                <i class="bi bi-upload me-1"></i>Import
+                                <InputFile OnChange="ImportFarmAsync" style="display:none" accept=".json" />
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
                     <strong>Features</strong>
                 </div>
                 <div class="card-body">
@@ -42,7 +98,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card mb-4">
                 <div class="card-header">
                     <strong>Telemetry & Analytics</strong>
@@ -63,7 +119,7 @@
     </div>
     <div class="row">
         <div class="col">
-            <button class="btn btn-primary" @onclick="SaveSettingsAsync">Save Settings</button>
+            <button class="btn btn-primary" @onclick="SaveSettingsAsync" data-testid="save-settings-btn">Save Settings</button>
         </div>
     </div>
 </div>
@@ -71,20 +127,26 @@
 @code {
     private AppConfiguration _config = new();
     private static readonly string[] _hiddenPrefixes = ["MakerPrompt.PrinterConnections", "MakerPrompt.PrintProjects"];
+    private Guid? _selectedFarmId;
+    private string _newFarmName = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // Create a copy to edit
         _config = new AppConfiguration
         {
             Theme = ConfigService.Configuration.Theme,
             Language = ConfigService.Configuration.Language,
             FarmName = ConfigService.Configuration.FarmName,
+            FarmModeEnabled = ConfigService.Configuration.FarmModeEnabled,
+            ActiveFarmId = ConfigService.Configuration.ActiveFarmId,
             AnalyticsEnabled = ConfigService.Configuration.AnalyticsEnabled,
             EnableFilamentInventory = ConfigService.Configuration.EnableFilamentInventory,
             EnablePrintAnalytics = ConfigService.Configuration.EnablePrintAnalytics,
             LastUpdated = ConfigService.Configuration.LastUpdated
         };
+
+        _selectedFarmId = _config.ActiveFarmId;
+        await FarmService.InitializeAsync();
     }
 
     private async Task SaveSettingsAsync()
@@ -92,6 +154,8 @@
         ConfigService.Configuration.Theme = _config.Theme;
         ConfigService.Configuration.Language = _config.Language;
         ConfigService.Configuration.FarmName = _config.FarmName;
+        ConfigService.Configuration.FarmModeEnabled = _config.FarmModeEnabled;
+        ConfigService.Configuration.ActiveFarmId = _config.ActiveFarmId;
         ConfigService.Configuration.AnalyticsEnabled = _config.AnalyticsEnabled;
         ConfigService.Configuration.EnableFilamentInventory = _config.EnableFilamentInventory;
         ConfigService.Configuration.EnablePrintAnalytics = _config.EnablePrintAnalytics;
@@ -99,6 +163,91 @@
 
         await ConfigService.SaveConfigurationAsync();
         ToastService.Notify(new ToastMessage(ToastType.Success, "Settings Saved", "Your settings have been saved successfully."));
+    }
+
+    private async Task CreateFarmAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newFarmName)) return;
+        try
+        {
+            var farm = await FarmService.CreateFarmAsync(_newFarmName.Trim());
+            _selectedFarmId = farm.Id;
+            _newFarmName = string.Empty;
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Created", $"Farm '{farm.Name}' created."));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to create farm");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to create farm."));
+        }
+    }
+
+    private async Task SwitchFarmAsync()
+    {
+        if (_selectedFarmId == null) return;
+        try
+        {
+            await FarmService.SwitchFarmAsync(_selectedFarmId.Value);
+            _config.FarmName = ConfigService.Configuration.FarmName;
+            _config.ActiveFarmId = _selectedFarmId;
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Switched", $"Switched to '{FarmService.ActiveFarm?.Name}'."));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to switch farm");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to switch farm."));
+        }
+    }
+
+    private async Task DeleteFarmAsync()
+    {
+        if (_selectedFarmId == null) return;
+        try
+        {
+            await FarmService.DeleteFarmAsync(_selectedFarmId.Value);
+            _selectedFarmId = FarmService.Farms.FirstOrDefault()?.Id;
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Deleted", "Farm configuration removed."));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete farm");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to delete farm."));
+        }
+    }
+
+    private async Task ExportFarmAsync()
+    {
+        if (_selectedFarmId == null) return;
+        try
+        {
+            var json = FarmService.ExportFarm(_selectedFarmId.Value);
+            var farmName = FarmService.Farms.FirstOrDefault(f => f.Id == _selectedFarmId)?.Name ?? "farm";
+            await JsInterop.DownloadFileAsync($"{farmName}-config.json", json);
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Exported", "Farm configuration exported."));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to export farm");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to export farm configuration."));
+        }
+    }
+
+    private async Task ImportFarmAsync(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            using var stream = e.File.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024);
+            using var reader = new StreamReader(stream);
+            var json = await reader.ReadToEndAsync();
+            var farm = await FarmService.ImportFarmAsync(json);
+            _selectedFarmId = farm.Id;
+            ToastService.Notify(new ToastMessage(ToastType.Success, "Imported", $"Farm '{farm.Name}' imported."));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to import farm");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to import farm configuration."));
+        }
     }
 
     public void Dispose()

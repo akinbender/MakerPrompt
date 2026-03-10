@@ -1,0 +1,39 @@
+# Codecov configuration
+# https://docs.codecov.io/docs/codecov-yaml
+
+coverage:
+  status:
+    project:
+      default:
+        # Allow 1% drop before failing the status check
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        # Require 70% coverage on changed lines in a PR
+        target: 70%
+        threshold: 5%
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+  require_base: true
+
+# Mirror the exclusions defined in coverage.runsettings
+ignore:
+  - "**/*.Designer.cs"
+  - "**/*.g.cs"
+  - "**/*.g.i.cs"
+  - "**/*.razor.g.cs"
+  - "**/Program.cs"
+  - "**/obj/**"
+  - "**/bin/**"
+  - "MakerPrompt.Blazor/**"
+  - "MakerPrompt.MAUI/**"
+  - "MakerPrompt.Tests/**"
+  - "MakerPrompt.E2E*/**"
+  - "MakerPrompt.Shared/Pages/**"
+  - "MakerPrompt.Shared/Layout/**"
+  - "MakerPrompt.Shared/Components/**"
+  - "MakerPrompt.Shared/BrailleRAP/**"

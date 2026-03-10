@@ -30,14 +30,14 @@ public class FleetWorkflowTests
         await NavigateToFleetAsync();
 
         var name = $"Add {S}";
-        await Page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
+        await Page.Locator("[data-testid='fleet-add-btn']").ClickAsync();
 
-        var nameInput = Page.Locator("input[placeholder='My 3D Printer']");
+        var nameInput = Page.Locator("#printerName");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync(name);
 
         // Demo is the default connection type — click Save
-        await Page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
+        await Page.Locator("[data-testid='fleet-save-printer-btn']").ClickAsync();
 
         var card = Page.Locator($".card strong:has-text('{name}')").First;
         await card.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
@@ -108,18 +108,18 @@ public class FleetWorkflowTests
     {
         await AppiumSetup.NavigateAsync("/settings");
         await Page.WaitForTimeoutAsync(300);
-        await AppiumSetup.NavigateAsync("/");
-        await Page.Locator("button.btn-outline-primary:has-text('Add')").WaitForAsync(
+        await AppiumSetup.NavigateAsync("/fleet");
+        await Page.Locator("[data-testid='fleet-add-btn']").WaitForAsync(
             new LocatorWaitForOptions { Timeout = 30_000 });
     }
 
     private static async Task AddDemoPrinterAsync(string name)
     {
-        await Page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
-        var nameInput = Page.Locator("input[placeholder='My 3D Printer']");
+        await Page.Locator("[data-testid='fleet-add-btn']").ClickAsync();
+        var nameInput = Page.Locator("#printerName");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync(name);
-        await Page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
+        await Page.Locator("[data-testid='fleet-save-printer-btn']").ClickAsync();
         await Page.Locator($".card strong:has-text('{name}')").First.WaitForAsync(
             new LocatorWaitForOptions { Timeout = 5_000 });
     }

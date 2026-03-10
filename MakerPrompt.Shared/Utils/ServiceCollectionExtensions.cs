@@ -20,6 +20,7 @@ namespace MakerPrompt.Shared.Utils
 			services.AddSingleton<OctoPrintApiService>();
 			services.AddSingleton<PrinterCommunicationServiceFactory>();
 			services.AddScoped<PrinterConnectionManager>();
+			services.AddScoped<FarmConfigurationService>();
 			services.AddScoped<PrintProjectService>();
 			services.AddScoped<FilamentInventoryService>();
 			services.AddScoped<AnalyticsService>();

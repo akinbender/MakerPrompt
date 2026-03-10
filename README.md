@@ -1,5 +1,5 @@
 # MakerPrompt
-[![Build](https://github.com/akinbender/MakerPrompt/actions/workflows/build.yml/badge.svg)](https://github.com/akinbender/MakerPrompt/actions/workflows/build.yml) [![Publish MAUI Apps](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-maui.yml/badge.svg)](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-maui.yml) [![Deploy Blazor WASM to GitHub Pages](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-github-pages.yml/badge.svg)](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-github-pages.yml)
+[![CI](https://github.com/akinbender/MakerPrompt/actions/workflows/ci.yml/badge.svg)](https://github.com/akinbender/MakerPrompt/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/akinbender/MakerPrompt/branch/main/graph/badge.svg)](https://codecov.io/gh/akinbender/MakerPrompt) [![Build](https://github.com/akinbender/MakerPrompt/actions/workflows/build.yml/badge.svg)](https://github.com/akinbender/MakerPrompt/actions/workflows/build.yml) [![Publish MAUI Apps](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-maui.yml/badge.svg)](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-maui.yml) [![Deploy Blazor WASM to GitHub Pages](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-github-pages.yml/badge.svg)](https://github.com/akinbender/MakerPrompt/actions/workflows/publish-github-pages.yml)
 
 Open source "cross-platform" 3D printer management software powered by Blazor Hybrid. WASM version can be found [here](https://akinbender.github.io/MakerPrompt).
 *Is still under initial development, use at your own risk.*
@@ -57,4 +57,39 @@ Legend: ✅= implemented and PoC, ❌= known issues, ⚠️= probably implemente
 - [ ] Mention used open source projects
 
 The BrailleRAP integration is based on logic from [AccessBrailleRAP](https://github.com/braillerap/AccessBrailleRAP) and adapted for the MakerPrompt architecture.
+
+---
+
+## CI & Code Coverage
+
+### CI workflow (`ci.yml`)
+
+Runs automatically on every **pull request** and every **push to `main`**.
+
+| Step | Details |
+|---|---|
+| Build | Restores and builds `MakerPrompt.Tests` (and `MakerPrompt.Shared` transitively) on `ubuntu-latest` |
+| Unit tests | Runs all tests in `MakerPrompt.Tests` with Coverlet code coverage |
+| Coverage | Cobertura report generated via `coverlet.collector`; settings in [`coverage.runsettings`](coverage.runsettings) |
+| Codecov upload | Report uploaded to [Codecov](https://codecov.io/gh/akinbender/MakerPrompt) — PR comments and coverage diff enabled |
+
+Coverage measures `MakerPrompt.Shared` (services, infrastructure, models, utilities).  
+UI components, pages, layout, and generated files are excluded.
+
+> **Codecov setup:** add a `CODECOV_TOKEN` secret in *Settings → Secrets and variables → Actions*. For public repositories the token is optional.
+
+### E2E tests (`e2e.yml`)
+
+E2E tests run in a **separate workflow** and have no impact on coverage metrics.
+
+Triggered by:
+- **Manual dispatch** — *Actions → E2E Tests → Run workflow*
+- **Nightly schedule** — 02:00 UTC
+
+| Job | Runner | What it tests |
+|---|---|---|
+| `playwright-wasm` | `ubuntu-latest` | Playwright against the Blazor WASM dev server |
+| `playwright-maui` | `windows-latest` | Playwright via CDP against the MAUI Windows app |
+
+Test artifacts (`.trx` logs, Playwright traces) are uploaded for each run and kept for 90 days.
 

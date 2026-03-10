@@ -48,16 +48,18 @@ public class AppLaunchTests
     }
 
     [Fact]
-    public async Task Fleet_Page_Is_Default_Route()
+    public async Task Dashboard_Is_Default_Route()
     {
-        // Navigate away first so Fleet component remounts fresh — a previous
-        // test may have left it in ControlPanel view with a connected printer.
+        // Farm mode defaults to disabled — "/" redirects to "/dashboard".
+        // We verify the redirect by checking the URL rather than looking for the
+        // welcome banner, which only renders when no printer is connected.
         await AppiumSetup.NavigateAsync("/settings");
         await Page.WaitForTimeoutAsync(300);
         await AppiumSetup.NavigateAsync("/");
-        var addBtn = Page.Locator("button:has-text('Add Printer')");
-        await addBtn.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
-        Assert.True(await addBtn.IsVisibleAsync(), "Fleet page (default route) should have an Add Printer button");
+        // Index.razor calls NavigationManager.NavigateTo("/dashboard", replace:true)
+        // which updates window.location via history.replaceState — wait for that.
+        await Page.WaitForURLAsync("**/dashboard", new PageWaitForURLOptions { Timeout = 5_000 });
+        Assert.Contains("dashboard", Page.Url, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

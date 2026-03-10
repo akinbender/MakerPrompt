@@ -25,15 +25,15 @@ public class FleetWorkflowTests(PlaywrightFixture fixture)
         await NavigateToFleetAsync();
 
         // Click "Add Printer"
-        await Page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
+        await Page.Locator("[data-testid='fleet-add-btn']").ClickAsync();
 
         // Modal should appear — fill in the name
-        var nameInput = Page.Locator("input[placeholder='My 3D Printer']");
+        var nameInput = Page.Locator("#printerName");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync("E2E Test Printer");
 
         // Demo is the default connection type — click Save
-        await Page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
+        await Page.Locator("[data-testid='fleet-save-printer-btn']").ClickAsync();
 
         // Verify the printer card appears
         var card = Page.Locator(".card strong:has-text('E2E Test Printer')").First;
@@ -103,22 +103,22 @@ public class FleetWorkflowTests(PlaywrightFixture fixture)
     /// </summary>
     private async Task NavigateToFleetAsync()
     {
-        await Page.GotoAsync(_fixture.BaseUrl);
+        await Page.GotoAsync($"{_fixture.BaseUrl}/fleet");
         // Clear stored printers from previous tests so each test starts fresh
         await Page.EvaluateAsync("() => localStorage.clear()");
         await Page.ReloadAsync();
         // Wait for the Fleet page to be interactive
-        await Page.Locator("button.btn-outline-primary:has-text('Add')").WaitForAsync(
+        await Page.Locator("[data-testid='fleet-add-btn']").WaitForAsync(
             new LocatorWaitForOptions { Timeout = 30_000 });
     }
 
     private async Task AddDemoPrinterAsync(string name)
     {
-        await Page.Locator("button.btn-outline-primary:has-text('Add')").ClickAsync();
-        var nameInput = Page.Locator("input[placeholder='My 3D Printer']");
+        await Page.Locator("[data-testid='fleet-add-btn']").ClickAsync();
+        var nameInput = Page.Locator("#printerName");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync(name);
-        await Page.Locator("button.btn-outline-primary:has-text('Save')").ClickAsync();
+        await Page.Locator("[data-testid='fleet-save-printer-btn']").ClickAsync();
         // Wait for the card to appear
         await Page.Locator($".card:has-text('{name}')").First.WaitForAsync(
             new LocatorWaitForOptions { Timeout = 5_000 });

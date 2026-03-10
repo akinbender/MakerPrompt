@@ -2,6 +2,7 @@ using System.Globalization;
 using MakerPrompt.Blazor;
 using MakerPrompt.Blazor.Services;
 using MakerPrompt.Blazor.Storage;
+using MakerPrompt.Shared.Infrastructure;
 using MakerPrompt.Shared.Services;
 using MakerPrompt.Shared.Utils;
 using Microsoft.AspNetCore.Components.Web;
@@ -19,6 +20,12 @@ builder.Services.AddSingleton<IConnectionEncryptionService, Base64ConnectionEncr
 
 var host = builder.Build();
 const string defaultCulture = "en-US";
+
+// Initialize configuration from localStorage before the app renders so that
+// Index.razor and other components see the persisted FarmModeEnabled / FarmName
+// values on the very first render rather than always defaulting.
+var configService = host.Services.GetRequiredService<IAppConfigurationService>();
+await configService.InitializeAsync();
 
 var js = host.Services.GetRequiredService<IJSRuntime>();
 var result = await js.InvokeAsync<string>("blazorCulture.get");

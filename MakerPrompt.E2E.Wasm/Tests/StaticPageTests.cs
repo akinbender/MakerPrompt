@@ -159,7 +159,7 @@ public class StaticPageTests(PlaywrightFixture fixture)
     public async Task Settings_Page_Loads()
     {
         await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        var heading = Page.Locator("h3:has-text('Settings')");
+        var heading = Page.Locator("h1:has-text('Settings')");
         await heading.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
         Assert.True(await heading.IsVisibleAsync());
     }
@@ -168,7 +168,7 @@ public class StaticPageTests(PlaywrightFixture fixture)
     public async Task Settings_Has_Feature_Toggles()
     {
         await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        await Page.Locator("h3:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         // Feature toggle switches should be present
         var filamentToggle = Page.Locator("#enableFilamentInventory");
@@ -182,7 +182,7 @@ public class StaticPageTests(PlaywrightFixture fixture)
     public async Task Settings_Has_Save_Button()
     {
         await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        await Page.Locator("h3:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("h1:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         var saveBtn = Page.Locator("button.btn-primary:has-text('Save')");
         Assert.True(await saveBtn.IsVisibleAsync(), "Save Settings button should exist");
@@ -197,12 +197,16 @@ public class StaticPageTests(PlaywrightFixture fixture)
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         // All core nav links should be in the sidebar
-        var navLinks = new[] { "", "cheatsheet", "calculators", "about", "settings" };
+        var navLinks = new[] { "cheatsheet", "calculators", "about", "settings" };
         foreach (var href in navLinks)
         {
             var link = Page.Locator($".sidebar a[href='{href}']");
             Assert.True(await link.CountAsync() >= 1, $"Sidebar should have a link to '/{href}'");
         }
+
+        // Dashboard or Fleet link depending on farm mode
+        var homeLink = Page.Locator(".sidebar a[href='dashboard'], .sidebar a[href='fleet']");
+        Assert.True(await homeLink.CountAsync() >= 1, "Sidebar should have a Dashboard or Fleet link");
     }
 
     [Fact]

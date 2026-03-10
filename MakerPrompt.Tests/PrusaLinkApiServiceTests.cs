@@ -47,7 +47,7 @@ public class PrusaLinkApiServiceTests
         var files = await service.GetFilesAsync();
 
         Assert.Single(files);
-        Assert.Equal("/local/examples/file.gcode", files[0].FullPath);
+        Assert.Equal("/local/file.gcode", files[0].FullPath);
         Assert.Equal(424242, files[0].Size);
     }
 
