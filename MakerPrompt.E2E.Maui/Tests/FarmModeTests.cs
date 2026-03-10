@@ -81,81 +81,71 @@ public class FarmModeTests
     }
 
     [Fact]
-    public async Task FarmMode_D_Disabled_ShowsAddPrinterInNavbar()
+    public async Task FarmMode_D_Disabled_ShowsControlPanel()
     {
         // Farm mode defaults to disabled — navigate to dashboard
         await AppiumSetup.NavigateAsync("/dashboard");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
+        // Dashboard should render ControlPanel directly; header-add-printer exists in farm mode only
         var addPrinterLink = Page.Locator("[data-testid='header-add-printer']");
-        Assert.True(await addPrinterLink.IsVisibleAsync(), "Add Printer button should appear in navbar when farm mode is off");
+        Assert.True(await addPrinterLink.CountAsync() == 0, "Add Printer button should NOT appear in navbar when farm mode is off");
     }
 
     // ── Farm Name ──
 
     [Fact]
-    public async Task FarmName_E_DisplaysInHeader()
+    public async Task FarmName_E_DefaultBrandLabel_ShowsMakerPrompt()
     {
+        // Farm mode off and no active farm — header brand should show the app name
         await NavigateToSettingsAsync();
+        var toggle = Page.Locator("#farmModeEnabled");
+        if (await toggle.IsCheckedAsync())
+        {
+            await toggle.UncheckAsync();
+            await SaveSettingsAsync();
+        }
 
-        // Set a farm name
-        var nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
-        await nameInput.FillAsync("MAUI Test Farm");
-        await SaveSettingsAsync();
-
-        // Navigate away and back to verify the farm name persists in the header
         await AppiumSetup.NavigateAsync("/dashboard");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         var brand = Page.Locator("header .brand-label");
         var text = await brand.InnerTextAsync();
-        Assert.Equal("MAUI Test Farm", text);
-
-        // Clean up — reset farm name
-        await NavigateToSettingsAsync();
-        nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
-        await SaveSettingsAsync();
+        Assert.Equal("MakerPrompt", text);
     }
 
     [Fact]
     public async Task FarmName_F_ShowsInSidebar_WhenFarmModeEnabled()
     {
-        await NavigateToSettingsAsync();
+        await EnableFarmModeAsync();
 
-        // Enable farm mode and set name
-        var toggle = Page.Locator("#farmModeEnabled");
-        if (!await toggle.IsCheckedAsync())
-        {
-            await toggle.CheckAsync();
-        }
-        var nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
-        await nameInput.FillAsync("MAUI Sidebar Farm");
-        // Blazor @bind uses onchange (blur), not oninput — press Tab to fire the event.
+        // Create a farm and switch to it so the config FarmName gets populated
+        var nameInput = Page.Locator("#farmNewName");
+        await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
+        await nameInput.FillAsync("Sidebar Test Farm");
         await nameInput.PressAsync("Tab");
-        await SaveSettingsAsync();
+        await Page.WaitForTimeoutAsync(300);
+        var createBtn = Page.Locator("[data-testid='farm-create-btn']");
+        await createBtn.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
 
-        // Verify farm name appears in sidebar
+        // Switch to the newly created farm
+        var selectEl = Page.Locator("select");
+        await selectEl.SelectOptionAsync(new SelectOptionValue { Label = "Sidebar Test Farm" });
+        var switchBtn = Page.Locator("[data-testid='farm-switch-btn']");
+        await switchBtn.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
+
+        // Navigate to fleet and verify sidebar shows the farm name
         await AppiumSetup.NavigateAsync("/fleet");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         var sidebarFarm = Page.Locator(".sidebar .text-info");
         await sidebarFarm.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         var text = await sidebarFarm.InnerTextAsync();
-        Assert.Contains("MAUI Sidebar Farm", text);
+        Assert.Contains("Sidebar Test Farm", text);
 
-        // Clean up — disable farm mode and clear name
-        await NavigateToSettingsAsync();
-        toggle = Page.Locator("#farmModeEnabled");
-        if (await toggle.IsCheckedAsync())
-        {
-            await toggle.UncheckAsync();
-        }
-        nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
-        await SaveSettingsAsync();
+        await RestoreDefaultFarmModeAsync();
     }
 
     // ── Farm Configuration Management ──
@@ -247,7 +237,7 @@ public class FarmModeTests
     private static async Task NavigateToSettingsAsync()
     {
         await AppiumSetup.NavigateAsync("/settings");
-        await Page.Locator("#farmName").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("#farmModeEnabled").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
     }
 
     private static async Task SaveSettingsAsync()

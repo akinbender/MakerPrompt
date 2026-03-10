@@ -120,12 +120,13 @@ namespace MakerPrompt.Shared.Services
             {
                 foreach (var p in _printers.ToList())
                 {
-                    if (p.Service != null)
+                    var reloadService = p.Service;
+                    if (reloadService != null)
                     {
                         try
                         {
-                            await p.Service.DisconnectAsync();
-                            await p.Service.DisposeAsync();
+                            await reloadService.DisconnectAsync();
+                            await reloadService.DisposeAsync();
                         }
                         catch (Exception ex)
                         {
@@ -229,12 +230,13 @@ namespace MakerPrompt.Shared.Services
                 if (state == null) return;
 
                 // Disconnect if connected
-                if (state.Service != null)
+                var removeService = state.Service;
+                if (removeService != null)
                 {
                     try
                     {
-                        await state.Service.DisconnectAsync();
-                        await state.Service.DisposeAsync();
+                        await removeService.DisconnectAsync();
+                        await removeService.DisposeAsync();
                     }
                     catch (Exception ex)
                     {
@@ -425,10 +427,11 @@ namespace MakerPrompt.Shared.Services
             state.IsBusy = true;
             RaisePrintersChanged();
 
+            var disconnectService = state.Service;
             try
             {
-                await state.Service.DisconnectAsync();
-                await state.Service.DisposeAsync();
+                await disconnectService.DisconnectAsync();
+                await disconnectService.DisposeAsync();
             }
             catch (Exception ex)
             {

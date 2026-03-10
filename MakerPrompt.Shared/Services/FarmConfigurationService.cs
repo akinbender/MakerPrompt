@@ -127,6 +127,18 @@ namespace MakerPrompt.Shared.Services
         }
 
         /// <summary>
+        /// Clears all printer connections from storage and reloads the connection manager.
+        /// Called when farm mode is disabled to remove printers that were loaded from a farm.
+        /// </summary>
+        public async Task ClearPrinterConnectionsAsync()
+        {
+            var bytes = Encoding.UTF8.GetBytes("[]");
+            using var stream = new MemoryStream(bytes);
+            await _storage.SaveFileAsync(PrinterStorageKey, stream);
+            await _connectionManager.ReloadAsync();
+        }
+
+        /// <summary>
         /// Exports a farm configuration as a JSON string suitable for saving to a file.
         /// </summary>
         public string ExportFarm(Guid farmId)

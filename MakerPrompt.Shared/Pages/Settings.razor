@@ -16,19 +16,6 @@
         <div class="col-md-6 col-sm-12">
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong>General</strong>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label" for="farmName">Farm Name</label>
-                        <input type="text" class="form-control" id="farmName" @bind="_config.FarmName" placeholder="My Print Farm" />
-                        <div class="form-text">Optional name to display next to the logo.</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header">
                     <strong>Farm Mode</strong>
                 </div>
                 <div class="card-body">
@@ -136,7 +123,6 @@
         {
             Theme = ConfigService.Configuration.Theme,
             Language = ConfigService.Configuration.Language,
-            FarmName = ConfigService.Configuration.FarmName,
             FarmModeEnabled = ConfigService.Configuration.FarmModeEnabled,
             ActiveFarmId = ConfigService.Configuration.ActiveFarmId,
             AnalyticsEnabled = ConfigService.Configuration.AnalyticsEnabled,
@@ -151,15 +137,24 @@
 
     private async Task SaveSettingsAsync()
     {
+        var wasInFarmMode = ConfigService.Configuration.FarmModeEnabled;
+
         ConfigService.Configuration.Theme = _config.Theme;
         ConfigService.Configuration.Language = _config.Language;
-        ConfigService.Configuration.FarmName = _config.FarmName;
         ConfigService.Configuration.FarmModeEnabled = _config.FarmModeEnabled;
         ConfigService.Configuration.ActiveFarmId = _config.ActiveFarmId;
         ConfigService.Configuration.AnalyticsEnabled = _config.AnalyticsEnabled;
         ConfigService.Configuration.EnableFilamentInventory = _config.EnableFilamentInventory;
         ConfigService.Configuration.EnablePrintAnalytics = _config.EnablePrintAnalytics;
         ConfigService.Configuration.LastUpdated = DateTime.UtcNow;
+
+        // When disabling farm mode, clear the farm-loaded printers and reset the farm name
+        if (wasInFarmMode && !_config.FarmModeEnabled)
+        {
+            ConfigService.Configuration.FarmName = string.Empty;
+            ConfigService.Configuration.ActiveFarmId = null;
+            await FarmService.ClearPrinterConnectionsAsync();
+        }
 
         await ConfigService.SaveConfigurationAsync();
         ToastService.Notify(new ToastMessage(ToastType.Success, "Settings Saved", "Your settings have been saved successfully."));

@@ -66,9 +66,8 @@ public class FarmModeTests(PlaywrightFixture fixture)
 
         // Navigate to root — should redirect to dashboard
         await Page.GotoAsync(_fixture.BaseUrl);
-        var welcome = Page.Locator("[data-testid='dashboard-welcome']");
-        await welcome.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
-        Assert.True(await welcome.IsVisibleAsync());
+        await Page.WaitForURLAsync("**/dashboard", new PageWaitForURLOptions { Timeout = 15_000 });
+        Assert.Contains("dashboard", Page.Url, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -78,8 +77,9 @@ public class FarmModeTests(PlaywrightFixture fixture)
         await Page.GotoAsync($"{_fixture.BaseUrl}/dashboard");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
+        // Add Printer button no longer appears in navbar for single-printer mode
         var addPrinterLink = Page.Locator("[data-testid='header-add-printer']");
-        Assert.True(await addPrinterLink.IsVisibleAsync());
+        Assert.True(await addPrinterLink.CountAsync() == 0, "Add Printer button should NOT appear in navbar when farm mode is off");
     }
 
     // ── Farm Name ──
@@ -87,48 +87,44 @@ public class FarmModeTests(PlaywrightFixture fixture)
     [Fact]
     public async Task FarmName_DisplaysInHeader()
     {
+        // Farm mode off and no active farm — header brand should show the app name
         await NavigateToSettingsAsync();
+        var toggle = Page.Locator("#farmModeEnabled");
+        if (await toggle.IsCheckedAsync())
+        {
+            await toggle.UncheckAsync();
+            await SaveSettingsAsync();
+        }
 
-        // Set a farm name — press Tab after fill to trigger Blazor @bind (change event)
-        var nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
-        await nameInput.FillAsync("Test Farm");
-        await nameInput.PressAsync("Tab");
-        await SaveSettingsAsync();
-
-        // Navigate away and back to verify the farm name persists in the header
-        await Page.GotoAsync(_fixture.BaseUrl);
+        await Page.GotoAsync($"{_fixture.BaseUrl}/dashboard");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
         var brand = Page.Locator("header .brand-label");
         var text = await brand.InnerTextAsync();
-        Assert.Equal("Test Farm", text);
-
-        // Clean up — reset farm name
-        await NavigateToSettingsAsync();
-        nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
-        await nameInput.PressAsync("Tab");
-        await SaveSettingsAsync();
+        Assert.Equal("MakerPrompt", text);
     }
 
     [Fact]
     public async Task FarmName_ShowsInSidebar_WhenFarmModeEnabled()
     {
-        await NavigateToSettingsAsync();
+        await EnableFarmModeAsync();
 
-        // Enable farm mode and set name
-        var toggle = Page.Locator("#farmModeEnabled");
-        if (!await toggle.IsCheckedAsync())
-        {
-            await toggle.CheckAsync();
-            await Page.WaitForTimeoutAsync(300);
-        }
-        var nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
+        // Create a farm and switch to it so the config FarmName gets populated
+        var nameInput = Page.Locator("#farmNewName");
+        await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync("Sidebar Farm");
         await nameInput.PressAsync("Tab");
-        await SaveSettingsAsync();
+        await Page.WaitForTimeoutAsync(300);
+        var createBtn = Page.Locator("[data-testid='farm-create-btn']");
+        await createBtn.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
+
+        // Switch to the newly created farm
+        var selectEl = Page.Locator("select");
+        await selectEl.SelectOptionAsync(new SelectOptionValue { Label = "Sidebar Farm" });
+        var switchBtn = Page.Locator("[data-testid='farm-switch-btn']");
+        await switchBtn.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
 
         // Verify farm name appears in sidebar
         await Page.GotoAsync($"{_fixture.BaseUrl}/fleet");
@@ -139,18 +135,7 @@ public class FarmModeTests(PlaywrightFixture fixture)
         var text = await sidebarFarm.InnerTextAsync();
         Assert.Contains("Sidebar Farm", text);
 
-        // Clean up — disable farm mode and clear name
-        await NavigateToSettingsAsync();
-        toggle = Page.Locator("#farmModeEnabled");
-        if (await toggle.IsCheckedAsync())
-        {
-            await toggle.UncheckAsync();
-            await Page.WaitForTimeoutAsync(300);
-        }
-        nameInput = Page.Locator("#farmName");
-        await nameInput.ClearAsync();
-        await nameInput.PressAsync("Tab");
-        await SaveSettingsAsync();
+        await RestoreDefaultFarmModeAsync();
     }
 
     // ── Farm Configuration Management ──
@@ -239,7 +224,7 @@ public class FarmModeTests(PlaywrightFixture fixture)
     private async Task NavigateToSettingsAsync()
     {
         await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        await Page.Locator("#farmName").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        await Page.Locator("#farmModeEnabled").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
     }
 
     private async Task SaveSettingsAsync()
