@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch and Debug Blazor WebAssembly",
+      "type": "blazorwasm",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/MakerPrompt.Blazor",
+      "url": "https://localhost:7257",
+      "browser": "chrome",
+      "preLaunchTask": "build-blazor"
+    },
+    {
+      "name": "Attach to Blazor WebAssembly (Chrome)",
+      "type": "blazorwasm",
+      "request": "attach",
+      "url": "https://localhost:7257",
+      "webRoot": "${workspaceFolder}/MakerPrompt.Blazor/wwwroot"
+    }
+  ]
+}

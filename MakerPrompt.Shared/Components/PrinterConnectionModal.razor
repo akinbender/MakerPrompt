@@ -1,0 +1,314 @@
+@* ─────────────────────────────────────────────────────────────────────
+   PrinterConnectionModal — Reusable add/edit printer modal.
+
+   Call ShowAddAsync() or ShowEditAsync(definition) to open it.
+   Connects automatically after saving when _connectAfterSave is set
+   (default true for new printers in single-printer mode).
+   ───────────────────────────────────────────────────────────────────── *@
+@using MakerPrompt.Shared.Infrastructure
+@using static MakerPrompt.Shared.Utils.Enums
+@inject PrinterConnectionManager ConnectionManager
+@inject FilamentInventoryService FilamentInventoryService
+@inject ISerialService SerialService
+@inject IAppConfigurationService ConfigService
+@inject IStringLocalizer<Resources> localizer
+@inject ToastService ToastService
+@inject ILogger<PrinterConnectionModal> Logger
+
+<Modal @ref="_modal" Title="@(_isEditing ? localizer[Resources.Fleet_EditPrinter] : localizer[Resources.Fleet_AddPrinter])" Size="ModalSize.Regular">
+    <BodyTemplate>
+        <div class="mb-3">
+            <label class="form-label">@localizer[Resources.Fleet_PrinterName]</label>
+            <input type="text" class="form-control" id="printerNameInput" @bind="_editDefinition.Name" placeholder="My 3D Printer" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">@localizer[Resources.Fleet_ConnectionType]</label>
+            <select class="form-select" @bind="_editConnectionType">
+                @foreach (var ct in _connectionTypes)
+                {
+                    <option value="@ct">@ct.GetDisplayName()</option>
+                }
+            </select>
+        </div>
+
+        @if (_editConnectionType == PrinterConnectionType.Serial)
+        {
+            <div class="mb-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Port</span>
+                    <select class="form-select" @bind="_editSerialSettings.PortName">
+                        <option value="">@localizer[Resources.NavConnection_SelectPort]</option>
+                        @foreach (var port in _availablePorts)
+                        {
+                            <option value="@port">@port</option>
+                        }
+                    </select>
+                    <button class="btn btn-outline-secondary" type="button" @onclick="RefreshPortsAsync">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group input-group-sm">
+                    <select class="form-select" @bind="_editSerialSettings.BaudRate">
+                        @foreach (var rate in BaudRates)
+                        {
+                            <option value="@rate">@rate</option>
+                        }
+                    </select>
+                    <span class="input-group-text">bps</span>
+                </div>
+            </div>
+        }
+        else if (_editConnectionType == PrinterConnectionType.Demo)
+        {
+            <div class="alert alert-info">
+                <p class="mb-0">@localizer[Resources.NavConnection_DemoServiceDescription]</p>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label class="form-label">URL</label>
+                <input type="text" class="form-control" @bind="_editApiSettings.Url" placeholder="http://192.168.1.100" />
+            </div>
+
+            @if (_editConnectionType == PrinterConnectionType.BambuLab)
+            {
+                <div class="mb-3">
+                    <label class="form-label">Serial Number</label>
+                    <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Enter printer serial number" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Access Code</label>
+                    <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter access code" />
+                </div>
+            }
+            else if (_editConnectionType == PrinterConnectionType.OctoPrint)
+            {
+                <div class="mb-3">
+                    <label class="form-label">API Key</label>
+                    <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter OctoPrint API key" />
+                </div>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Username" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password / API Key</label>
+                    <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Password or API key" />
+                </div>
+            }
+        }
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="pcm-autoConnect" @bind="_editDefinition.AutoConnect" />
+            <label class="form-check-label" for="pcm-autoConnect">@localizer[Resources.Fleet_AutoConnect]</label>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_connectionError))
+        {
+            <div class="alert alert-danger d-flex align-items-start gap-2 mt-2 mb-0" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+                <div><strong>Connection failed</strong><br />@_connectionError</div>
+            </div>
+        }
+
+        @if (ConfigService.Configuration.EnableFilamentInventory)
+        {
+            <div class="mb-3">
+                <label class="form-label">Assigned Filament Spool</label>
+                <select class="form-select" @bind="_editDefinition.AssignedFilamentSpoolId">
+                    <option value="">None</option>
+                    @foreach (var spool in FilamentInventoryService.GetSpools())
+                    {
+                        <option value="@spool.Id">@spool.Name (@spool.Material - @spool.Color)</option>
+                    }
+                </select>
+            </div>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <button class="btn btn-outline-secondary" @onclick="CloseAsync" disabled="@_isSaving">@localizer[Resources.Fleet_Cancel]</button>
+        <button class="btn btn-outline-primary" @onclick="SaveAsync" data-testid="fleet-save-printer-btn" disabled="@_isSaving">
+            @if (_isSaving)
+            {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                @(_connectAfterSave ? "Connecting..." : "Saving...")
+            }
+            else
+            {
+                @localizer[Resources.Fleet_Save]
+            }
+        </button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback<PrinterConnectionDefinition> OnSaved { get; set; }
+
+    private Modal _modal = default!;
+    private bool _isEditing;
+    // In non-farm mode, always attempt an immediate connection after saving a new printer.
+    // Not exposed as a checkbox — "Auto-connect on startup" is the only visible flag.
+    private bool _connectAfterSave;
+    private bool _isSaving;
+    private string? _connectionError;
+
+    private PrinterConnectionDefinition _editDefinition = new();
+    private ApiConnectionSettings _editApiSettings = new();
+    private SerialConnectionSettings _editSerialSettings = new();
+    private PrinterConnectionType _editConnectionType = PrinterConnectionType.Demo;
+    private List<string> _availablePorts = new();
+    private readonly List<int> BaudRates = [9600, 19200, 38400, 57600, 115200, 250000];
+    private readonly PrinterConnectionType[] _connectionTypes = Enum.GetValues<PrinterConnectionType>();
+
+    public async Task ShowAddAsync()
+    {
+        _isEditing = false;
+        _connectAfterSave = !ConfigService.Configuration.FarmModeEnabled;
+        _connectionError = null;
+        _editDefinition = new();
+        _editApiSettings = new();
+        _editSerialSettings = new();
+        _editConnectionType = PrinterConnectionType.Demo;
+        await _modal.ShowAsync();
+    }
+
+    public async Task ShowEditAsync(PrinterConnectionDefinition definition)
+    {
+        _isEditing = true;
+        _connectAfterSave = false;
+        _connectionError = null;
+        _editDefinition = new PrinterConnectionDefinition
+        {
+            Id = definition.Id,
+            Name = definition.Name,
+            ConnectionType = definition.ConnectionType,
+            AutoConnect = definition.AutoConnect,
+            Color = definition.Color,
+            Notes = definition.Notes,
+            CreatedAt = definition.CreatedAt,
+            LastConnectedAt = definition.LastConnectedAt,
+            AssignedFilamentSpoolId = definition.AssignedFilamentSpoolId,
+        };
+        _editConnectionType = definition.ConnectionType;
+        _editApiSettings = definition.Settings.Api is not null
+            ? new ApiConnectionSettings(definition.Settings.Api.Url, definition.Settings.Api.UserName, definition.Settings.Api.Password)
+            : new ApiConnectionSettings();
+        _editSerialSettings = definition.Settings.Serial is not null
+            ? new SerialConnectionSettings { PortName = definition.Settings.Serial.PortName, BaudRate = definition.Settings.Serial.BaudRate }
+            : new SerialConnectionSettings();
+        await _modal.ShowAsync();
+    }
+
+    private async Task CloseAsync()
+    {
+        _connectionError = null;
+        await _modal.HideAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_editDefinition.Name))
+        {
+            ToastService.Notify(new ToastMessage(ToastType.Warning, localizer[Resources.Fleet_PrinterName] + " is required"));
+            return;
+        }
+
+        // Validate URL for API-based backends before attempting anything.
+        if (_editConnectionType != PrinterConnectionType.Serial && _editConnectionType != PrinterConnectionType.Demo
+            && string.IsNullOrWhiteSpace(_editApiSettings.Url))
+        {
+            _connectionError = "URL is required. Enter the printer\'s IP address or hostname (e.g. http://192.168.1.100).";
+            return;
+        }
+
+        _editDefinition.ConnectionType = _editConnectionType;
+        _editDefinition.Settings = _editConnectionType switch
+        {
+            PrinterConnectionType.Serial => new PrinterConnectionSettings(_editSerialSettings),
+            PrinterConnectionType.Demo => new PrinterConnectionSettings(),
+            _ => new PrinterConnectionSettings(_editApiSettings, _editConnectionType)
+        };
+
+        _isSaving = true;
+        _connectionError = null;
+        try
+        {
+            if (_isEditing)
+            {
+                await ConnectionManager.UpdatePrinterAsync(_editDefinition);
+                ToastService.Notify(new ToastMessage(ToastType.Success, "Printer updated"));
+                await _modal.HideAsync();
+                await OnSaved.InvokeAsync(_editDefinition);
+            }
+            else
+            {
+                await ConnectionManager.AddPrinterAsync(_editDefinition);
+
+                if (_connectAfterSave)
+                {
+                    // Look up by Id — the definition already has the Guid assigned before saving.
+                    var saved = ConnectionManager.Printers.FirstOrDefault(p => p.Definition.Id == _editDefinition.Id);
+                    if (saved != null)
+                    {
+                        try
+                        {
+                            await ConnectionManager.ConnectPrinterAsync(saved.Definition.Id);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError(ex, "Auto-connect after save failed");
+                        }
+
+                        // ConnectPrinterAsync does not throw on failure — check state after the call.
+                        var result = ConnectionManager.Printers.FirstOrDefault(p => p.Definition.Id == _editDefinition.Id);
+                        if (result?.Status != PrinterStatus.Connected)
+                        {
+                            // Surface the error inline so the user can correct settings without re-opening the modal.
+                            _connectionError = result?.LastError ?? "Could not reach the printer. Check the URL and credentials, then try again.";
+                            Logger.LogWarning("Auto-connect after save failed: {Reason}", _connectionError);
+                            return; // leave the modal open
+                        }
+                    }
+
+                    ToastService.Notify(new ToastMessage(ToastType.Success, $"{_editDefinition.Name} connected"));
+                }
+                else
+                {
+                    ToastService.Notify(new ToastMessage(ToastType.Success, "Printer added"));
+                }
+
+                await _modal.HideAsync();
+                await OnSaved.InvokeAsync(_editDefinition);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save printer definition");
+            _connectionError = ex.Message;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private async Task RefreshPortsAsync()
+    {
+        try
+        {
+            _availablePorts = (await SerialService.GetAvailablePortsAsync()).ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to enumerate serial ports");
+            ToastService.Notify(new ToastMessage(ToastType.Warning, "Could not refresh ports", ex.Message));
+        }
+    }
+}

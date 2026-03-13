@@ -6,6 +6,7 @@
 @inject MakerPromptJsInterop JsInterop
 @inject IAppLocalStorageProvider AppStorage
 @inject ToastService ToastService
+@inject NavigationManager Navigation
 @inject ILogger<Settings> Logger
 @implements IDisposable
 
@@ -158,6 +159,11 @@
 
         await ConfigService.SaveConfigurationAsync();
         ToastService.Notify(new ToastMessage(ToastType.Success, "Settings Saved", "Your settings have been saved successfully."));
+
+        if (!wasInFarmMode && _config.FarmModeEnabled)
+            Navigation.NavigateTo("/fleet", replace: true);
+        else if (wasInFarmMode && !_config.FarmModeEnabled)
+            Navigation.NavigateTo("/dashboard", replace: true);
     }
 
     private async Task CreateFarmAsync()
@@ -201,6 +207,19 @@
         {
             await FarmService.DeleteFarmAsync(_selectedFarmId.Value);
             _selectedFarmId = FarmService.Farms.FirstOrDefault()?.Id;
+
+            // If no farms remain, disable farm mode and redirect so MainLayout re-renders
+            if (!FarmService.Farms.Any())
+            {
+                ConfigService.Configuration.FarmModeEnabled = false;
+                ConfigService.Configuration.FarmName = string.Empty;
+                ConfigService.Configuration.ActiveFarmId = null;
+                await ConfigService.SaveConfigurationAsync();
+                ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Deleted", "Farm configuration removed. Farm mode has been disabled."));
+                Navigation.NavigateTo("/dashboard", replace: true);
+                return;
+            }
+
             ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Deleted", "Farm configuration removed."));
         }
         catch (Exception ex)

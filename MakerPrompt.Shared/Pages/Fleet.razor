@@ -1,6 +1,6 @@
 @page "/fleet"
 @* ─────────────────────────────────────────────────────────────────────
-   Fleet Dashboard — Main landing page.
+   Fleet Dashboard — Farm mode main landing page.
    
    Shows all saved printers as cards. Clicking a connected printer opens
    the full Dashboard (ControlPanel / PID / Thermal) inline. Disconnected
@@ -12,7 +12,7 @@
 @inject PrinterConnectionManager ConnectionManager
 @inject FilamentInventoryService FilamentInventoryService
 @inject IAppConfigurationService ConfigService
-@inject ISerialService SerialService
+@inject NavigationManager Navigation
 @inject IPrinterCameraProvider CameraProvider
 @inject IStringLocalizer<Resources> localizer
 @inject ToastService ToastService
@@ -46,7 +46,7 @@ else
     <div class="container-fluid">
         @* ── Toolbar ── *@
         <div class="d-flex justify-content-end mb-3">
-            <button class="btn btn-outline-primary" @onclick="OpenAddModal" data-testid="fleet-add-btn">
+            <button class="btn btn-outline-primary" @onclick="() => ConnectionModal!.ShowAddAsync()" data-testid="fleet-add-btn">
                 <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
             </button>
         </div>
@@ -96,7 +96,7 @@ else
                                                 <i class="bi bi-x-circle"></i>
                                             </button>
                                         }
-                                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => ShowEditForm(printer.Definition)" title="@localizer[Resources.Fleet_EditPrinter]">
+                                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => ConnectionModal!.ShowEditAsync(printer.Definition)" title="@localizer[Resources.Fleet_EditPrinter]">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePrinter(printer.Definition.Id)" title="@localizer[Resources.Fleet_DeletePrinter]">
@@ -200,150 +200,26 @@ else
                 }
             </div>
         }
-
-        @* ── Print Queue ── *@
-        <div class="mt-4">
-            <PrintQueue />
-        </div>
     </div>
 }
 
-@* ── Add / Edit Printer Modal ── *@
-<Modal @ref="_addEditModal" Title="@(_isEditing ? localizer[Resources.Fleet_EditPrinter] : localizer[Resources.Fleet_AddPrinter])" Size="ModalSize.Regular">
-    <BodyTemplate>
-        <div class="mb-3">
-            <label class="form-label">@localizer[Resources.Fleet_PrinterName]</label>
-            <input type="text" class="form-control" id="printerName" @bind="_editDefinition.Name" placeholder="My 3D Printer" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">@localizer[Resources.Fleet_ConnectionType]</label>
-            <select class="form-select" @bind="_editConnectionType">
-                @foreach (var ct in _connectionTypes)
-                {
-                    <option value="@ct">@ct.GetDisplayName()</option>
-                }
-            </select>
-        </div>
-
-        @if (_editConnectionType == PrinterConnectionType.Serial)
-        {
-            <div class="mb-3">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">Port</span>
-                    <select class="form-select" @bind="_editSerialSettings.PortName">
-                        <option value="">@localizer[Resources.NavConnection_SelectPort]</option>
-                        @foreach (var port in _availablePorts)
-                        {
-                            <option value="@port">@port</option>
-                        }
-                    </select>
-                    <button class="btn btn-outline-secondary" type="button" @onclick="RefreshPortsAsync">
-                        <i class="bi bi-arrow-clockwise"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="mb-3">
-                <div class="input-group input-group-sm">
-                    <select class="form-select" @bind="_editSerialSettings.BaudRate">
-                        @foreach (var rate in BaudRates)
-                        {
-                            <option value="@rate">@rate</option>
-                        }
-                    </select>
-                    <span class="input-group-text">bps</span>
-                </div>
-            </div>
-        }
-        else if (_editConnectionType == PrinterConnectionType.Demo)
-        {
-            <div class="alert alert-info">
-                <p class="mb-0">@localizer[Resources.NavConnection_DemoServiceDescription]</p>
-            </div>
-        }
-        else
-        {
-            <div class="mb-3">
-                <label class="form-label">URL</label>
-                <input type="text" class="form-control" @bind="_editApiSettings.Url" placeholder="http://192.168.1.100" />
-            </div>
-
-            @if (_editConnectionType == PrinterConnectionType.BambuLab)
-            {
-                <div class="mb-3">
-                    <label class="form-label">Serial Number</label>
-                    <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Enter printer serial number" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Access Code</label>
-                    <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter access code" />
-                </div>
-            }
-            else if (_editConnectionType == PrinterConnectionType.OctoPrint)
-            {
-                <div class="mb-3">
-                    <label class="form-label">API Key</label>
-                    <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter OctoPrint API key" />
-                </div>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Username" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Password / API Key</label>
-                    <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Password or API key" />
-                </div>
-            }
-        }
-
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="autoConnect" @bind="_editDefinition.AutoConnect" />
-            <label class="form-check-label" for="autoConnect">@localizer[Resources.Fleet_AutoConnect]</label>
-        </div>
-
-        @if (ConfigService.Configuration.EnableFilamentInventory)
-        {
-            <div class="mb-3">
-                <label class="form-label">Assigned Filament Spool</label>
-                <select class="form-select" @bind="_editDefinition.AssignedFilamentSpoolId">
-                    <option value="">None</option>
-                    @foreach (var spool in FilamentInventoryService.GetSpools())
-                    {
-                        <option value="@spool.Id">@spool.Name (@spool.Material - @spool.Color)</option>
-                    }
-                </select>
-            </div>
-        }
-    </BodyTemplate>
-    <FooterTemplate>
-        <button class="btn btn-outline-secondary" @onclick="CloseAddEditModal">@localizer[Resources.Fleet_Cancel]</button>
-        <button class="btn btn-outline-primary" @onclick="SavePrinterAsync" data-testid="fleet-save-printer-btn">@localizer[Resources.Fleet_Save]</button>
-    </FooterTemplate>
-</Modal>
-
 @code {
+    [CascadingParameter] private PrinterConnectionModal? ConnectionModal { get; set; }
+
     private readonly Dictionary<Guid, string?> _cameraUrls = new();
 
     // Selection state
     private Guid? _selectedPrinterId;
     private ManagedPrinterState? _selectedPrinter;
 
-    // Add/Edit modal state
-    private Modal _addEditModal = default!;
-    private bool _isEditing;
-    private PrinterConnectionDefinition _editDefinition = new();
-    private ApiConnectionSettings _editApiSettings = new();
-    private SerialConnectionSettings _editSerialSettings = new();
-    private PrinterConnectionType _editConnectionType = PrinterConnectionType.Demo;
-    private List<string> _availablePorts = new();
-    private readonly List<int> BaudRates = [9600, 19200, 38400, 57600, 115200, 250000];
-    private readonly PrinterConnectionType[] _connectionTypes = Enum.GetValues<PrinterConnectionType>();
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await ConfigService.InitializeAsync();
+        if (!ConfigService.Configuration.FarmModeEnabled)
+        {
+            Navigation.NavigateTo("/dashboard", replace: true);
+            return;
+        }
         ConnectionManager.PrintersChanged += HandlePrintersChanged;
     }
 
@@ -454,83 +330,6 @@ else
         }
     }
 
-    // ── Add/Edit modal ──
-    private async Task OpenAddModal()
-    {
-        _isEditing = false;
-        _editDefinition = new PrinterConnectionDefinition();
-        _editApiSettings = new ApiConnectionSettings();
-        _editSerialSettings = new SerialConnectionSettings();
-        _editConnectionType = PrinterConnectionType.Demo;
-        await _addEditModal.ShowAsync();
-    }
-
-    private async Task ShowEditForm(PrinterConnectionDefinition definition)
-    {
-        _isEditing = true;
-        _editDefinition = new PrinterConnectionDefinition
-        {
-            Id = definition.Id,
-            Name = definition.Name,
-            ConnectionType = definition.ConnectionType,
-            AutoConnect = definition.AutoConnect,
-            Color = definition.Color,
-            Notes = definition.Notes,
-            CreatedAt = definition.CreatedAt,
-            LastConnectedAt = definition.LastConnectedAt
-        };
-        _editConnectionType = definition.ConnectionType;
-        _editApiSettings = definition.Settings.Api is not null
-            ? new ApiConnectionSettings(definition.Settings.Api.Url, definition.Settings.Api.UserName, definition.Settings.Api.Password)
-            : new ApiConnectionSettings();
-        _editSerialSettings = definition.Settings.Serial is not null
-            ? new SerialConnectionSettings { PortName = definition.Settings.Serial.PortName, BaudRate = definition.Settings.Serial.BaudRate }
-            : new SerialConnectionSettings();
-        await _addEditModal.ShowAsync();
-    }
-
-    private async Task CloseAddEditModal()
-    {
-        await _addEditModal.HideAsync();
-    }
-
-    private async Task SavePrinterAsync()
-    {
-        if (string.IsNullOrWhiteSpace(_editDefinition.Name))
-        {
-            ToastService.Notify(new ToastMessage(ToastType.Warning, "Printer name is required"));
-            return;
-        }
-
-        _editDefinition.ConnectionType = _editConnectionType;
-        _editDefinition.Settings = _editConnectionType switch
-        {
-            PrinterConnectionType.Serial => new PrinterConnectionSettings(_editSerialSettings),
-            PrinterConnectionType.Demo => new PrinterConnectionSettings(),
-            _ => new PrinterConnectionSettings(_editApiSettings, _editConnectionType)
-        };
-
-        try
-        {
-            if (_isEditing)
-            {
-                await ConnectionManager.UpdatePrinterAsync(_editDefinition);
-                ToastService.Notify(new ToastMessage(ToastType.Success, "Printer updated"));
-            }
-            else
-            {
-                await ConnectionManager.AddPrinterAsync(_editDefinition);
-                ToastService.Notify(new ToastMessage(ToastType.Success, "Printer added"));
-            }
-            await _addEditModal.HideAsync();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to save printer definition");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Failed to save printer", ex.Message));
-        }
-    }
-
     private async Task DeletePrinter(Guid id)
     {
         try
@@ -547,19 +346,6 @@ else
         {
             Logger.LogError(ex, "Failed to delete printer");
             ToastService.Notify(new ToastMessage(ToastType.Danger, "Delete failed", ex.Message));
-        }
-    }
-
-    private async Task RefreshPortsAsync()
-    {
-        try
-        {
-            _availablePorts = (await SerialService.GetAvailablePortsAsync()).ToList();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to enumerate serial ports");
-            ToastService.Notify(new ToastMessage(ToastType.Warning, "Could not refresh ports", ex.Message));
         }
     }
 

@@ -110,7 +110,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card mt-3">
             <h4 class="card-header">@Localizer[Resources.ControlPanel_Status]</h4>
             <div class="card-body">
                 <div class="input-group mb-2">
@@ -120,16 +120,41 @@
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" disabled>@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
-                <div class="input-group">
+                <div class="input-group mb-2">
                     <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.FlowRate.ToString()</span>
                     <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintFlow]:</span>
                     <input type="text" class="form-control" @bind="printFlow" @bind:after="UpdatePrintFlowAsync" disabled="@(!IsConnected)">
                     <span class="input-group-text">%</span>
                     <button class="btn btn-outline-secondary" type="button" disabled>@Localizer[Resources.ControlPanel_Set]</button>
                 </div>
+                @if (Telemetry.SDCard.Printing || Telemetry.Status == PrinterStatus.Printing)
+                {
+                    <div class="mt-2">
+                        @if (!string.IsNullOrWhiteSpace(Telemetry.PrintJobName))
+                        {
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-file-earmark-text text-muted"></i>
+                                <small class="text-truncate" title="@Telemetry.PrintJobName">@Telemetry.PrintJobName</small>
+                            </div>
+                        }
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">@Localizer[Resources.Fleet_Progress]</small>
+                            <small>@($"{Telemetry.SDCard.Progress:F0}%")</small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                                 role="progressbar"
+                                 style="width: @($"{Telemetry.SDCard.Progress:F0}%")"
+                                 aria-valuenow="@Telemetry.SDCard.Progress"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
-        <div class="card">
+        <div class="card mt-3">
             <h4 class="card-header">@Localizer[Resources.GCodeCategory_Calibration]</h4>
             <div class="card-body">
                 <Calibration />

@@ -42,7 +42,7 @@ namespace MakerPrompt.Shared.Services
             return await jsRuntime.InvokeAsync<string>("navigator.clipboard.readText");
         }
 
-        // https://github.com/aligator/gcode-viewer implementation
+        // https://github.com/remcoder/gcode-preview — MIT, supports Klipper/Moonraker, PrusaLink, Cura, Marlin G-code
         public async ValueTask InitializeViewerAsync(ElementReference container, string gcodeContent)
         {
             var module = await moduleTask.Value;

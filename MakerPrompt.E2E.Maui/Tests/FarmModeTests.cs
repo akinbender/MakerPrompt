@@ -87,9 +87,10 @@ public class FarmModeTests
         await AppiumSetup.NavigateAsync("/dashboard");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
-        // Dashboard should render ControlPanel directly; header-add-printer exists in farm mode only
+        // Add Printer button appears in the navbar in single-printer (non-farm) mode
         var addPrinterLink = Page.Locator("[data-testid='header-add-printer']");
-        Assert.True(await addPrinterLink.CountAsync() == 0, "Add Printer button should NOT appear in navbar when farm mode is off");
+        await addPrinterLink.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
+        Assert.True(await addPrinterLink.IsVisibleAsync(), "Add Printer button should appear in navbar when farm mode is off");
     }
 
     // ── Farm Name ──

@@ -57,6 +57,9 @@
 @code {
     private ElementReference viewerContainer;
     private bool showVisual = false;
+    // Only reinitialise when content or mode actually changes — prevents re-init on every telemetry poll.
+    private bool _viewerNeedsReset = false;
+    private string? _viewerGCode = null;
 
     private bool CanPrint => IsConnected && !string.IsNullOrWhiteSpace(GCodeDoc.CurrentGCode) && PrinterServiceFactory.Current != null;
 
@@ -68,28 +71,39 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (showVisual && !string.IsNullOrWhiteSpace(GCodeDoc.CurrentGCode))
+        if (showVisual && _viewerNeedsReset && !string.IsNullOrWhiteSpace(GCodeDoc.CurrentGCode))
         {
+            _viewerNeedsReset = false;
+            _viewerGCode = GCodeDoc.CurrentGCode;
             try
             {
                 await JS.InitializeViewerAsync(viewerContainer, GCodeDoc.CurrentGCode!);
-
+            }
+            catch (JSException ex) when (ex.Message.Contains("bgcode"))
+            {
+                ToastService.Notify(new(ToastType.Warning, "Binary G-code", "bgcode format cannot be visualised. Use the text view."));
             }
             catch (Exception)
             {
-                ToastService.Notify(new(ToastType.Danger, "Braille Gcode view is not supported atm."));
+                // Swallow viewer errors silently — non-critical and surfacing them would spam toasts
+                // on every re-render triggered by background telemetry polling.
             }
         }
     }
 
     private void OnDocChanged()
     {
+        if (GCodeDoc.CurrentGCode != _viewerGCode)
+            _viewerNeedsReset = true;
         StateHasChanged();
     }
 
     private void ToggleMode(ChangeEventArgs e)
     {
+        var was = showVisual;
         showVisual = e.Value is bool b ? b : showVisual;
+        if (showVisual && !was)
+            _viewerNeedsReset = true;
         StateHasChanged();
     }
 

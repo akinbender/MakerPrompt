@@ -12,14 +12,17 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <input type="text" class="form-control"
-                   placeholder="@localizer[Resources.CheatSheetPage_SearchCommands]" @bind="searchTerm" />
+                   placeholder="@localizer[Resources.CheatSheetPage_SearchCommands]"
+                   @bind="searchTerm"
+                   @bind:event="oninput"
+                   @bind:after="UpdateFilter" />
         </div>
     </div>
 
     <BlazorBootstrap.Tabs>
         <BlazorBootstrap.Tab Title="@localizer[Resources.PageTitle_GCodeList]">
             <Content>
-                <div class="table-responsive h-100">
+                <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
@@ -31,7 +34,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var command in FilteredCommands)
+                            @foreach (var command in _filteredList)
                             {
                                 <tr>
                                     <td class="font-monospace">@command.Command</td>
@@ -126,15 +129,34 @@
     private Dictionary<string, string>? moonrakerHelp;
     private string? moonrakerHelpError;
 
-    // Cache all G-code commands once for this component to avoid repeated reflection and allocations.
+    // Cached once via reflection — shared across all instances.
     private static readonly List<GCodeCommand> allCommands = GCodeCommands.AllCommands();
 
-    private IEnumerable<GCodeCommand> FilteredCommands =>
-        string.IsNullOrWhiteSpace(searchTerm)
+    // Materialized filtered list — only recomputed when searchTerm changes.
+    private List<GCodeCommand> _filteredList = allCommands;
+
+    // Dirty flag: set true only when content-affecting state changes.
+    // Prevents the 3-second telemetry tick from re-rendering 43 rows.
+    private bool _needsRender = true;
+
+    protected override bool ShouldRender()
+    {
+        if (_needsRender) { _needsRender = false; return true; }
+        return false;
+    }
+
+    private void UpdateFilter()
+    {
+        _filteredList = string.IsNullOrWhiteSpace(searchTerm)
             ? allCommands
             : allCommands.Where(c =>
                 c.Command.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                c.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                c.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+        _needsRender = true;
+    }
+
+    // Telemetry updates don't affect this page's content — suppress re-renders.
+    protected override void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry) { }
 
     protected override async Task OnInitializedAsync()
     {
@@ -144,6 +166,7 @@
 
     protected override void HandleConnectionChanged(object? sender, bool connected)
     {
+        _needsRender = true;
         base.HandleConnectionChanged(sender, connected);
         if (connected && PrinterServiceFactory.Current?.ConnectionType == MakerPrompt.Shared.Utils.Enums.PrinterConnectionType.Moonraker)
         {
@@ -158,6 +181,7 @@
 
         if (PrinterServiceFactory.Current is not MoonrakerApiService moonrakerService)
         {
+            _needsRender = true;
             await InvokeAsync(StateHasChanged);
             return;
         }
@@ -171,6 +195,7 @@
             moonrakerHelpError = ex.Message;
         }
 
+        _needsRender = true;
         await InvokeAsync(StateHasChanged);
     }
 

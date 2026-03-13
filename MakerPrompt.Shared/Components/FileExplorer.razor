@@ -11,8 +11,16 @@
         <button class="btn btn-sm btn-secondary" disabled="@(!IsConnected)" @onclick="RefreshFiles">
             <i class="bi bi-arrow-clockwise"></i> @Localizer[Resources.Files_Refresh]
         </button>
-        <button class="btn btn-sm btn-outline-info" @onclick="OpenSelectedPrinter" disabled="@(selectedFile == null)">
-            <i class="bi bi-eye"></i> Open
+        <button class="btn btn-sm btn-outline-info" @onclick="OpenSelectedPrinter" disabled="@(selectedFile == null || _isOpening)">
+            @if (_isOpening)
+            {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                <span>Loading...</span>
+            }
+            else
+            {
+                <i class="bi bi-eye"></i><span> Open</span>
+            }
         </button>
         <button class="btn btn-sm btn-outline-success" @onclick="CopySelectedToApp" disabled="@(selectedFile == null)">
             <i class="bi bi-arrow-left-square"></i> Copy to App
@@ -69,6 +77,7 @@
 @code {
     private List<FileEntry> _files = new();
     private bool _isLoading;
+    private bool _isOpening;
     private FileEntry? selectedFile;
 
     protected override async Task OnInitializedAsync()
@@ -161,17 +170,27 @@
         }, "Failed to copy file");
     }
 
-    private Task OpenSelectedPrinter()
+    private async Task OpenSelectedPrinter()
     {
-        if (selectedFile == null) return Task.CompletedTask;
+        if (selectedFile == null) return;
         var file = selectedFile;
-        return RunAsync(async () =>
+        _isOpening = true;
+        StateHasChanged();
+        try
         {
-            await using var stream = await PrinterStorage.OpenReadAsync(file.FullPath) ?? Stream.Null;
-            if (stream == Stream.Null) return;
-            using var reader = new StreamReader(stream);
-            var content = await reader.ReadToEndAsync();
-            GCodeDoc.SetGCode(content);
-        }, "Failed to open file");
+            await RunAsync(async () =>
+            {
+                await using var stream = await PrinterStorage.OpenReadAsync(file.FullPath) ?? Stream.Null;
+                if (stream == Stream.Null) return;
+                using var reader = new StreamReader(stream);
+                var content = await reader.ReadToEndAsync();
+                GCodeDoc.SetGCode(content);
+            }, "Failed to open file");
+        }
+        finally
+        {
+            _isOpening = false;
+            StateHasChanged();
+        }
     }
 }

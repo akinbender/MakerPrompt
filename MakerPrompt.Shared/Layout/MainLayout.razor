@@ -2,15 +2,23 @@
 @inject IAppConfigurationService ConfigService
 @inherits LayoutComponentBase
 @implements IDisposable
+@implements IAsyncDisposable
 
 <header class="navbar sticky-top bg-body-secondary text-body flex-md-nowrap p-0 shadow">
     <a href="/" class="navbar-brand bg-body-tertiary d-flex align-items-center me-0 px-2 @(_navCollapsed ? "brand--collapsed" : "")">
         <img class="ms-2" width="40" height="32" aria-hidden="true" src="_content/MakerPrompt.Shared/logo.svg" onerror="this.src='_content/MakerPrompt.Shared/favicon.png'" />
-        <span class="brand-label">@(string.IsNullOrWhiteSpace(ConfigService.Configuration.FarmName) ? "MakerPrompt" : ConfigService.Configuration.FarmName)</span>
+        <span class="brand-label">MakerPrompt</span>
     </a>
-    <NavTop />
+    @if (ConfigService.Configuration.FarmModeEnabled && !string.IsNullOrWhiteSpace(ConfigService.Configuration.FarmName))
+    {
+        <span class="ms-2 fw-semibold text-body-secondary d-none d-md-inline">@ConfigService.Configuration.FarmName</span>
+    }
+    <div class="ms-auto">
+        <NavTop />
+    </div>
 </header>
 
+<CascadingValue Value="@_connectionModal" IsFixed="false">
 <div class="layout-body">
     <NavMenu Collapsed="_navCollapsed" OnToggle="ToggleSidebar" />
     <main class="layout-main h-100">
@@ -23,23 +31,38 @@
             </div>
             <div class="layout-resizer @(_isResizing ? "active" : "")" @onmousedown="OnMouseDown"></div>
             <div class="layout-right" style="--layout-right-width: @(_rightPanelWidth)px;">
-                <div class="layout-right-top">
-                    <CommandPrompt />
-                </div>
-                <div class="layout-right-bottom">
-                    <GCodeViewer />
-                </div>
+                @if (ConfigService.Configuration.FarmModeEnabled)
+                {
+                    <div class="layout-right-top">
+                        <PrintQueue />
+                    </div>
+                    <div class="layout-right-bottom">
+                        <GCodeViewer />
+                    </div>
+                }
+                else
+                {
+                    <div class="layout-right-top">
+                        <CommandPrompt />
+                    </div>
+                    <div class="layout-right-bottom">
+                        <GCodeViewer />
+                    </div>
+                }
             </div>
         </div>
     </main>
 </div>
+</CascadingValue>
 
+<PrinterConnectionModal @ref="_connectionModal" />
 <Toasts class="p-3" AutoHide="true" Delay="8000" Placement="ToastsPlacement.BottomRight" />
 
 @code {
     [Inject]
     private LocalizedTitleService TitleService { get; set; } = null!;
 
+    private PrinterConnectionModal? _connectionModal;
     private bool _navCollapsed = false;
     private bool _isResizing = false;
     private double _rightPanelWidth = 600; // Default width in pixels
@@ -89,5 +112,11 @@
     public void Dispose()
     {
         TitleService.OnTitleChanged -= HandleTitleChanged;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        Dispose();
+        return ValueTask.CompletedTask;
     }
 }
