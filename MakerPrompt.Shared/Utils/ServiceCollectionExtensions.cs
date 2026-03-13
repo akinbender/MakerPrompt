@@ -15,6 +15,7 @@ namespace MakerPrompt.Shared.Utils
 			services.AddScoped<IAppConfigurationService, P>();
 			services.AddSingleton<ISerialService, L>();
 			services.AddSingleton<PrusaLinkApiService>();
+			services.AddSingleton<PrusaConnectApiService>();
 			services.AddSingleton<MoonrakerApiService>();
 			services.AddSingleton<BambuLabApiService>();
 			services.AddSingleton<OctoPrintApiService>();
@@ -26,6 +27,7 @@ namespace MakerPrompt.Shared.Utils
 			services.AddScoped<AnalyticsService>();
 			services.AddScoped<NotificationService>();
 			services.AddScoped<IPrinterCameraProvider, PrinterCameraProvider>();
+            services.AddScoped<ICameraProxyService, PassthroughCameraProxyService>();
             services.AddScoped<PrinterStorageProvider>();
             services.AddSingleton<GCodeDocumentService>();
             services.AddSingleton<MakerPromptJsInterop>();

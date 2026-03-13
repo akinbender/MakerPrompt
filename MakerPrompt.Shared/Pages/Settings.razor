@@ -8,59 +8,60 @@
 @inject ToastService ToastService
 @inject NavigationManager Navigation
 @inject ILogger<Settings> Logger
+@inject IStringLocalizer<Resources> localizer
 @implements IDisposable
 
-<LocalizedTitle TitleKey="Settings" />
+<LocalizedTitle TitleKey="PageTitle_Settings" />
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong>Farm Mode</strong>
+                    <strong>@localizer[Resources.Settings_FarmMode]</strong>
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="farmModeEnabled" @bind="_config.FarmModeEnabled" />
-                        <label class="form-check-label" for="farmModeEnabled">Enable Farm Mode</label>
-                        <div class="form-text">When enabled, the Fleet page is the default landing page and farm management features are active. When disabled, a single-printer Dashboard is the default.</div>
+                        <label class="form-check-label" for="farmModeEnabled">@localizer[Resources.Settings_EnableFarmMode]</label>
+                        <div class="form-text">@localizer[Resources.Settings_FarmModeDescription]</div>
                     </div>
 
                     @if (_config.FarmModeEnabled)
                     {
                         <hr />
-                        <h6>Farm Configurations</h6>
+                        <h6>@localizer[Resources.Settings_FarmConfigurations]</h6>
                         <div class="mb-3">
                             <div class="input-group input-group-sm">
                                 <select class="form-select" @bind="_selectedFarmId">
-                                    <option value="">— select a farm —</option>
+                                    <option value="">@localizer[Resources.Settings_SelectFarm]</option>
                                     @foreach (var farm in FarmService.Farms)
                                     {
                                         <option value="@farm.Id">@farm.Name</option>
                                     }
                                 </select>
-                                <button class="btn btn-outline-primary" type="button" @onclick="SwitchFarmAsync" disabled="@(_selectedFarmId == null)" title="Switch" data-testid="farm-switch-btn">
+                                <button class="btn btn-outline-primary" type="button" @onclick="SwitchFarmAsync" disabled="@(_selectedFarmId == null)" title="@localizer[Resources.Settings_FarmMode]" data-testid="farm-switch-btn">
                                     <i class="bi bi-arrow-repeat"></i>
                                 </button>
-                                <button class="btn btn-outline-danger" type="button" @onclick="DeleteFarmAsync" disabled="@(_selectedFarmId == null)" title="Delete">
+                                <button class="btn btn-outline-danger" type="button" @onclick="DeleteFarmAsync" disabled="@(_selectedFarmId == null)" title="@localizer[Resources.Settings_Delete]">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="mb-3">
                             <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" id="farmNewName" placeholder="New farm name" @bind="_newFarmName" />
+                                <input type="text" class="form-control" id="farmNewName" placeholder="@localizer[Resources.Settings_NewFarmName]" @bind="_newFarmName" />
                                 <button class="btn btn-outline-success" type="button" @onclick="CreateFarmAsync" disabled="@(string.IsNullOrWhiteSpace(_newFarmName))" data-testid="farm-create-btn">
-                                    <i class="bi bi-plus-circle me-1"></i>Create
+                                    <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Settings_Create]
                                 </button>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm btn-outline-secondary" @onclick="ExportFarmAsync" disabled="@(_selectedFarmId == null)" data-testid="farm-export-btn">
-                                <i class="bi bi-download me-1"></i>Export
+                                <i class="bi bi-download me-1"></i>@localizer[Resources.Settings_Export]
                             </button>
                             <label class="btn btn-sm btn-outline-secondary mb-0" data-testid="farm-import-label">
-                                <i class="bi bi-upload me-1"></i>Import
+                                <i class="bi bi-upload me-1"></i>@localizer[Resources.Settings_Import]
                                 <InputFile OnChange="ImportFarmAsync" style="display:none" accept=".json" />
                             </label>
                         </div>
@@ -70,44 +71,44 @@
 
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong>Features</strong>
+                    <strong>@localizer[Resources.Settings_Features]</strong>
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="enableFilamentInventory" @bind="_config.EnableFilamentInventory" />
-                        <label class="form-check-label" for="enableFilamentInventory">Enable Filament Inventory</label>
-                        <div class="form-text">Track filament spools and their remaining weight.</div>
+                        <label class="form-check-label" for="enableFilamentInventory">@localizer[Resources.Settings_EnableFilamentInventory]</label>
+                        <div class="form-text">@localizer[Resources.Settings_FilamentInventoryDescription]</div>
                     </div>
 
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="enablePrintAnalytics" @bind="_config.EnablePrintAnalytics" />
-                        <label class="form-check-label" for="enablePrintAnalytics">Enable Print Analytics</label>
-                        <div class="form-text">Track print job history, duration, and filament usage.</div>
+                        <label class="form-check-label" for="enablePrintAnalytics">@localizer[Resources.Settings_EnablePrintAnalytics]</label>
+                        <div class="form-text">@localizer[Resources.Settings_PrintAnalyticsDescription]</div>
                     </div>
                 </div>
             </div>
 
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong>Telemetry & Analytics</strong>
+                    <strong>@localizer[Resources.Settings_TelemetryAnalytics]</strong>
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="analyticsEnabled" @bind="_config.AnalyticsEnabled" />
-                        <label class="form-check-label" for="analyticsEnabled">Enable App Telemetry</label>
-                        <div class="form-text">Allow MakerPrompt to collect anonymous usage data to improve the app.</div>
+                        <label class="form-check-label" for="analyticsEnabled">@localizer[Resources.Settings_EnableAppTelemetry]</label>
+                        <div class="form-text">@localizer[Resources.Settings_TelemetryDescription]</div>
                     </div>
                 </div>
             </div>
 
         </div>
         <div class="col-md-6 col-sm-12">
-            <StorageExplorer Title="App storage" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
+            <StorageExplorer Title="@localizer[Resources.Settings_AppStorage]" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <button class="btn btn-primary" @onclick="SaveSettingsAsync" data-testid="save-settings-btn">Save Settings</button>
+            <button class="btn btn-primary" @onclick="SaveSettingsAsync" data-testid="save-settings-btn">@localizer[Resources.Settings_SaveButton]</button>
         </div>
     </div>
 </div>
@@ -158,7 +159,7 @@
         }
 
         await ConfigService.SaveConfigurationAsync();
-        ToastService.Notify(new ToastMessage(ToastType.Success, "Settings Saved", "Your settings have been saved successfully."));
+        ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_Saved], localizer[Resources.Settings_Toast_SavedMessage]));
 
         if (!wasInFarmMode && _config.FarmModeEnabled)
             Navigation.NavigateTo("/fleet", replace: true);
@@ -174,12 +175,12 @@
             var farm = await FarmService.CreateFarmAsync(_newFarmName.Trim());
             _selectedFarmId = farm.Id;
             _newFarmName = string.Empty;
-            ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Created", $"Farm '{farm.Name}' created."));
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_FarmCreated], string.Format(localizer[Resources.Settings_Toast_FarmCreatedMessage], farm.Name)));
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to create farm");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to create farm."));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.Settings_Toast_Error], localizer[Resources.Settings_Toast_CreateFarmError]));
         }
     }
 
@@ -191,12 +192,12 @@
             await FarmService.SwitchFarmAsync(_selectedFarmId.Value);
             _config.FarmName = ConfigService.Configuration.FarmName;
             _config.ActiveFarmId = _selectedFarmId;
-            ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Switched", $"Switched to '{FarmService.ActiveFarm?.Name}'."));
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_FarmSwitched], string.Format(localizer[Resources.Settings_Toast_FarmSwitchedMessage], FarmService.ActiveFarm?.Name)));
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to switch farm");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to switch farm."));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.Settings_Toast_Error], localizer[Resources.Settings_Toast_SwitchFarmError]));
         }
     }
 
@@ -215,17 +216,17 @@
                 ConfigService.Configuration.FarmName = string.Empty;
                 ConfigService.Configuration.ActiveFarmId = null;
                 await ConfigService.SaveConfigurationAsync();
-                ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Deleted", "Farm configuration removed. Farm mode has been disabled."));
+                ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_FarmDeleted], localizer[Resources.Settings_Toast_FarmDeletedDisabled]));
                 Navigation.NavigateTo("/dashboard", replace: true);
                 return;
             }
 
-            ToastService.Notify(new ToastMessage(ToastType.Success, "Farm Deleted", "Farm configuration removed."));
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_FarmDeleted], localizer[Resources.Settings_Toast_FarmDeletedMessage]));
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to delete farm");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to delete farm."));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.Settings_Toast_Error], localizer[Resources.Settings_Toast_DeleteFarmError]));
         }
     }
 
@@ -237,12 +238,12 @@
             var json = FarmService.ExportFarm(_selectedFarmId.Value);
             var farmName = FarmService.Farms.FirstOrDefault(f => f.Id == _selectedFarmId)?.Name ?? "farm";
             await JsInterop.DownloadFileAsync($"{farmName}-config.json", json);
-            ToastService.Notify(new ToastMessage(ToastType.Success, "Exported", "Farm configuration exported."));
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_Exported], localizer[Resources.Settings_Toast_ExportedMessage]));
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to export farm");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to export farm configuration."));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.Settings_Toast_Error], localizer[Resources.Settings_Toast_ExportError]));
         }
     }
 
@@ -255,12 +256,12 @@
             var json = await reader.ReadToEndAsync();
             var farm = await FarmService.ImportFarmAsync(json);
             _selectedFarmId = farm.Id;
-            ToastService.Notify(new ToastMessage(ToastType.Success, "Imported", $"Farm '{farm.Name}' imported."));
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_Imported], string.Format(localizer[Resources.Settings_Toast_ImportedMessage], farm.Name)));
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to import farm");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Error", "Failed to import farm configuration."));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.Settings_Toast_Error], localizer[Resources.Settings_Toast_ImportError]));
         }
     }
 

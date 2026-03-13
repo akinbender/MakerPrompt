@@ -1,4 +1,6 @@
 @using MakerPrompt.Shared.Models
+@using MakerPrompt.Shared.Services
+@inject ICameraProxyService CameraProxy
 @implements IAsyncDisposable
 
 @if (Camera is null)
@@ -9,9 +11,7 @@ else if (_hasError)
 {
     <div class="text-danger small">Unable to load webcam stream.</div>
 }
-else if (!string.IsNullOrWhiteSpace(_currentUrl)
-         && (_currentUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-             || _currentUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
+else if (!string.IsNullOrWhiteSpace(_currentUrl))
 {
     <img src="@_currentUrl"
          class="img-fluid rounded border"
@@ -47,16 +47,16 @@ else
         var hasStream = !string.IsNullOrWhiteSpace(Camera.StreamUrl);
         var hasSnapshot = !string.IsNullOrWhiteSpace(Camera.SnapshotUrl);
 
-        if (hasStream)
+        // On MAUI the WebView can't load cross-origin img src URLs.
+        // Fall back to snapshot polling so we can fetch natively via HttpClient.
+        if (hasStream && !CameraProxy.NativeProxyRequired)
         {
             StopSnapshotLoop();
             _currentUrl = Camera.StreamUrl;
-            Console.WriteLine($"[WebcamViewer] Using stream URL: {_currentUrl}");
         }
-        else if (hasSnapshot)
+        else if (hasSnapshot || (hasStream && CameraProxy.NativeProxyRequired))
         {
             StartSnapshotLoop();
-            Console.WriteLine($"[WebcamViewer] Using snapshot URL: {Camera.SnapshotUrl}");
         }
         else
         {
@@ -90,12 +90,35 @@ else
 
     private async Task RunSnapshotLoopAsync(CancellationToken token)
     {
-        while (!token.IsCancellationRequested && Camera != null && !string.IsNullOrWhiteSpace(Camera.SnapshotUrl))
+        // Prefer SnapshotUrl; fall back to StreamUrl when using native proxy (MAUI)
+        var rawUrl = !string.IsNullOrWhiteSpace(Camera?.SnapshotUrl)
+            ? Camera!.SnapshotUrl!
+            : Camera?.StreamUrl;
+
+        while (!token.IsCancellationRequested && rawUrl != null)
         {
-            var baseUrl = Camera.SnapshotUrl!;
-            var separator = baseUrl.Contains("?", StringComparison.Ordinal) ? "&" : "?";
-            _currentUrl = baseUrl + separator + "t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            _hasError = false;
+            if (CameraProxy.NativeProxyRequired)
+            {
+                // Fetch via native HttpClient — no CORS issues
+                var dataUrl = await CameraProxy.FetchSnapshotAsDataUrlAsync(rawUrl, token).ConfigureAwait(false);
+                if (dataUrl != null)
+                {
+                    _currentUrl = dataUrl;
+                    _hasError = false;
+                }
+                else if (_currentUrl == null)
+                {
+                    _hasError = true;
+                }
+            }
+            else
+            {
+                // Browser handles the request — just update the cache-busting URL
+                var separator = rawUrl.Contains('?') ? "&" : "?";
+                _currentUrl = rawUrl + separator + "t=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                _hasError = false;
+            }
+
             await InvokeAsync(StateHasChanged);
 
             try

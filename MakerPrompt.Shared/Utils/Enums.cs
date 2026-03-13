@@ -37,21 +37,23 @@ namespace MakerPrompt.Shared.Utils
             Step15 = 150
         }
 
-        public enum PrinterConnectionType
-        {
-            [Display(Name = "Demo")]
-            Demo,
-            [Display(Name = "Serial")]
-            Serial,
-            [Display(Name = "Moonraker")]
-            Moonraker,
+		public enum PrinterConnectionType
+		{
+			[Display(Name = "Demo")]
+			Demo,
+			[Display(Name = "Serial")]
+			Serial,
+			[Display(Name = "Moonraker")]
+			Moonraker,
 			[Display(Name = "PrusaLink")]
 			PrusaLink,
+			[Display(Name = "PrusaConnect")]
+			PrusaConnect,
 			[Display(Name = "BambuLab")]
 			BambuLab,
 			[Display(Name = "OctoPrint")]
 			OctoPrint
-        }
+		}
 
         public enum PrinterStatus
         {

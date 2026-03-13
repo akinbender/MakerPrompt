@@ -2120,5 +2120,269 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("PrintQueue_Failed", resourceCulture);
             }
         }
+
+        public static string PageTitle_Settings {
+            get { return ResourceManager.GetString("PageTitle_Settings", resourceCulture); }
+        }
+
+        public static string PageTitle_Dashboard {
+            get { return ResourceManager.GetString("PageTitle_Dashboard", resourceCulture); }
+        }
+
+        public static string PageTitle_FilamentInventory {
+            get { return ResourceManager.GetString("PageTitle_FilamentInventory", resourceCulture); }
+        }
+
+        public static string PageTitle_Analytics {
+            get { return ResourceManager.GetString("PageTitle_Analytics", resourceCulture); }
+        }
+
+        public static string Dashboard_Welcome {
+            get { return ResourceManager.GetString("Dashboard_Welcome", resourceCulture); }
+        }
+
+        public static string Dashboard_ConnectPrompt {
+            get { return ResourceManager.GetString("Dashboard_ConnectPrompt", resourceCulture); }
+        }
+
+        public static string Settings_FarmMode {
+            get { return ResourceManager.GetString("Settings_FarmMode", resourceCulture); }
+        }
+
+        public static string Settings_Delete {
+            get { return ResourceManager.GetString("Settings_Delete", resourceCulture); }
+        }
+
+        public static string Settings_EnableFarmMode {
+            get { return ResourceManager.GetString("Settings_EnableFarmMode", resourceCulture); }
+        }
+
+        public static string Settings_FarmModeDescription {
+            get { return ResourceManager.GetString("Settings_FarmModeDescription", resourceCulture); }
+        }
+
+        public static string Settings_FarmConfigurations {
+            get { return ResourceManager.GetString("Settings_FarmConfigurations", resourceCulture); }
+        }
+
+        public static string Settings_SelectFarm {
+            get { return ResourceManager.GetString("Settings_SelectFarm", resourceCulture); }
+        }
+
+        public static string Settings_NewFarmName {
+            get { return ResourceManager.GetString("Settings_NewFarmName", resourceCulture); }
+        }
+
+        public static string Settings_Create {
+            get { return ResourceManager.GetString("Settings_Create", resourceCulture); }
+        }
+
+        public static string Settings_Export {
+            get { return ResourceManager.GetString("Settings_Export", resourceCulture); }
+        }
+
+        public static string Settings_Import {
+            get { return ResourceManager.GetString("Settings_Import", resourceCulture); }
+        }
+
+        public static string Settings_Features {
+            get { return ResourceManager.GetString("Settings_Features", resourceCulture); }
+        }
+
+        public static string Settings_EnableFilamentInventory {
+            get { return ResourceManager.GetString("Settings_EnableFilamentInventory", resourceCulture); }
+        }
+
+        public static string Settings_FilamentInventoryDescription {
+            get { return ResourceManager.GetString("Settings_FilamentInventoryDescription", resourceCulture); }
+        }
+
+        public static string Settings_EnablePrintAnalytics {
+            get { return ResourceManager.GetString("Settings_EnablePrintAnalytics", resourceCulture); }
+        }
+
+        public static string Settings_PrintAnalyticsDescription {
+            get { return ResourceManager.GetString("Settings_PrintAnalyticsDescription", resourceCulture); }
+        }
+
+        public static string Settings_TelemetryAnalytics {
+            get { return ResourceManager.GetString("Settings_TelemetryAnalytics", resourceCulture); }
+        }
+
+        public static string Settings_EnableAppTelemetry {
+            get { return ResourceManager.GetString("Settings_EnableAppTelemetry", resourceCulture); }
+        }
+
+        public static string Settings_TelemetryDescription {
+            get { return ResourceManager.GetString("Settings_TelemetryDescription", resourceCulture); }
+        }
+
+        public static string Settings_AppStorage {
+            get { return ResourceManager.GetString("Settings_AppStorage", resourceCulture); }
+        }
+
+        public static string Settings_SaveButton {
+            get { return ResourceManager.GetString("Settings_SaveButton", resourceCulture); }
+        }
+
+        public static string Settings_Toast_Saved {
+            get { return ResourceManager.GetString("Settings_Toast_Saved", resourceCulture); }
+        }
+
+        public static string Settings_Toast_SavedMessage {
+            get { return ResourceManager.GetString("Settings_Toast_SavedMessage", resourceCulture); }
+        }
+
+        public static string Settings_Toast_FarmCreated {
+            get { return ResourceManager.GetString("Settings_Toast_FarmCreated", resourceCulture); }
+        }
+
+        public static string Settings_Toast_FarmCreatedMessage {
+            get { return ResourceManager.GetString("Settings_Toast_FarmCreatedMessage", resourceCulture); }
+        }
+
+        public static string Settings_Toast_FarmSwitched {
+            get { return ResourceManager.GetString("Settings_Toast_FarmSwitched", resourceCulture); }
+        }
+
+        public static string Settings_Toast_FarmSwitchedMessage {
+            get { return ResourceManager.GetString("Settings_Toast_FarmSwitchedMessage", resourceCulture); }
+        }
+
+        public static string Settings_Toast_FarmDeleted {
+            get { return ResourceManager.GetString("Settings_Toast_FarmDeleted", resourceCulture); }
+        }
+
+        public static string Settings_Toast_FarmDeletedMessage {
+            get { return ResourceManager.GetString("Settings_Toast_FarmDeletedMessage", resourceCulture); }
+        }
+
+        public static string Settings_Toast_FarmDeletedDisabled {
+            get { return ResourceManager.GetString("Settings_Toast_FarmDeletedDisabled", resourceCulture); }
+        }
+
+        public static string Settings_Toast_Exported {
+            get { return ResourceManager.GetString("Settings_Toast_Exported", resourceCulture); }
+        }
+
+        public static string Settings_Toast_ExportedMessage {
+            get { return ResourceManager.GetString("Settings_Toast_ExportedMessage", resourceCulture); }
+        }
+
+        public static string Settings_Toast_Imported {
+            get { return ResourceManager.GetString("Settings_Toast_Imported", resourceCulture); }
+        }
+
+        public static string Settings_Toast_ImportedMessage {
+            get { return ResourceManager.GetString("Settings_Toast_ImportedMessage", resourceCulture); }
+        }
+
+        public static string Settings_Toast_Error {
+            get { return ResourceManager.GetString("Settings_Toast_Error", resourceCulture); }
+        }
+
+        public static string Settings_Toast_CreateFarmError {
+            get { return ResourceManager.GetString("Settings_Toast_CreateFarmError", resourceCulture); }
+        }
+
+        public static string Settings_Toast_SwitchFarmError {
+            get { return ResourceManager.GetString("Settings_Toast_SwitchFarmError", resourceCulture); }
+        }
+
+        public static string Settings_Toast_DeleteFarmError {
+            get { return ResourceManager.GetString("Settings_Toast_DeleteFarmError", resourceCulture); }
+        }
+
+        public static string Settings_Toast_ExportError {
+            get { return ResourceManager.GetString("Settings_Toast_ExportError", resourceCulture); }
+        }
+
+        public static string Settings_Toast_ImportError {
+            get { return ResourceManager.GetString("Settings_Toast_ImportError", resourceCulture); }
+        }
+
+        public static string NavPrinters_Back {
+            get { return ResourceManager.GetString("NavPrinters_Back", resourceCulture); }
+        }
+
+        public static string NavPrinters_Close {
+            get { return ResourceManager.GetString("NavPrinters_Close", resourceCulture); }
+        }
+
+        public static string NavPrinters_Port {
+            get { return ResourceManager.GetString("NavPrinters_Port", resourceCulture); }
+        }
+
+        public static string NavPrinters_Url {
+            get { return ResourceManager.GetString("NavPrinters_Url", resourceCulture); }
+        }
+
+        public static string NavPrinters_SerialNumber {
+            get { return ResourceManager.GetString("NavPrinters_SerialNumber", resourceCulture); }
+        }
+
+        public static string NavPrinters_AccessCode {
+            get { return ResourceManager.GetString("NavPrinters_AccessCode", resourceCulture); }
+        }
+
+        public static string NavPrinters_ApiKey {
+            get { return ResourceManager.GetString("NavPrinters_ApiKey", resourceCulture); }
+        }
+
+        public static string NavPrinters_PrinterUuid {
+            get { return ResourceManager.GetString("NavPrinters_PrinterUuid", resourceCulture); }
+        }
+
+        public static string NavConnect_PrusaConnectDescription {
+            get { return ResourceManager.GetString("NavConnect_PrusaConnectDescription", resourceCulture); }
+        }
+
+        public static string NavPrinters_Username {
+            get { return ResourceManager.GetString("NavPrinters_Username", resourceCulture); }
+        }
+
+        public static string NavPrinters_PasswordOrApiKey {
+            get { return ResourceManager.GetString("NavPrinters_PasswordOrApiKey", resourceCulture); }
+        }
+
+        public static string NavPrinters_PrinterNameRequired {
+            get { return ResourceManager.GetString("NavPrinters_PrinterNameRequired", resourceCulture); }
+        }
+
+        public static string NavPrinters_PrinterUpdated {
+            get { return ResourceManager.GetString("NavPrinters_PrinterUpdated", resourceCulture); }
+        }
+
+        public static string NavPrinters_PrinterAdded {
+            get { return ResourceManager.GetString("NavPrinters_PrinterAdded", resourceCulture); }
+        }
+
+        public static string NavPrinters_SaveFailed {
+            get { return ResourceManager.GetString("NavPrinters_SaveFailed", resourceCulture); }
+        }
+
+        public static string NavPrinters_ConnectFailed {
+            get { return ResourceManager.GetString("NavPrinters_ConnectFailed", resourceCulture); }
+        }
+
+        public static string NavPrinters_DisconnectFailed {
+            get { return ResourceManager.GetString("NavPrinters_DisconnectFailed", resourceCulture); }
+        }
+
+        public static string NavPrinters_PrinterRemoved {
+            get { return ResourceManager.GetString("NavPrinters_PrinterRemoved", resourceCulture); }
+        }
+
+        public static string NavPrinters_DeleteFailed {
+            get { return ResourceManager.GetString("NavPrinters_DeleteFailed", resourceCulture); }
+        }
+
+        public static string StorageExplorer_Upload {
+            get { return ResourceManager.GetString("StorageExplorer_Upload", resourceCulture); }
+        }
+
+        public static string StorageExplorer_Loading {
+            get { return ResourceManager.GetString("StorageExplorer_Loading", resourceCulture); }
+        }
     }
 }

@@ -17,6 +17,9 @@
 
     private List<FileEntry> _files = new();
     private bool _isLoading;
+    private bool _isOpening;
+    private bool _isUploading;
+    private bool _isCopying;
     private FileEntry? selectedFile;
 
     protected override async Task OnInitializedAsync()
@@ -41,27 +44,57 @@
         if (!EnableUpload) return;
         var file = e.File;
         if (file == null) return;
-        await using var stream = file.OpenReadStream(long.MaxValue);
-        await Provider.SaveFileAsync(file.Name, stream);
+        _isUploading = true;
+        StateHasChanged();
+        try
+        {
+            await using var stream = file.OpenReadStream(long.MaxValue);
+            await Provider.SaveFileAsync(file.Name, stream);
+        }
+        finally
+        {
+            _isUploading = false;
+            StateHasChanged();
+        }
         await RefreshFiles();
     }
 
     private async Task CopySelected()
     {
         if (!EnableCopy || selectedFile == null || TargetProvider == null) return;
-        await using var stream = await Provider.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
-        if (stream == Stream.Null) return;
-        await TargetProvider.SaveFileAsync(Path.GetFileName(selectedFile.FullPath), stream);
+        _isCopying = true;
+        StateHasChanged();
+        try
+        {
+            await using var stream = await Provider.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
+            if (stream == Stream.Null) return;
+            await TargetProvider.SaveFileAsync(Path.GetFileName(selectedFile.FullPath), stream);
+        }
+        finally
+        {
+            _isCopying = false;
+            StateHasChanged();
+        }
     }
 
     private async Task OpenSelected()
     {
         if (!EnableOpen || selectedFile == null) return;
-        await using var stream = await Provider.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
-        if (stream == Stream.Null) return;
-        using var reader = new StreamReader(stream);
-        var content = await reader.ReadToEndAsync();
-        GCodeDoc.SetGCode(content);
+        _isOpening = true;
+        StateHasChanged();
+        try
+        {
+            await using var stream = await Provider.OpenReadAsync(selectedFile.FullPath) ?? Stream.Null;
+            if (stream == Stream.Null) return;
+            using var reader = new StreamReader(stream);
+            var content = await reader.ReadToEndAsync();
+            GCodeDoc.SetGCode(content);
+        }
+        finally
+        {
+            _isOpening = false;
+            StateHasChanged();
+        }
     }
 
     private async Task DeleteSelected()
@@ -108,9 +141,17 @@
                 {
                     var uploadId = $"fileUpload-{Title?.Replace(" ", string.Empty)}";
                     <div class="input-group input-group-sm" style="max-width: 260px;">
-                        <InputFile id="@uploadId" class="form-control" OnChange="OnFileSelected" />
+                        <InputFile id="@uploadId" class="form-control" OnChange="OnFileSelected" disabled="@_isUploading" />
                         <label class="input-group-text" for="@uploadId">
-                            <i class="bi bi-upload me-1"></i>Upload
+                            @if (_isUploading)
+                            {
+                                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-upload me-1"></i>
+                            }
+                            @Localizer[Resources.StorageExplorer_Upload]
                         </label>
                     </div>
                 }
@@ -120,14 +161,28 @@
                     </button>
                     @if (EnableCopy)
                     {
-                        <button class="btn btn-sm btn-outline-success" @onclick="CopySelected" disabled="@(selectedFile == null)">
-                            <i class="bi bi-arrow-left-right"></i>
+                        <button class="btn btn-sm btn-outline-success" @onclick="CopySelected" disabled="@(selectedFile == null || _isCopying)">
+                            @if (_isCopying)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-arrow-left-right"></i>
+                            }
                         </button>
                     }
                     @if (EnableOpen)
                     {
-                        <button class="btn btn-sm btn-outline-info" @onclick="OpenSelected" disabled="@(selectedFile == null)">
-                            <i class="bi bi-eye"></i>
+                        <button class="btn btn-sm btn-outline-info" @onclick="OpenSelected" disabled="@(selectedFile == null || _isOpening)">
+                            @if (_isOpening)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-eye"></i>
+                            }
                         </button>
                     }
                     @if (EnableDelete)
@@ -155,7 +210,7 @@
                         <tr>
                             <td colspan="5" class="text-center">
                                 <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                                    <span class="visually-hidden">@Localizer[Resources.StorageExplorer_Loading]</span>
                                 </div>
                             </td>
                         </tr>

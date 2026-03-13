@@ -3,6 +3,7 @@
     public class PrinterCommunicationServiceFactory(
         ISerialService serialService,
         PrusaLinkApiService prusaLinkApiService,
+        PrusaConnectApiService prusaConnectApiService,
         MoonrakerApiService moonrakerApiService,
         BambuLabApiService bambuLabApiService,
         OctoPrintApiService octoPrintApiService) : IAsyncDisposable
@@ -13,6 +14,7 @@
 
 		private readonly ISerialService serialService = serialService;
 		private readonly PrusaLinkApiService prusaLinkApiService = prusaLinkApiService;
+		private readonly PrusaConnectApiService prusaConnectApiService = prusaConnectApiService;
 		private readonly MoonrakerApiService moonrakerApiService = moonrakerApiService;
 		private readonly BambuLabApiService bambuLabApiService = bambuLabApiService;
 		private readonly OctoPrintApiService octoPrintApiService = octoPrintApiService;
@@ -28,7 +30,8 @@
             {
                 PrinterConnectionType.Demo => new DemoPrinterService(),
                 PrinterConnectionType.Serial => serialService,
-                PrinterConnectionType.PrusaLink => prusaLinkApiService,
+				PrinterConnectionType.PrusaLink => prusaLinkApiService,
+				PrinterConnectionType.PrusaConnect => prusaConnectApiService,
 				PrinterConnectionType.Moonraker => moonrakerApiService,
 				PrinterConnectionType.BambuLab => bambuLabApiService,
 				PrinterConnectionType.OctoPrint => octoPrintApiService,

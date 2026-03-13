@@ -1,0 +1,796 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GCodeCategory_Calibration" xml:space="preserve">
+    <value>Calibración</value>
+  </data>
+  <data name="GCodeCategory_Fan" xml:space="preserve">
+    <value>Ventilador</value>
+  </data>
+  <data name="GCodeCategory_Reporting" xml:space="preserve">
+    <value>Reporte</value>
+  </data>
+  <data name="GCodeCategory_Settings" xml:space="preserve">
+    <value>Ajustes</value>
+  </data>
+  <data name="GCodeCategory_Temperature" xml:space="preserve">
+    <value>Temperatura</value>
+  </data>
+  <data name="GCodeDescription_G0" xml:space="preserve">
+    <value>Movimiento lineal rápido (sin impresión)</value>
+  </data>
+  <data name="GCodeDescription_G1" xml:space="preserve">
+    <value>Movimiento lineal controlado (impresión)</value>
+  </data>
+  <data name="GCodeDescription_G28" xml:space="preserve">
+    <value>Hogar todos o ejes especificados</value>
+  </data>
+  <data name="GCodeDescription_G29" xml:space="preserve">
+    <value>Autonivelación de cama</value>
+  </data>
+  <data name="GCodeDescription_G90" xml:space="preserve">
+    <value>Establecer modo de posicionamiento absoluto</value>
+  </data>
+  <data name="GCodeDescription_G91" xml:space="preserve">
+    <value>Establecer modo de posicionamiento relativo</value>
+  </data>
+  <data name="GCodeDescription_G92" xml:space="preserve">
+    <value>Establecer posición actual (reiniciar coordenadas)</value>
+  </data>
+  <data name="GCodeDescription_M104" xml:space="preserve">
+    <value>Establecer temperatura del hotend (no bloqueante)</value>
+  </data>
+  <data name="GCodeDescription_M105" xml:space="preserve">
+    <value>Reportar temperaturas actuales</value>
+  </data>
+  <data name="GCodeDescription_M106" xml:space="preserve">
+    <value>Establecer velocidad del ventilador (S: 0-255)</value>
+  </data>
+  <data name="GCodeDescription_M107" xml:space="preserve">
+    <value>Apagar ventilador</value>
+  </data>
+  <data name="GCodeDescription_M109" xml:space="preserve">
+    <value>Establecer temp. del hotend y esperar (bloqueante)</value>
+  </data>
+  <data name="GCodeDescription_M112" xml:space="preserve">
+    <value>Parada de emergencia</value>
+  </data>
+  <data name="GCodeDescription_M3" xml:space="preserve">
+    <value>Husillo / láser encendido (sentido horario)</value>
+  </data>
+  <data name="GCodeDescription_M4" xml:space="preserve">
+    <value>Husillo / láser encendido (sentido antihorario)</value>
+  </data>
+  <data name="GCodeDescription_M5" xml:space="preserve">
+    <value>Husillo / láser apagado</value>
+  </data>
+  <data name="GCodeDescription_M114" xml:space="preserve">
+    <value>Obtener posición actual</value>
+  </data>
+  <data name="GCodeDescription_M115" xml:space="preserve">
+    <value>Obtener información del firmware</value>
+  </data>
+  <data name="GCodeDescription_M140" xml:space="preserve">
+    <value>Establecer temperatura de la cama (no bloqueante)</value>
+  </data>
+  <data name="GCodeDescription_M190" xml:space="preserve">
+    <value>Establecer temp. de la cama y esperar (bloqueante)</value>
+  </data>
+  <data name="PageTitle_GCodeList" xml:space="preserve">
+    <value>Guía rápida de G-Code</value>
+  </data>
+  <data name="PageTitle_Homepage" xml:space="preserve">
+    <value>Panel principal</value>
+  </data>
+  <data name="GCodeCategory_Movement" xml:space="preserve">
+    <value>Movimiento</value>
+  </data>
+  <data name="GCodeDescription_M303" xml:space="preserve">
+    <value>Autotune PID</value>
+  </data>
+  <data name="GCodeDescription_M306" xml:space="preserve">
+    <value>Calibración del modelo térmico</value>
+  </data>
+  <data name="GCodeCategory_SdCard" xml:space="preserve">
+    <value>Tarjeta SD</value>
+  </data>
+  <data name="Theme_Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Oscuro</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="GCodeDescription_M20" xml:space="preserve">
+    <value>Listar contenido de la tarjeta SD</value>
+  </data>
+  <data name="GCodeDescription_M21" xml:space="preserve">
+    <value>Inicializar tarjeta SD</value>
+  </data>
+  <data name="GCodeDescription_M22" xml:space="preserve">
+    <value>Liberar tarjeta SD</value>
+  </data>
+  <data name="GCodeDescription_M23" xml:space="preserve">
+    <value>Seleccionar archivo SD</value>
+  </data>
+  <data name="GCodeDescription_M24" xml:space="preserve">
+    <value>Iniciar/reanudar impresión SD</value>
+  </data>
+  <data name="GCodeDescription_M25" xml:space="preserve">
+    <value>Pausar impresión SD</value>
+  </data>
+  <data name="GCodeDescription_M26" xml:space="preserve">
+    <value>Establecer posición de lectura SD</value>
+  </data>
+  <data name="GCodeDescription_M27" xml:space="preserve">
+    <value>Reportar estado de impresión SD</value>
+  </data>
+  <data name="GCodeDescription_M28" xml:space="preserve">
+    <value>Comenzar a escribir en la tarjeta SD</value>
+  </data>
+  <data name="GCodeDescription_M29" xml:space="preserve">
+    <value>Detener escritura en la tarjeta SD</value>
+  </data>
+  <data name="GCodeDescription_M30" xml:space="preserve">
+    <value>Eliminar archivo SD</value>
+  </data>
+  <data name="GCodeDescription_M32" xml:space="preserve">
+    <value>Seleccionar archivo e iniciar impresión</value>
+  </data>
+  <data name="GCodeCommand_Command" xml:space="preserve">
+    <value>Comando</value>
+  </data>
+  <data name="GCodeCommand_Description" xml:space="preserve">
+    <value>Descripción</value>
+  </data>
+  <data name="GCodeCommand_Category" xml:space="preserve">
+    <value>Categorías</value>
+  </data>
+  <data name="GCodeCommand_Parameter" xml:space="preserve">
+    <value>Parámetros</value>
+  </data>
+  <data name="CheatSheetPage_SearchCommands" xml:space="preserve">
+    <value>Buscar comandos..</value>
+  </data>
+  <data name="GCodeDescription_S_TargetTemp" xml:space="preserve">
+    <value>Temperatura objetivo</value>
+  </data>
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve">
+    <value>Modo en línea (encendido / apagado)</value>
+  </data>
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve">
+    <value>Potencia del husillo / láser (PWM 0-255)</value>
+  </data>
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve">
+    <value>Velocidad del husillo / láser</value>
+  </data>
+  <data name="GCodeDescription_C_Cycle" xml:space="preserve">
+    <value>Ciclos (3-20)</value>
+  </data>
+  <data name="GCodeDescription_X_Position" xml:space="preserve">
+    <value>Posición X</value>
+  </data>
+  <data name="GCodeDescription_Y_Position" xml:space="preserve">
+    <value>Posición Y</value>
+  </data>
+  <data name="GCodeDescription_Z_Position" xml:space="preserve">
+    <value>Posición Z</value>
+  </data>
+  <data name="GCodeDescription_F_Feedrate" xml:space="preserve">
+    <value>Velocidad de avance</value>
+  </data>
+  <data name="GCodeDescription_F_File" xml:space="preserve">
+    <value>Ruta del archivo</value>
+  </data>
+  <data name="GCodeDescription_E_Amount" xml:space="preserve">
+    <value>Cantidad de extrusión</value>
+  </data>
+  <data name="GCodeDescription_M17" xml:space="preserve">
+    <value>Habilitar motores</value>
+  </data>
+  <data name="GCodeDescription_M18" xml:space="preserve">
+    <value>Deshabilitar motores</value>
+  </data>
+  <data name="GCodeDescription_M117" xml:space="preserve">
+    <value>Establecer mensaje LCD</value>
+  </data>
+  <data name="NavConnection_Connect" xml:space="preserve">
+    <value>Conectar</value>
+  </data>
+  <data name="NavConnection_Disconnect" xml:space="preserve">
+    <value>Desconectar</value>
+  </data>
+  <data name="GCodeDescription_E_Position" xml:space="preserve">
+    <value>Posición E</value>
+  </data>
+  <data name="NavConnection_RefreshPorts" xml:space="preserve">
+    <value>Actualizar puertos</value>
+  </data>
+  <data name="CheatSheetPage_None" xml:space="preserve">
+    <value>Ninguno</value>
+  </data>
+  <data name="NavConnection_SelectPort" xml:space="preserve">
+    <value>Seleccionar puerto</value>
+  </data>
+  <data name="CalibrationPage_PidTuning" xml:space="preserve">
+    <value>Ajuste PID</value>
+  </data>
+  <data name="CalibrationPage_ThermalModel" xml:space="preserve">
+    <value>Modelo térmico</value>
+  </data>
+  <data name="GCodeDescription_M500" xml:space="preserve">
+    <value>Guardar ajustes en EEPROM</value>
+  </data>
+  <data name="GCodeDescription_M501" xml:space="preserve">
+    <value>Leer ajustes desde EEPROM</value>
+  </data>
+  <data name="GCodeDescription_M502" xml:space="preserve">
+    <value>Restablecer todos los ajustes a valores de fábrica</value>
+  </data>
+  <data name="GCodeDescription_M503" xml:space="preserve">
+    <value>Reportar ajustes actuales desde EEPROM</value>
+  </data>
+  <data name="GCodeDescription_M504" xml:space="preserve">
+    <value>Validar el contenido de la EEPROM</value>
+  </data>
+  <data name="GCodeDescription_P_Proportional" xml:space="preserve">
+    <value>Valor proporcional</value>
+  </data>
+  <data name="GCodeDescription_I_Integral" xml:space="preserve">
+    <value>Valor integral</value>
+  </data>
+  <data name="GCodeDescription_D_Derivative" xml:space="preserve">
+    <value>Valor derivativo</value>
+  </data>
+  <data name="GCodeDescription_M304" xml:space="preserve">
+    <value>Establecer PID de la cama</value>
+  </data>
+  <data name="GCodeDescription_M301" xml:space="preserve">
+    <value>Establecer PID del hotend</value>
+  </data>
+  <data name="CommandPrompt_ConnectedMessage" xml:space="preserve">
+    <value>Conexión establecida.</value>
+  </data>
+  <data name="CommandPrompt_ErrorMessage" xml:space="preserve">
+    <value>Error al enviar el comando: {0}.</value>
+  </data>
+  <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve">
+    <value>Conexión terminada.</value>
+  </data>
+  <data name="CommandPrompt_Send" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="CommandPrompt_EnterCommand" xml:space="preserve">
+    <value>Ingrese comando..</value>
+  </data>
+  <data name="CalibrationPage_Start" xml:space="preserve">
+    <value>Iniciar</value>
+  </data>
+  <data name="PrinterComponent_Hotend" xml:space="preserve">
+    <value>Hotend</value>
+  </data>
+  <data name="PrinterComponent_Heatbed" xml:space="preserve">
+    <value>Cama caliente</value>
+  </data>
+  <data name="Dashboard_ControlPanel" xml:space="preserve">
+    <value>Panel de control</value>
+  </data>
+  <data name="CalibrationPage_HeaterIndex" xml:space="preserve">
+    <value>Índice de calentador</value>
+  </data>
+  <data name="CalibrationPage_Result" xml:space="preserve">
+    <value>Resultado</value>
+  </data>
+  <data name="ControlPanel_Position" xml:space="preserve">
+    <value>Posición</value>
+  </data>
+  <data name="ControlPanel_Length" xml:space="preserve">
+    <value>Longitud</value>
+  </data>
+  <data name="ControlPanel_Set" xml:space="preserve">
+    <value>Establecer</value>
+  </data>
+  <data name="ControlPanel_Extrude" xml:space="preserve">
+    <value>Extruir</value>
+  </data>
+  <data name="ControlPanel_Reverse" xml:space="preserve">
+    <value>Revertir</value>
+  </data>
+  <data name="ControlPanel_PrintFlow" xml:space="preserve">
+    <value>Flujo de impresión</value>
+  </data>
+  <data name="ControlPanel_Heating" xml:space="preserve">
+    <value>Calentando</value>
+  </data>
+  <data name="ControlPanel_Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="ControlPanel_SetHotendTemp" xml:space="preserve">
+    <value>Establecer temperatura del hotend</value>
+  </data>
+  <data name="ControlPanel_SetBedTemp" xml:space="preserve">
+    <value>Establecer temperatura de la cama</value>
+  </data>
+  <data name="ControlPanel_MotorsOff" xml:space="preserve">
+    <value>Motores apagados</value>
+  </data>
+  <data name="ControlPanel_SdCard_Ready" xml:space="preserve">
+    <value>Listo</value>
+  </data>
+  <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve">
+    <value>No presente</value>
+  </data>
+  <data name="ControlPanel_Speed" xml:space="preserve">
+    <value>Velocidad</value>
+  </data>
+  <data name="ControlPanel_Current" xml:space="preserve">
+    <value>Actual</value>
+  </data>
+  <data name="ControlPanel_Target" xml:space="preserve">
+    <value>Objetivo</value>
+  </data>
+  <data name="ControlPanel_Set_XYSpeed" xml:space="preserve">
+    <value>Establecer velocidad para ejes X e Y (mm/min)</value>
+  </data>
+  <data name="ControlPanel_Set_ZSpeed" xml:space="preserve">
+    <value>Establecer velocidad para eje Z (mm/min)</value>
+  </data>
+  <data name="ControlPanel_PrintSpeed" xml:space="preserve">
+    <value>Velocidad de impresión</value>
+  </data>
+  <data name="GCodeDescription_M220" xml:space="preserve">
+    <value>Establecer o reportar el porcentaje de velocidad de avance para todos los movimientos G-code (ejes X, Y, Z, E)</value>
+  </data>
+  <data name="GCodeDescription_M221" xml:space="preserve">
+    <value>Establecer o reportar el porcentaje de flujo para movimientos de extrusión del eje E</value>
+  </data>
+  <data name="PrinterStatus_Disconnected" xml:space="preserve">
+    <value>Desconectado</value>
+  </data>
+  <data name="PrinterStatus_Connected" xml:space="preserve">
+    <value>Conectado</value>
+  </data>
+  <data name="PrinterStatus_Printing" xml:space="preserve">
+    <value>Imprimiendo</value>
+  </data>
+  <data name="PrinterStatus_Paused" xml:space="preserve">
+    <value>Pausado</value>
+  </data>
+  <data name="PrinterStatus_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ControlPanel_Set_FanSpeed" xml:space="preserve">
+    <value>Establecer velocidad del ventilador</value>
+  </data>
+  <data name="ControlPanel_FanSpeed" xml:space="preserve">
+    <value>Velocidad del ventilador</value>
+  </data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve">
+    <value>Hogar todos los ejes</value>
+  </data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve">
+    <value>Hogar eje seleccionado</value>
+  </data>
+  <data name="Calculators_LeadScrewSteps" xml:space="preserve">
+    <value>Calculadora de pasos por milímetro de husillo</value>
+  </data>
+  <data name="Calculators_ExtruderSteps" xml:space="preserve">
+    <value>Calculadora de E-Steps</value>
+  </data>
+  <data name="PageTitle_Calculators" xml:space="preserve">
+    <value>Calculadoras</value>
+  </data>
+  <data name="Calculators_MotorAngle" xml:space="preserve">
+    <value>Ángulo de paso del motor</value>
+  </data>
+  <data name="Calculators_Microstepping" xml:space="preserve">
+    <value>Microstepping del driver</value>
+  </data>
+  <data name="Calculators_BeltSteps" xml:space="preserve">
+    <value>Calculadora de pasos por milímetro de correa</value>
+  </data>
+  <data name="Calculators_PrintPrice" xml:space="preserve">
+    <value>Calculadora de precio de impresión</value>
+  </data>
+  <data name="Calculators_BeltPitch" xml:space="preserve">
+    <value>Distancia entre dientes de correa (mm)</value>
+  </data>
+  <data name="Calculators_PulleyToothCount" xml:space="preserve">
+    <value>Cantidad de dientes de polea</value>
+  </data>
+  <data name="Calculators_LeadscrewPitch" xml:space="preserve">
+    <value>Paso del husillo (mm/revolución)</value>
+  </data>
+  <data name="Calculators_GearRatio" xml:space="preserve">
+    <value>Relación de engranajes</value>
+  </data>
+  <data name="Calculators_Steps" xml:space="preserve">
+    <value>Pasos por mm</value>
+  </data>
+  <data name="Calculators_Resolution" xml:space="preserve">
+    <value>Resolución</value>
+  </data>
+  <data name="Calculators_GCodeExample" xml:space="preserve">
+    <value>Ejemplo de G-code</value>
+  </data>
+  <data name="Calculators_RequestedExtrusionLength" xml:space="preserve">
+    <value>Longitud de extrusión solicitada (mm)</value>
+  </data>
+  <data name="Calculators_CurrentEsteps" xml:space="preserve">
+    <value>E-steps actuales (pasos/mm)</value>
+  </data>
+  <data name="Calculators_ActualExtrusionLength" xml:space="preserve">
+    <value>Longitud de extrusión real (mm)</value>
+  </data>
+  <data name="Calculators_MeasureCaliper" xml:space="preserve">
+    <value>Medir con un calibrador</value>
+  </data>
+  <data name="Calculators_Esteps_HowTo" xml:space="preserve">
+    <value>        &lt;h5&gt;Cómo usar:&lt;/h5&gt;        &lt;ol&gt;            &lt;li&gt;Marca 120mm desde la entrada del extrusor&lt;/li&gt;            &lt;li&gt;Calienta el hotend&lt;/li&gt;            &lt;li&gt;Extruye 100mm (usa &lt;code&gt;G1 E100 F100&lt;/code&gt;)&lt;/li&gt;            &lt;li&gt;Mide el filamento restante hasta el extrusor&lt;/li&gt;            &lt;li&gt;Ingresa los valores arriba (real = 120 - restante)&lt;/li&gt;        &lt;/ol&gt;</value>
+  </data>
+  <data name="GCodeDescription_M92" xml:space="preserve">
+    <value>Obtener o establecer los pasos por unidad para uno o más ejes</value>
+  </data>
+  <data name="NavConnection_BrowserNotSupported" xml:space="preserve">
+    <value>Navegador no soportado.</value>
+  </data>
+  <data name="Calculators_RememberSave" xml:space="preserve">
+    <value>Recuerde guardar después de probar</value>
+  </data>
+  <data name="Dashboard_FileExplorer" xml:space="preserve">
+    <value>Archivos</value>
+  </data>
+  <data name="Files_Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="Files_DateModified" xml:space="preserve">
+    <value>Fecha de modificación</value>
+  </data>
+  <data name="Files_Size" xml:space="preserve">
+    <value>Tamaño</value>
+  </data>
+  <data name="Files_Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="PageTitle_About" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="AboutPage_Content" xml:space="preserve">
+    <value>Software de gestión de impresoras 3D de código abierto y multiplataforma impulsado por Blazor Hybrid. &lt;strong&gt;Aún en desarrollo—úselo bajo su propio riesgo.&lt;/strong&gt;&lt;/br&gt;Agradecimientos especiales a &lt;a href="https://mrhide.de"&gt;MrHide&lt;/a&gt; por el logo digital y a Paleva (@x-hain) por su invaluable apoyo. El código fuente está disponible &lt;a href="https://github.com/akinbender/MakerPrompt"&gt;aquí&lt;/a&gt;.</value>
+  </data>
+  <data name="CommandPrompt_RunCommand" xml:space="preserve">
+    <value>Ejecutar comando</value>
+  </data>
+  <data name="CommandPrompt_CopyCommand" xml:space="preserve">
+    <value>Copiar comando</value>
+  </data>
+  <data name="NavConnection_DemoServiceDescription" xml:space="preserve">
+    <value>Un servicio que simula una impresora 3D funcional con fines de demostración.
+</value>
+  </data>
+  <data name="PageTitle_CommandPrompt" xml:space="preserve">
+    <value>Consola</value>
+  </data>
+  <data name="PageTitle_GCodeViewer" xml:space="preserve">
+    <value>Visor de G-Code</value>
+  </data>
+  <data name="PageTitle_BrailleRAP" xml:space="preserve">
+    <value>BrailleRAP</value>
+  </data>
+  <data name="BrailleRAP_Description" xml:space="preserve">
+    <value>Convertir texto a Braille y generar código G para grabado BrailleRAP.</value>
+  </data>
+  <data name="BrailleRAP_TextInput" xml:space="preserve">
+    <value>Entrada de texto</value>
+  </data>
+  <data name="BrailleRAP_EnterText" xml:space="preserve">
+    <value>Ingrese el texto para convertir a Braille</value>
+  </data>
+  <data name="BrailleRAP_TextPlaceholder" xml:space="preserve">
+    <value>Escriba o pegue su texto aquí...</value>
+  </data>
+  <data name="BrailleRAP_Pages" xml:space="preserve">
+    <value>Páginas</value>
+  </data>
+  <data name="BrailleRAP_Lines" xml:space="preserve">
+    <value>Líneas</value>
+  </data>
+  <data name="BrailleRAP_Clear" xml:space="preserve">
+    <value>Limpiar</value>
+  </data>
+  <data name="BrailleRAP_Configuration" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="BrailleRAP_PageSettings" xml:space="preserve">
+    <value>Configuración de página</value>
+  </data>
+  <data name="BrailleRAP_Language" xml:space="preserve">
+    <value>Idioma de traducción</value>
+  </data>
+  <data name="BrailleRAP_Columns" xml:space="preserve">
+    <value>Columnas por línea</value>
+  </data>
+  <data name="BrailleRAP_Rows" xml:space="preserve">
+    <value>Filas por página</value>
+  </data>
+  <data name="BrailleRAP_LineSpacing" xml:space="preserve">
+    <value>Espaciado de líneas</value>
+  </data>
+  <data name="BrailleRAP_MachineSettings" xml:space="preserve">
+    <value>Configuración de máquina</value>
+  </data>
+  <data name="BrailleRAP_FeedRate" xml:space="preserve">
+    <value>Velocidad de avance</value>
+  </data>
+  <data name="BrailleRAP_OffsetX" xml:space="preserve">
+    <value>Desplazamiento X</value>
+  </data>
+  <data name="BrailleRAP_OffsetY" xml:space="preserve">
+    <value>Desplazamiento Y</value>
+  </data>
+  <data name="BrailleRAP_Preview" xml:space="preserve">
+    <value>Vista previa Braille</value>
+  </data>
+  <data name="BrailleRAP_PageNavigation" xml:space="preserve">
+    <value>Navegación de página</value>
+  </data>
+  <data name="BrailleRAP_Page" xml:space="preserve">
+    <value>Página</value>
+  </data>
+  <data name="BrailleRAP_NoPreview" xml:space="preserve">
+    <value>Ingrese texto para ver la vista previa en Braille</value>
+  </data>
+  <data name="BrailleRAP_GenerateGCode" xml:space="preserve">
+    <value>Generar código G</value>
+  </data>
+  <data name="BrailleRAP_SendToPrinter" xml:space="preserve">
+    <value>Enviar a impresora</value>
+  </data>
+  <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
+    <value>Código G</value>
+  </data>
+  <data name="BrailleRAP_Copy" xml:space="preserve">
+    <value>Copiar</value>
+  </data>
+  <data name="BrailleRAP_GCodeGenerated" xml:space="preserve">
+    <value>Código G generado exitosamente</value>
+  </data>
+  <data name="BrailleRAP_NotConnected" xml:space="preserve">
+    <value>Por favor, conéctese primero a una impresora</value>
+  </data>
+  <data name="BrailleRAP_GenerateFirst" xml:space="preserve">
+    <value>Por favor, genere el código G primero</value>
+  </data>
+  <data name="BrailleRAP_SentSuccessfully" xml:space="preserve">
+    <value>Código G enviado a la impresora exitosamente</value>
+  </data>
+  <data name="BrailleRAP_CopiedToClipboard" xml:space="preserve">
+    <value>Copiado al portapapeles</value>
+  </data>
+  <data name="GCode_Title" xml:space="preserve">
+    <value>Código G</value>
+  </data>
+  <data name="CommandPrompt_ShowTelemetry" xml:space="preserve">
+    <value>Mostrar salida de telemetría</value>
+  </data>
+  <data name="PageTitle_Dashboard" xml:space="preserve"><value>Panel</value></data>
+  <data name="PageTitle_Settings" xml:space="preserve"><value>Configuración</value></data>
+  <data name="PageTitle_FilamentInventory" xml:space="preserve"><value>Inventario de Filamento</value></data>
+  <data name="PageTitle_Analytics" xml:space="preserve"><value>Analíticas</value></data>
+  <data name="PageTitle_Fleet" xml:space="preserve"><value>Flota</value></data>
+  <data name="Dashboard_Welcome" xml:space="preserve"><value>Bienvenido a MakerPrompt</value></data>
+  <data name="Dashboard_ConnectPrompt" xml:space="preserve"><value>Configura y conecta una impresora para comenzar.</value></data>
+  <data name="Settings_FarmMode" xml:space="preserve"><value>Modo Granja</value></data>
+  <data name="Settings_Delete" xml:space="preserve"><value>Eliminar</value></data>
+  <data name="Settings_EnableFarmMode" xml:space="preserve"><value>Activar Modo Granja</value></data>
+  <data name="Settings_FarmModeDescription" xml:space="preserve"><value>Cuando está activo, la página de Flota es la página de inicio predeterminada y las funciones de gestión de granjas están disponibles.</value></data>
+  <data name="Settings_FarmConfigurations" xml:space="preserve"><value>Configuraciones de Granja</value></data>
+  <data name="Settings_SelectFarm" xml:space="preserve"><value>— seleccionar granja —</value></data>
+  <data name="Settings_NewFarmName" xml:space="preserve"><value>Nombre de nueva granja</value></data>
+  <data name="Settings_Create" xml:space="preserve"><value>Crear</value></data>
+  <data name="Settings_Export" xml:space="preserve"><value>Exportar</value></data>
+  <data name="Settings_Import" xml:space="preserve"><value>Importar</value></data>
+  <data name="Settings_Features" xml:space="preserve"><value>Funciones</value></data>
+  <data name="Settings_EnableFilamentInventory" xml:space="preserve"><value>Activar Inventario de Filamento</value></data>
+  <data name="Settings_FilamentInventoryDescription" xml:space="preserve"><value>Realiza seguimiento de bobinas de filamento y su peso restante.</value></data>
+  <data name="Settings_EnablePrintAnalytics" xml:space="preserve"><value>Activar Analíticas de Impresión</value></data>
+  <data name="Settings_PrintAnalyticsDescription" xml:space="preserve"><value>Registra el historial de trabajos de impresión, duración y uso de filamento.</value></data>
+  <data name="Settings_TelemetryAnalytics" xml:space="preserve"><value>Telemetría y Analíticas</value></data>
+  <data name="Settings_EnableAppTelemetry" xml:space="preserve"><value>Activar Telemetría de la App</value></data>
+  <data name="Settings_TelemetryDescription" xml:space="preserve"><value>Permite que MakerPrompt recopile datos de uso anónimos para mejorar la aplicación.</value></data>
+  <data name="Settings_AppStorage" xml:space="preserve"><value>Almacenamiento de la App</value></data>
+  <data name="Settings_SaveButton" xml:space="preserve"><value>Guardar Configuración</value></data>
+  <data name="Settings_Toast_Saved" xml:space="preserve"><value>Configuración Guardada</value></data>
+  <data name="Settings_Toast_SavedMessage" xml:space="preserve"><value>Tu configuración se ha guardado correctamente.</value></data>
+  <data name="Settings_Toast_FarmCreated" xml:space="preserve"><value>Granja Creada</value></data>
+  <data name="Settings_Toast_FarmCreatedMessage" xml:space="preserve"><value>Granja '{0}' creada.</value></data>
+  <data name="Settings_Toast_FarmSwitched" xml:space="preserve"><value>Granja Cambiada</value></data>
+  <data name="Settings_Toast_FarmSwitchedMessage" xml:space="preserve"><value>Cambiado a '{0}'.</value></data>
+  <data name="Settings_Toast_FarmDeleted" xml:space="preserve"><value>Granja Eliminada</value></data>
+  <data name="Settings_Toast_FarmDeletedMessage" xml:space="preserve"><value>Configuración de granja eliminada.</value></data>
+  <data name="Settings_Toast_FarmDeletedDisabled" xml:space="preserve"><value>Configuración de granja eliminada. El modo granja ha sido desactivado.</value></data>
+  <data name="Settings_Toast_Exported" xml:space="preserve"><value>Exportado</value></data>
+  <data name="Settings_Toast_ExportedMessage" xml:space="preserve"><value>Configuración de granja exportada.</value></data>
+  <data name="Settings_Toast_Imported" xml:space="preserve"><value>Importado</value></data>
+  <data name="Settings_Toast_ImportedMessage" xml:space="preserve"><value>Granja '{0}' importada.</value></data>
+  <data name="Settings_Toast_Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Settings_Toast_CreateFarmError" xml:space="preserve"><value>No se pudo crear la granja.</value></data>
+  <data name="Settings_Toast_SwitchFarmError" xml:space="preserve"><value>No se pudo cambiar de granja.</value></data>
+  <data name="Settings_Toast_DeleteFarmError" xml:space="preserve"><value>No se pudo eliminar la granja.</value></data>
+  <data name="Settings_Toast_ExportError" xml:space="preserve"><value>No se pudo exportar la configuración de granja.</value></data>
+  <data name="Settings_Toast_ImportError" xml:space="preserve"><value>No se pudo importar la configuración de granja.</value></data>
+  <data name="Fleet_Title" xml:space="preserve"><value>Flota</value></data>
+  <data name="Fleet_NoPrinters" xml:space="preserve"><value>No hay impresoras configuradas. Añade una para comenzar.</value></data>
+  <data name="Fleet_AddPrinter" xml:space="preserve"><value>Añadir Impresora</value></data>
+  <data name="Fleet_EditPrinter" xml:space="preserve"><value>Editar Impresora</value></data>
+  <data name="Fleet_ManagePrinters" xml:space="preserve"><value>Gestionar Impresoras</value></data>
+  <data name="Fleet_DeletePrinter" xml:space="preserve"><value>Eliminar Impresora</value></data>
+  <data name="Fleet_PrinterName" xml:space="preserve"><value>Nombre de Impresora</value></data>
+  <data name="Fleet_ConnectionType" xml:space="preserve"><value>Tipo de Conexión</value></data>
+  <data name="Fleet_AutoConnect" xml:space="preserve"><value>Conectar automáticamente al inicio</value></data>
+  <data name="Fleet_Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="Fleet_Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="Fleet_Connecting" xml:space="preserve"><value>Conectando...</value></data>
+  <data name="Fleet_Disconnecting" xml:space="preserve"><value>Desconectando...</value></data>
+  <data name="Fleet_SetActive" xml:space="preserve"><value>Establecer como activa</value></data>
+  <data name="Fleet_Active" xml:space="preserve"><value>Activa</value></data>
+  <data name="Fleet_Printers" xml:space="preserve"><value>Impresoras</value></data>
+  <data name="Fleet_DeleteConfirm" xml:space="preserve"><value>¿Seguro que deseas eliminar esta impresora?</value></data>
+  <data name="Fleet_Progress" xml:space="preserve"><value>Progreso</value></data>
+  <data name="Fleet_Camera" xml:space="preserve"><value>Cámara</value></data>
+  <data name="NavPrinters_Back" xml:space="preserve"><value>Atrás</value></data>
+  <data name="NavPrinters_Close" xml:space="preserve"><value>Cerrar</value></data>
+  <data name="NavPrinters_Port" xml:space="preserve"><value>Puerto</value></data>
+  <data name="NavPrinters_Url" xml:space="preserve"><value>URL</value></data>
+  <data name="NavPrinters_SerialNumber" xml:space="preserve"><value>Número de Serie</value></data>
+  <data name="NavPrinters_AccessCode" xml:space="preserve"><value>Código de Acceso</value></data>
+  <data name="NavPrinters_ApiKey" xml:space="preserve"><value>Clave API</value></data>
+  <data name="NavPrinters_Username" xml:space="preserve"><value>Usuario</value></data>
+  <data name="NavPrinters_PasswordOrApiKey" xml:space="preserve"><value>Contraseña / Clave API</value></data>
+  <data name="NavPrinters_PrinterNameRequired" xml:space="preserve"><value>El nombre de la impresora es obligatorio</value></data>
+  <data name="NavPrinters_PrinterUpdated" xml:space="preserve"><value>Impresora actualizada</value></data>
+  <data name="NavPrinters_PrinterAdded" xml:space="preserve"><value>Impresora añadida</value></data>
+  <data name="NavPrinters_SaveFailed" xml:space="preserve"><value>No se pudo guardar la impresora</value></data>
+  <data name="NavPrinters_ConnectFailed" xml:space="preserve"><value>Error de conexión</value></data>
+  <data name="NavPrinters_DisconnectFailed" xml:space="preserve"><value>Error al desconectar</value></data>
+  <data name="NavPrinters_PrinterRemoved" xml:space="preserve"><value>Impresora eliminada</value></data>
+  <data name="NavPrinters_DeleteFailed" xml:space="preserve"><value>Error al eliminar</value></data>
+  <data name="PrintQueue_Title" xml:space="preserve"><value>Cola de Impresión</value></data>
+  <data name="PrintQueue_NoFiles" xml:space="preserve"><value>No hay archivos disponibles. Conecta una impresora para ver los archivos.</value></data>
+  <data name="PrintQueue_SelectPrinter" xml:space="preserve"><value>Enviar a impresora</value></data>
+  <data name="PrintQueue_StartPrint" xml:space="preserve"><value>Iniciar impresión</value></data>
+  <data name="PrintQueue_NoPrintersAvailable" xml:space="preserve"><value>No hay impresoras disponibles</value></data>
+  <data name="PrintQueue_PrintStarted" xml:space="preserve"><value>Impresión iniciada</value></data>
+  <data name="PrintQueue_Refresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="PrintQueue_NoProjects" xml:space="preserve"><value>Aún no hay proyectos. Crea uno para organizar tus impresiones.</value></data>
+  <data name="PrintQueue_NewProject" xml:space="preserve"><value>Nuevo proyecto</value></data>
+  <data name="PrintQueue_ProjectName" xml:space="preserve"><value>Nombre del proyecto</value></data>
+  <data name="PrintQueue_UploadFiles" xml:space="preserve"><value>Subir G-Code</value></data>
+  <data name="PrintQueue_DeleteProject" xml:space="preserve"><value>Eliminar proyecto</value></data>
+  <data name="PrintQueue_RemoveJob" xml:space="preserve"><value>Eliminar</value></data>
+  <data name="PrintQueue_SendToPrinter" xml:space="preserve"><value>Enviar a impresora</value></data>
+  <data name="PrintQueue_Queued" xml:space="preserve"><value>En cola</value></data>
+  <data name="PrintQueue_Printing" xml:space="preserve"><value>Imprimiendo</value></data>
+  <data name="PrintQueue_Completed" xml:space="preserve"><value>Completado</value></data>
+  <data name="PrintQueue_Failed" xml:space="preserve"><value>Fallido</value></data>
+  <data name="StorageExplorer_Upload" xml:space="preserve"><value>Subir</value></data>
+  <data name="StorageExplorer_Loading" xml:space="preserve"><value>Cargando...</value></data>
+</root>

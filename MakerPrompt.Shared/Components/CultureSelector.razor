@@ -11,7 +11,7 @@
     <ul class="dropdown-menu dropdown-menu-end">
         @foreach (var culture in supportedCultures)
         {
-            <li><a class="dropdown-item" @onclick="() => ApplySelectedCultureAsync(culture)">@culture.DisplayName</a></li>
+            <li><a class="dropdown-item" @onclick="() => ApplySelectedCultureAsync(culture)">@culture.NativeName</a></li>
         }
     </ul>
 </li>

@@ -804,4 +804,202 @@
   <data name="PrintQueue_Failed" xml:space="preserve">
     <value>Failed</value>
   </data>
+  <data name="PageTitle_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="PageTitle_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="PageTitle_FilamentInventory" xml:space="preserve">
+    <value>Filament Inventory</value>
+  </data>
+  <data name="PageTitle_Analytics" xml:space="preserve">
+    <value>Analytics</value>
+  </data>
+  <data name="Dashboard_Welcome" xml:space="preserve">
+    <value>Welcome to MakerPrompt</value>
+  </data>
+  <data name="Dashboard_ConnectPrompt" xml:space="preserve">
+    <value>Configure and connect a printer to get started.</value>
+  </data>
+  <data name="Settings_FarmMode" xml:space="preserve">
+    <value>Farm Mode</value>
+  </data>
+  <data name="Settings_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Settings_EnableFarmMode" xml:space="preserve">
+    <value>Enable Farm Mode</value>
+  </data>
+  <data name="Settings_FarmModeDescription" xml:space="preserve">
+    <value>When enabled, the Fleet page is the default landing page and farm management features are active. When disabled, a single-printer Dashboard is the default.</value>
+  </data>
+  <data name="Settings_FarmConfigurations" xml:space="preserve">
+    <value>Farm Configurations</value>
+  </data>
+  <data name="Settings_SelectFarm" xml:space="preserve">
+    <value>— select a farm —</value>
+  </data>
+  <data name="Settings_NewFarmName" xml:space="preserve">
+    <value>New farm name</value>
+  </data>
+  <data name="Settings_Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Settings_Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Settings_Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Settings_Features" xml:space="preserve">
+    <value>Features</value>
+  </data>
+  <data name="Settings_EnableFilamentInventory" xml:space="preserve">
+    <value>Enable Filament Inventory</value>
+  </data>
+  <data name="Settings_FilamentInventoryDescription" xml:space="preserve">
+    <value>Track filament spools and their remaining weight.</value>
+  </data>
+  <data name="Settings_EnablePrintAnalytics" xml:space="preserve">
+    <value>Enable Print Analytics</value>
+  </data>
+  <data name="Settings_PrintAnalyticsDescription" xml:space="preserve">
+    <value>Track print job history, duration, and filament usage.</value>
+  </data>
+  <data name="Settings_TelemetryAnalytics" xml:space="preserve">
+    <value>Telemetry &amp; Analytics</value>
+  </data>
+  <data name="Settings_EnableAppTelemetry" xml:space="preserve">
+    <value>Enable App Telemetry</value>
+  </data>
+  <data name="Settings_TelemetryDescription" xml:space="preserve">
+    <value>Allow MakerPrompt to collect anonymous usage data to improve the app.</value>
+  </data>
+  <data name="Settings_AppStorage" xml:space="preserve">
+    <value>App storage</value>
+  </data>
+  <data name="Settings_SaveButton" xml:space="preserve">
+    <value>Save Settings</value>
+  </data>
+  <data name="Settings_Toast_Saved" xml:space="preserve">
+    <value>Settings Saved</value>
+  </data>
+  <data name="Settings_Toast_SavedMessage" xml:space="preserve">
+    <value>Your settings have been saved successfully.</value>
+  </data>
+  <data name="Settings_Toast_FarmCreated" xml:space="preserve">
+    <value>Farm Created</value>
+  </data>
+  <data name="Settings_Toast_FarmCreatedMessage" xml:space="preserve">
+    <value>Farm '{0}' created.</value>
+  </data>
+  <data name="Settings_Toast_FarmSwitched" xml:space="preserve">
+    <value>Farm Switched</value>
+  </data>
+  <data name="Settings_Toast_FarmSwitchedMessage" xml:space="preserve">
+    <value>Switched to '{0}'.</value>
+  </data>
+  <data name="Settings_Toast_FarmDeleted" xml:space="preserve">
+    <value>Farm Deleted</value>
+  </data>
+  <data name="Settings_Toast_FarmDeletedMessage" xml:space="preserve">
+    <value>Farm configuration removed.</value>
+  </data>
+  <data name="Settings_Toast_FarmDeletedDisabled" xml:space="preserve">
+    <value>Farm configuration removed. Farm mode has been disabled.</value>
+  </data>
+  <data name="Settings_Toast_Exported" xml:space="preserve">
+    <value>Exported</value>
+  </data>
+  <data name="Settings_Toast_ExportedMessage" xml:space="preserve">
+    <value>Farm configuration exported.</value>
+  </data>
+  <data name="Settings_Toast_Imported" xml:space="preserve">
+    <value>Imported</value>
+  </data>
+  <data name="Settings_Toast_ImportedMessage" xml:space="preserve">
+    <value>Farm '{0}' imported.</value>
+  </data>
+  <data name="Settings_Toast_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Settings_Toast_CreateFarmError" xml:space="preserve">
+    <value>Failed to create farm.</value>
+  </data>
+  <data name="Settings_Toast_SwitchFarmError" xml:space="preserve">
+    <value>Failed to switch farm.</value>
+  </data>
+  <data name="Settings_Toast_DeleteFarmError" xml:space="preserve">
+    <value>Failed to delete farm.</value>
+  </data>
+  <data name="Settings_Toast_ExportError" xml:space="preserve">
+    <value>Failed to export farm configuration.</value>
+  </data>
+  <data name="Settings_Toast_ImportError" xml:space="preserve">
+    <value>Failed to import farm configuration.</value>
+  </data>
+  <data name="NavPrinters_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="NavPrinters_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="NavPrinters_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="NavPrinters_Url" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="NavPrinters_SerialNumber" xml:space="preserve">
+    <value>Serial Number</value>
+  </data>
+  <data name="NavPrinters_AccessCode" xml:space="preserve">
+    <value>Access Code</value>
+  </data>
+  <data name="NavPrinters_ApiKey" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="NavPrinters_PrinterUuid" xml:space="preserve">
+    <value>Printer UUID</value>
+  </data>
+  <data name="NavConnect_PrusaConnectDescription" xml:space="preserve">
+    <value>Cloud-based printer management via Prusa Connect. Get your Printer UUID and API key from connect.prusa3d.com → Account → API Keys.</value>
+  </data>
+  <data name="NavPrinters_Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="NavPrinters_PasswordOrApiKey" xml:space="preserve">
+    <value>Password / API Key</value>
+  </data>
+  <data name="NavPrinters_PrinterNameRequired" xml:space="preserve">
+    <value>Printer name is required</value>
+  </data>
+  <data name="NavPrinters_PrinterUpdated" xml:space="preserve">
+    <value>Printer updated</value>
+  </data>
+  <data name="NavPrinters_PrinterAdded" xml:space="preserve">
+    <value>Printer added</value>
+  </data>
+  <data name="NavPrinters_SaveFailed" xml:space="preserve">
+    <value>Failed to save printer</value>
+  </data>
+  <data name="NavPrinters_ConnectFailed" xml:space="preserve">
+    <value>Connection failed</value>
+  </data>
+  <data name="NavPrinters_DisconnectFailed" xml:space="preserve">
+    <value>Disconnect failed</value>
+  </data>
+  <data name="NavPrinters_PrinterRemoved" xml:space="preserve">
+    <value>Printer removed</value>
+  </data>
+  <data name="NavPrinters_DeleteFailed" xml:space="preserve">
+    <value>Delete failed</value>
+  </data>
+  <data name="StorageExplorer_Upload" xml:space="preserve">
+    <value>Upload</value>
+  </data>
+  <data name="StorageExplorer_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
 </root>

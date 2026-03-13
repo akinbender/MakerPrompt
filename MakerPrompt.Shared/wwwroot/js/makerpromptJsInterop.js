@@ -34,6 +34,17 @@ export async function initializeViewer(container, gcodeContent) {
     canvas.style.height = '100%';
     container.appendChild(canvas);
 
+    // Verify WebGL availability using a SEPARATE temporary canvas.
+    // The main canvas must not have getContext() called before GCodePreview.init():
+    // a canvas can only hold one rendering context, so pre-acquiring it here would
+    // prevent Three.js from creating its own context, silently breaking the renderer.
+    const testCanvas = document.createElement('canvas');
+    const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+    if (!gl) {
+        container.innerHTML = '';
+        throw new Error('WebGL is not available on this device. Switch to text view.');
+    }
+
     const preview = GCodePreview.init({
         canvas,
         buildVolume: { x: 220, y: 220, z: 250 },

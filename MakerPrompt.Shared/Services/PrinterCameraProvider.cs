@@ -44,6 +44,9 @@ namespace MakerPrompt.Shared.Services
                     PrinterConnectionType.BambuLab when current is BambuLabApiService bambu =>
                         await bambu.GetCamerasAsync(cancellationToken).ConfigureAwait(false),
 
+                    PrinterConnectionType.PrusaConnect when current is PrusaConnectApiService prusaConnect =>
+                        await prusaConnect.GetCamerasAsync(cancellationToken).ConfigureAwait(false),
+
                     _ => Array.Empty<PrinterCamera>()
                 };
             }

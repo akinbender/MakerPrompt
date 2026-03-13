@@ -2,167 +2,305 @@
 @inject PrinterStorageProvider PrinterStorage
 @inject IAppLocalStorageProvider AppStorage
 
-<div class="row">
-    <div class="col-lg-6 col-md-12">
-        <div class="card mb-3">
-            <h4 class="card-header">@Localizer[Resources.ControlPanel_Position]</h4>
-            <div class="card-body">
-                <div class="input-group mb-2">
-                    <button class="btn btn-outline-secondary" type="button"
-                            title="@Localizer[Resources.ControlPanel_MotorsOff]"
-                            disabled="@(!IsConnected)">
-                        <i class="bi bi-stop-btn-fill"></i>
-                    </button>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">X: @Telemetry.Position.X.ToString("F2")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Y: @Telemetry.Position.Y.ToString("F2")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">Z: @Telemetry.Position.Z.ToString("F2")</span>
-                </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text">XY:</span>
-                    <input type="text" class="form-control" @bind="xySpeed"
-                           title="@Localizer[Resources.ControlPanel_Set_XYSpeed]"
-                           disabled="@(!IsConnected)">
-                    <span class="input-group-text">Z:</span>
-                    <input type="text" class="form-control" @bind="zSpeed"
-                           title="@Localizer[Resources.ControlPanel_Set_ZSpeed]"
-                           disabled="@(!IsConnected)">
-                    <span class="input-group-text">mm/min</span>
-                </div>
-                <div class="d-flex justify-content-center" disabled="@(!IsConnected)">
-                    <div class="d-flex flex-column">
-                        <div class="d-flex flex-row">
-                            <div class="input-group justify-content-center">
-                                <button type="button" class="btn btn-secondary" style="border-bottom-left-radius: 0;" title="@Localizer[Resources.ControlPanel_HomeAll]" @onclick="HomeAllAsync" disabled="@(!IsConnected)"><i class="bi bi-houses"></i></button>
-                                <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.X ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.X)">X</button>
-                                <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Y ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.Y)">Y</button>
-                                <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Z ? "active" : string.Empty)" @onclick="() => SetAxis(AxisTab.Z)">Z</button>
-                                <button type="button" class="btn btn-secondary" style="border-bottom-right-radius: 0;" title="@Localizer[Resources.ControlPanel_HomeSelected]" @onclick="async () => await HomeSelectedAxis()" disabled="@(!IsConnected)"><i class=" bi bi-house"></i></button>
-                            </div>
-                        </div>
-                        <div class="input-group mb-2" role="group" aria-label="relative-move">
-                            @foreach (var length in moveLenghts)
-                            {
-                                <button type="button" class="btn btn-outline-secondary" @onclick="async () => await MoveSelectedAxis(length)" disabled="@(!IsConnected)">@(isInverse ? $"-{length}" : $" {length}")</button>
-                            }
-                            <div class="input-group-text">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="switchReverse" checked="@(isInverse)" @onchange="MotionReversed">
-                                    <label class="form-check-label" for="switchReverse">@Localizer[Resources.ControlPanel_Reverse]</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+@* ── Print Status Banner (only while printing) ── *@
+@if (Telemetry.SDCard.Printing || Telemetry.Status == PrinterStatus.Printing)
+{
+    <div class="card mb-3 dash-print-banner">
+        <div class="card-body d-flex align-items-center gap-4 py-3 px-4">
+            @* SVG progress ring: r=15.9 → circumference ≈ 100, dasharray == percentage *@
+            <div class="dash-ring-wrap flex-shrink-0">
+                <svg viewBox="0 0 36 36" width="72" height="72">
+                    <circle fill="none" cx="18" cy="18" r="15.9" stroke-width="2.5" stroke="var(--bs-border-color)" />
+                    <circle fill="none" cx="18" cy="18" r="15.9" stroke-width="2.5"
+                            stroke="var(--bs-success)" stroke-linecap="round"
+                            stroke-dasharray="@($"{Telemetry.SDCard.Progress:F1} 100")"
+                            transform="rotate(-90 18 18)" />
+                </svg>
+                <div class="dash-ring-label">
+                    <strong>@($"{Telemetry.SDCard.Progress:F0}")</strong><small>%</small>
                 </div>
             </div>
-        </div>
-        <WebcamPanel />
-    </div>
-    <div class="col-lg-6 col-md-12">
-        <div class="card mb-3">
-            <h4 class="card-header">@Localizer[Resources.ControlPanel_Heating]</h4>
-            <div class="card-body">
-                <div class="input-group mb-2">
-                     <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.HotendTemp.ToString("F1")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @Telemetry.HotendTarget.ToString("F1")</span>
-                     <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" @bind:after="SetHotendTempAsync" disabled="@(!IsConnected)">
-                    <span class="input-group-text">°C</span>
-                    <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetHotendTemp]" @onclick="SetHotendTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+            @* Job info + bar *@
+            <div class="flex-grow-1 overflow-hidden">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-warning text-dark"><i class="bi bi-printer me-1"></i>Printing</span>
+                    @if (!string.IsNullOrWhiteSpace(Telemetry.PrintJobName))
+                    {
+                        <span class="text-truncate fw-semibold small" title="@Telemetry.PrintJobName">@Telemetry.PrintJobName</span>
+                    }
                 </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.BedTemp.ToString("F1")</span>
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Target]">T: @Telemetry.BedTarget.ToString("F1")</span>
-                    <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" @bind:after="SetBedTempAsync" disabled="@(!IsConnected)">
-                    <span class="input-group-text">°C</span>
-                    <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_SetBedTemp]" @onclick="SetBedTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.FanSpeed.ToString()</span>
-                    <span class="input-group-text">@Localizer[Resources.ControlPanel_FanSpeed]:</span>
-                    <input type="text" min="0" max="100" class="form-control" @bind="printSpeed" disabled="@(!IsConnected)">
-                    <span class="input-group-text">%</span>
-                    <button class="btn btn-outline-secondary" type="button" title="@Localizer[Resources.ControlPanel_Set_FanSpeed]"
-                            @onclick="SetFanSpeedAsync" disabled="@(!IsConnected)">
-                        @Localizer[Resources.ControlPanel_Set]
-                    </button>
+                <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                         style="width:@($"{Telemetry.SDCard.Progress:F0}%")" role="progressbar"></div>
                 </div>
             </div>
-        </div>
-
-        <div class="card mb-3">
-            <h4 class="card-header">@Localizer[Resources.ControlPanel_Extrude]</h4>
-            <div class="card-body">
-                <div class="input-group mb-2">
-                    <span class="input-group-text">@Localizer[Resources.ControlPanel_Length]</span>
-                    <input type="text" class="form-control" @bind="extrudeLength" disabled="@(!IsConnected)">
-                    <span class="input-group-text">mm</span>
+            @* Stats strip *@
+            <div class="d-none d-md-flex gap-3 flex-shrink-0">
+                <div class="dash-stat-box">
+                    <small class="text-muted">Speed</small>
+                    <strong>@Telemetry.FeedRate<small class="text-muted">%</small></strong>
                 </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text">@Localizer[Resources.ControlPanel_Speed]</span>
-                    <input type="text" class="form-control" @bind="extrudeSpeed" disabled="@(!IsConnected)">
-                    <span class="input-group-text">mm/min</span>
+                <div class="dash-stat-box">
+                    <small class="text-muted">Flow</small>
+                    <strong>@Telemetry.FlowRate<small class="text-muted">%</small></strong>
                 </div>
-                <div class="d-flex align-items-end">
-                    <div class="btn-group ms-auto" role="group">
-                        <button type="button" class="btn btn-primary" @onclick="async () => await ExtrudeAsync(extrudeLength)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Extrude]</button>
-                        <button type="button" class="btn btn-primary" @onclick="async () => await ExtrudeAsync(-extrudeLength)" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Reverse]</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card mt-3">
-            <h4 class="card-header">@Localizer[Resources.ControlPanel_Status]</h4>
-            <div class="card-body">
-                <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.FeedRate.ToString()</span>
-                    <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintSpeed]:</span>
-                    <input type="text" class="form-control" @bind="printSpeed" @bind:after="UpdatePrintSpeedAsync" disabled="@(!IsConnected)">
-                    <span class="input-group-text">%</span>
-                    <button class="btn btn-outline-secondary" type="button" disabled>@Localizer[Resources.ControlPanel_Set]</button>
-                </div>
-                <div class="input-group mb-2">
-                    <span class="input-group-text" title="@Localizer[Resources.ControlPanel_Current]">C: @Telemetry.FlowRate.ToString()</span>
-                    <span class="input-group-text">@Localizer[Resources.ControlPanel_PrintFlow]:</span>
-                    <input type="text" class="form-control" @bind="printFlow" @bind:after="UpdatePrintFlowAsync" disabled="@(!IsConnected)">
-                    <span class="input-group-text">%</span>
-                    <button class="btn btn-outline-secondary" type="button" disabled>@Localizer[Resources.ControlPanel_Set]</button>
-                </div>
-                @if (Telemetry.SDCard.Printing || Telemetry.Status == PrinterStatus.Printing)
+                @if (Telemetry.PrintDuration > TimeSpan.Zero)
                 {
-                    <div class="mt-2">
-                        @if (!string.IsNullOrWhiteSpace(Telemetry.PrintJobName))
-                        {
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="bi bi-file-earmark-text text-muted"></i>
-                                <small class="text-truncate" title="@Telemetry.PrintJobName">@Telemetry.PrintJobName</small>
-                            </div>
-                        }
-                        <div class="d-flex justify-content-between mb-1">
-                            <small class="text-muted">@Localizer[Resources.Fleet_Progress]</small>
-                            <small>@($"{Telemetry.SDCard.Progress:F0}%")</small>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
-                                 role="progressbar"
-                                 style="width: @($"{Telemetry.SDCard.Progress:F0}%")"
-                                 aria-valuenow="@Telemetry.SDCard.Progress"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100">
-                            </div>
-                        </div>
+                    <div class="dash-stat-box">
+                        <small class="text-muted">Elapsed</small>
+                        <strong>@($"{(int)Telemetry.PrintDuration.TotalHours:D2}:{Telemetry.PrintDuration.Minutes:D2}")</strong>
+                    </div>
+                }
+                @if (Telemetry.FilamentUsed > 0)
+                {
+                    <div class="dash-stat-box">
+                        <small class="text-muted">Filament</small>
+                        <strong>@($"{Telemetry.FilamentUsed:F1}")<small class="text-muted">m</small></strong>
                     </div>
                 }
             </div>
         </div>
-        <div class="card mt-3">
-            <h4 class="card-header">@Localizer[Resources.GCodeCategory_Calibration]</h4>
+    </div>
+}
+
+<div class="row g-3">
+
+    @* ── Left: Position + Webcam ── *@
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-crosshair2 text-primary"></i>
+                <span class="fw-semibold">@Localizer[Resources.ControlPanel_Position]</span>
+            </div>
+            <div class="card-body">
+                @* Position readout *@
+                <div class="d-flex gap-2 mb-3">
+                    <div class="dash-pos-box flex-fill text-center">
+                        <small class="text-muted d-block">X</small>
+                        <span class="fw-bold font-monospace">@Telemetry.Position.X.ToString("F2")</span>
+                    </div>
+                    <div class="dash-pos-box flex-fill text-center">
+                        <small class="text-muted d-block">Y</small>
+                        <span class="fw-bold font-monospace">@Telemetry.Position.Y.ToString("F2")</span>
+                    </div>
+                    <div class="dash-pos-box flex-fill text-center">
+                        <small class="text-muted d-block">Z</small>
+                        <span class="fw-bold font-monospace">@Telemetry.Position.Z.ToString("F2")</span>
+                    </div>
+                    <div class="d-flex align-items-center ps-1">
+                        <button class="btn btn-sm btn-outline-danger" title="@Localizer[Resources.ControlPanel_MotorsOff]" disabled="@(!IsConnected)">
+                            <i class="bi bi-stop-btn-fill"></i>
+                        </button>
+                    </div>
+                </div>
+                @* Jog speeds *@
+                <div class="row gx-2 mb-2">
+                    <div class="col">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">XY</span>
+                            <input type="text" class="form-control" @bind="xySpeed" disabled="@(!IsConnected)" title="@Localizer[Resources.ControlPanel_Set_XYSpeed]">
+                            <span class="input-group-text">mm/min</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Z</span>
+                            <input type="text" class="form-control" @bind="zSpeed" disabled="@(!IsConnected)" title="@Localizer[Resources.ControlPanel_Set_ZSpeed]">
+                            <span class="input-group-text">mm/min</span>
+                        </div>
+                    </div>
+                </div>
+                @* Axis + jog buttons *@
+                <div class="d-flex flex-column align-items-center">
+                    <div class="input-group input-group-sm mb-1 justify-content-center w-auto">
+                        <button type="button" class="btn btn-secondary" title="@Localizer[Resources.ControlPanel_HomeAll]" @onclick="HomeAllAsync" disabled="@(!IsConnected)">
+                            <i class="bi bi-houses"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.X ? "active" : "")" @onclick="() => SetAxis(AxisTab.X)">X</button>
+                        <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Y ? "active" : "")" @onclick="() => SetAxis(AxisTab.Y)">Y</button>
+                        <button type="button" class="btn btn-outline-secondary @(ActiveTab == AxisTab.Z ? "active" : "")" @onclick="() => SetAxis(AxisTab.Z)">Z</button>
+                        <button type="button" class="btn btn-secondary" title="@Localizer[Resources.ControlPanel_HomeSelected]" @onclick="async () => await HomeSelectedAxis()" disabled="@(!IsConnected)">
+                            <i class="bi bi-house"></i>
+                        </button>
+                    </div>
+                    <div class="input-group input-group-sm">
+                        @foreach (var length in moveLenghts)
+                        {
+                            <button type="button" class="btn btn-outline-secondary" @onclick="async () => await MoveSelectedAxis(length)" disabled="@(!IsConnected)">
+                                @(isInverse ? $"-{length}" : $"+{length}")
+                            </button>
+                        }
+                        <div class="input-group-text">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="switchReverse" checked="@isInverse" @onchange="MotionReversed">
+                                <label class="form-check-label small" for="switchReverse">@Localizer[Resources.ControlPanel_Reverse]</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3">
+            <WebcamPanel />
+        </div>
+    </div>
+
+    @* ── Right: Temps + Extrude + Speed/Flow + Calibration ── *@
+    <div class="col-lg-6 col-md-12">
+
+        @* Temperatures *@
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-thermometer-half text-danger"></i>
+                <span class="fw-semibold">@Localizer[Resources.ControlPanel_Heating]</span>
+            </div>
+            <div class="card-body pb-1">
+                @* Hotend *@
+                <div class="dash-temp-row mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="d-flex align-items-center gap-2">
+                            <i class="bi bi-fire text-danger"></i>
+                            <span class="fw-semibold small">@Localizer[Resources.PrinterComponent_Hotend]</span>
+                        </span>
+                        <span class="font-monospace fw-bold @(Telemetry.HotendTemp > 40 ? "text-danger" : "")">
+                            @($"{Telemetry.HotendTemp:F1}")°C
+                            <small class="text-muted fw-normal">/ @($"{Telemetry.HotendTarget:F0}")°C</small>
+                        </span>
+                    </div>
+                    <div class="progress mb-2" style="height:3px;">
+                        <div class="progress-bar @(Telemetry.HotendTemp > 150 ? "bg-danger" : Telemetry.HotendTemp > 60 ? "bg-warning" : "bg-secondary")"
+                             style="width:@($"{Math.Min(Telemetry.HotendTemp / 300.0 * 100, 100):F0}%")"></div>
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" disabled="@(!IsConnected)" placeholder="Target °C">
+                        <span class="input-group-text">°C</span>
+                        <button class="btn btn-outline-danger" @onclick="SetHotendTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                    </div>
+                </div>
+                @* Bed *@
+                <div class="dash-temp-row mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="d-flex align-items-center gap-2">
+                            <i class="bi bi-align-bottom text-warning"></i>
+                            <span class="fw-semibold small">@Localizer[Resources.PrinterComponent_Heatbed]</span>
+                        </span>
+                        <span class="font-monospace fw-bold @(Telemetry.BedTemp > 30 ? "text-warning" : "")">
+                            @($"{Telemetry.BedTemp:F1}")°C
+                            <small class="text-muted fw-normal">/ @($"{Telemetry.BedTarget:F0}")°C</small>
+                        </span>
+                    </div>
+                    <div class="progress mb-2" style="height:3px;">
+                        <div class="progress-bar bg-warning" style="width:@($"{Math.Min(Telemetry.BedTemp / 120.0 * 100, 100):F0}%")"></div>
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" disabled="@(!IsConnected)" placeholder="Target °C">
+                        <span class="input-group-text">°C</span>
+                        <button class="btn btn-outline-warning" @onclick="SetBedTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                    </div>
+                </div>
+                @* Fan *@
+                <div class="dash-temp-row">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="d-flex align-items-center gap-2">
+                            <i class="bi bi-wind text-info"></i>
+                            <span class="fw-semibold small">@Localizer[Resources.ControlPanel_FanSpeed]</span>
+                        </span>
+                        <span class="font-monospace fw-bold text-info">@Telemetry.FanSpeed<small class="text-muted fw-normal">%</small></span>
+                    </div>
+                    <div class="progress mb-2" style="height:3px;">
+                        <div class="progress-bar bg-info" style="width:@Telemetry.FanSpeed%"></div>
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <input type="number" min="0" max="100" class="form-control" @bind="printSpeed" disabled="@(!IsConnected)" placeholder="Fan %">
+                        <span class="input-group-text">%</span>
+                        <button class="btn btn-outline-info" @onclick="SetFanSpeedAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Extrude *@
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-moisture text-secondary"></i>
+                <span class="fw-semibold">@Localizer[Resources.ControlPanel_Extrude]</span>
+            </div>
+            <div class="card-body">
+                <div class="row gx-2 mb-2">
+                    <div class="col">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">@Localizer[Resources.ControlPanel_Length]</span>
+                            <input type="text" class="form-control" @bind="extrudeLength" disabled="@(!IsConnected)">
+                            <span class="input-group-text">mm</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">@Localizer[Resources.ControlPanel_Speed]</span>
+                            <input type="text" class="form-control" @bind="extrudeSpeed" disabled="@(!IsConnected)">
+                            <span class="input-group-text">mm/min</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-primary btn-sm" @onclick="async () => await ExtrudeAsync(extrudeLength)" disabled="@(!IsConnected)">
+                        <i class="bi bi-arrow-down me-1"></i>@Localizer[Resources.ControlPanel_Extrude]
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="async () => await ExtrudeAsync(-extrudeLength)" disabled="@(!IsConnected)">
+                        <i class="bi bi-arrow-up me-1"></i>@Localizer[Resources.ControlPanel_Reverse]
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @* Speed / Flow *@
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-speedometer2 text-primary"></i>
+                <span class="fw-semibold">@Localizer[Resources.ControlPanel_Status]</span>
+            </div>
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col">
+                        <label class="form-label small text-muted mb-1">
+                            @Localizer[Resources.ControlPanel_PrintSpeed]
+                            <span class="badge bg-primary ms-1">@Telemetry.FeedRate%</span>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" min="1" max="300" class="form-control" @bind="printSpeed" @bind:after="UpdatePrintSpeedAsync" disabled="@(!IsConnected)">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="form-label small text-muted mb-1">
+                            @Localizer[Resources.ControlPanel_PrintFlow]
+                            <span class="badge bg-secondary ms-1">@Telemetry.FlowRate%</span>
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" min="1" max="300" class="form-control" @bind="printFlow" @bind:after="UpdatePrintFlowAsync" disabled="@(!IsConnected)">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Calibration *@
+        <div class="card">
+            <div class="card-header d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-rulers text-secondary"></i>
+                <span class="fw-semibold">@Localizer[Resources.GCodeCategory_Calibration]</span>
+            </div>
             <div class="card-body">
                 <Calibration />
             </div>
         </div>
     </div>
+
+    @* ── File storage ── *@
     <div class="col-12">
-        <StorageExplorer Title="Printer storage" Provider="PrinterStorage" TargetProvider="AppStorage" EnableUpload="false" EnableDelete="true" EnableOpen="true" EnableCopy="true" />
+        <StorageExplorer Title="Printer storage" Provider="PrinterStorage" TargetProvider="AppStorage"
+                         EnableUpload="false" EnableDelete="true" EnableOpen="true" EnableCopy="true" />
     </div>
 </div>
 
@@ -176,7 +314,6 @@
     private int printSpeed = 100;
     private int printFlow = 100;
 
-
     private bool isInverse;
     private int[] moveLenghts = { 1, 10, 100, 500 };
     private AxisTab ActiveTab = AxisTab.Y;
@@ -184,7 +321,6 @@
 
     private void MotionReversed(ChangeEventArgs e)
     {
-        // get the checkbox state
         isInverse = e.Value as bool? ?? false;
     }
 
@@ -207,7 +343,7 @@
         switch (ActiveTab)
         {
             case AxisTab.X:
-                await printer.Home(true,false, false);
+                await printer.Home(true, false, false);
                 break;
             case AxisTab.Y:
                 await printer.Home(false, true, false);
@@ -215,8 +351,6 @@
             case AxisTab.Z:
                 await printer.Home(false, false, true);
                 break;
-            default:
-                return;
         }
     }
 
@@ -236,8 +370,6 @@
             case AxisTab.Z:
                 await printer.RelativeMove(zSpeed, 0, 0, length);
                 break;
-            default:
-                return;
         }
     }
 

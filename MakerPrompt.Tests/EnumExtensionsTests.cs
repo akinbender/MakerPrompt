@@ -13,9 +13,10 @@ public class EnumExtensionsTests
         Assert.Contains(PrinterConnectionType.Serial, values);
         Assert.Contains(PrinterConnectionType.Moonraker, values);
         Assert.Contains(PrinterConnectionType.PrusaLink, values);
+        Assert.Contains(PrinterConnectionType.PrusaConnect, values);
         Assert.Contains(PrinterConnectionType.BambuLab, values);
         Assert.Contains(PrinterConnectionType.OctoPrint, values);
-        Assert.Equal(6, values.Count);
+        Assert.Equal(7, values.Count);
     }
 
     [Fact]
@@ -25,6 +26,7 @@ public class EnumExtensionsTests
         Assert.Equal("Serial", PrinterConnectionType.Serial.GetDisplayName());
         Assert.Equal("Moonraker", PrinterConnectionType.Moonraker.GetDisplayName());
         Assert.Equal("PrusaLink", PrinterConnectionType.PrusaLink.GetDisplayName());
+        Assert.Equal("PrusaConnect", PrinterConnectionType.PrusaConnect.GetDisplayName());
         Assert.Equal("BambuLab", PrinterConnectionType.BambuLab.GetDisplayName());
         Assert.Equal("OctoPrint", PrinterConnectionType.OctoPrint.GetDisplayName());
     }

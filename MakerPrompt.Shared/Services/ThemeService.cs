@@ -101,7 +101,13 @@
             {
                 if (_jsModule != null)
                 {
-                    await _jsModule.InvokeVoidAsync("dispose");
+                    try
+                    {
+                        await _jsModule.InvokeVoidAsync("dispose");
+                    }
+                    catch (JSDisconnectedException) { }
+                    catch (JSException) { }
+
                     await _jsModule.DisposeAsync();
                 }
             }

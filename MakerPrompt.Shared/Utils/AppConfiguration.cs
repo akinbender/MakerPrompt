@@ -3,7 +3,7 @@
     public class AppConfiguration
     {
         public Theme Theme { get; set; } = Theme.Auto;
-		public string[] SupportedCultures { get; } = new string[] { "en-US", "de-DE", "tr-TR", "es-ES", "fr-FR", "pl-PL" };
+		public string[] SupportedCultures { get; } = new string[] { "en-US", "de-DE", "tr-TR", "es-ES", "fr-FR", "it-IT", "pl-PL", "he-IL", "zh-CN" };
         public string Language { get; set; } = "en-US";
         public string FarmName { get; set; } = string.Empty;
         public bool FarmModeEnabled { get; set; } = false;

@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using MakerPrompt.Shared.Utils;
 using MakerPrompt.Shared.Services;
+using MakerPrompt.MAUI.Services;
 using Microsoft.AspNetCore.Builder;
 using MakerPrompt.MAUI.Services;
 using MakerPrompt.MAUI.Storage;
@@ -23,15 +24,17 @@ namespace MakerPrompt.MAUI
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            // Enable WebGL in the embedded WebView2 on Windows.
+            // WebView2 silently disables WebGL for GPUs on its blocklist — bypassing that
+            // is required for the GCode visual viewer (Three.js / WebGL canvas) to work.
+            var webViewArgs = "--ignore-gpu-blocklist --enable-gpu-rasterization";
 #if DEBUG
-            // Enable WebView2 remote debugging so E2E tests can connect via
-            // Chrome DevTools Protocol (CDP) with Playwright.
-            Environment.SetEnvironmentVariable(
-                "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
-                "--remote-debugging-port=9222");
+            // Append remote-debugging port so E2E tests can connect via CDP / Playwright.
+            webViewArgs += " --remote-debugging-port=9222";
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
+            Environment.SetEnvironmentVariable("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", webViewArgs);
 
             builder.Services.AddLocalization(options =>
             {
@@ -51,6 +54,8 @@ namespace MakerPrompt.MAUI
             RestoreSavedCulture(supportedCultures);
 
             builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, SerialService>();
+            // Override the passthrough camera proxy with MAUI native HttpClient fetcher
+            builder.Services.AddSingleton<ICameraProxyService, MauiCameraProxyService>();
             builder.Services.AddScoped<IAppLocalStorageProvider, MauiAppLocalStorageProvider>();
             // MAUI: Use AES-256-GCM encryption for stored credentials
             var deviceId = DeviceInfo.Current.Idiom.ToString();

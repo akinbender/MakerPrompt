@@ -164,12 +164,10 @@ else
                                     }
 
                                     @* ── Camera Preview ── *@
-                                    @if (_cameraUrls.TryGetValue(printer.Definition.Id, out var camUrl) && !string.IsNullOrWhiteSpace(camUrl))
+                                    @if (_cameras.TryGetValue(printer.Definition.Id, out var cam) && cam is not null)
                                     {
                                         <div class="mb-2">
-                                            <div class="ratio ratio-16x9 border rounded overflow-hidden">
-                                                <img src="@camUrl" alt="Camera" class="object-fit-cover" style="background: #000;" />
-                                            </div>
+                                            <WebcamViewer Camera="@cam" SnapshotInterval="@TimeSpan.FromSeconds(5)" />
                                         </div>
                                     }
 
@@ -206,7 +204,7 @@ else
 @code {
     [CascadingParameter] private PrinterConnectionModal? ConnectionModal { get; set; }
 
-    private readonly Dictionary<Guid, string?> _cameraUrls = new();
+    private readonly Dictionary<Guid, PrinterCamera?> _cameras = new();
 
     // Selection state
     private Guid? _selectedPrinterId;
@@ -284,7 +282,7 @@ else
         {
             if (printer.Service == null || !printer.Service.IsConnected)
             {
-                _cameraUrls.Remove(printer.Definition.Id);
+                _cameras.Remove(printer.Definition.Id);
                 continue;
             }
 
@@ -296,15 +294,15 @@ else
                     OctoPrintApiService octoprint => await octoprint.GetCamerasAsync(),
                     BambuLabApiService bambu => await bambu.GetCamerasAsync(),
                     PrusaLinkApiService prusa => await prusa.GetCamerasAsync(),
+                    PrusaConnectApiService prusaConnect => await prusaConnect.GetCamerasAsync(),
                     _ => Array.Empty<PrinterCamera>()
                 };
 
-                var cam = cameras.FirstOrDefault();
-                _cameraUrls[printer.Definition.Id] = cam?.StreamUrl ?? cam?.SnapshotUrl;
+                _cameras[printer.Definition.Id] = cameras.FirstOrDefault();
             }
             catch
             {
-                _cameraUrls.Remove(printer.Definition.Id);
+                _cameras.Remove(printer.Definition.Id);
             }
         }
     }
@@ -316,7 +314,7 @@ else
         catch (Exception ex)
         {
             Logger.LogError(ex, "Fleet: connect failed");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Connection failed", ex.Message));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_ConnectFailed], ex.Message));
         }
     }
 
@@ -326,7 +324,7 @@ else
         catch (Exception ex)
         {
             Logger.LogError(ex, "Fleet: disconnect failed");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Disconnect failed", ex.Message));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_DisconnectFailed], ex.Message));
         }
     }
 
@@ -340,12 +338,12 @@ else
                 _selectedPrinterId = null;
                 _selectedPrinter = null;
             }
-            ToastService.Notify(new ToastMessage(ToastType.Success, "Printer removed"));
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.NavPrinters_PrinterRemoved]));
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to delete printer");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Delete failed", ex.Message));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_DeleteFailed], ex.Message));
         }
     }
 

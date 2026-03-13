@@ -325,3 +325,78 @@ tr:hover .action-button {
     --bs-form-invalid-color: #EE4266;
     --bs-form-invalid-border-color: #EE4266;
   }
+}
+
+/* ─── Dashboard ──────────────────────────────────────────────── */
+
+.dash-print-banner {
+    border: 1px solid var(--bs-success-border-subtle);
+    background: linear-gradient(135deg, var(--bs-secondary-bg), var(--bs-body-bg));
+}
+
+/* SVG progress ring */
+.dash-ring-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+}
+
+.dash-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 0.8rem;
+    line-height: 1.1;
+    pointer-events: none;
+}
+
+.dash-ring-label strong {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* Stat boxes in the print banner */
+.dash-stat-box {
+    text-align: center;
+    min-width: 52px;
+}
+
+.dash-stat-box small {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.dash-stat-box strong {
+    font-size: 1rem;
+    display: block;
+    line-height: 1.2;
+}
+
+/* Position readout boxes */
+.dash-pos-box {
+    background: var(--bs-secondary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    padding: 0.3rem 0.4rem;
+}
+
+.dash-pos-box span {
+    font-size: 0.95rem;
+}
+
+/* Temperature rows with divider */
+.dash-temp-row {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+
+.dash-temp-row:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}

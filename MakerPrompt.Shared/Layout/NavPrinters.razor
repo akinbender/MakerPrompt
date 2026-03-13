@@ -148,7 +148,7 @@
             @* ── Add/Edit Form ── *@
             <div class="mb-3">
                 <button class="btn btn-sm btn-outline-secondary" @onclick="HideAddEditForm">
-                    <i class="bi bi-arrow-left me-1"></i>Back
+                    <i class="bi bi-arrow-left me-1"></i>@localizer[Resources.NavPrinters_Back]
                 </button>
             </div>
 
@@ -171,7 +171,7 @@
             {
                 <div class="mb-3">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text">Port</span>
+                        <span class="input-group-text">@localizer[Resources.NavPrinters_Port]</span>
                         <select class="form-select" @bind="_editSerialSettings.PortName">
                             <option value="">@localizer[Resources.NavConnection_SelectPort]</option>
                             @foreach (var port in _availablePorts)
@@ -202,40 +202,54 @@
                     <p class="mb-0">@localizer[Resources.NavConnection_DemoServiceDescription]</p>
                 </div>
             }
+            else if (_editConnectionType == PrinterConnectionType.PrusaConnect)
+            {
+                <div class="alert alert-info">
+                    <p class="mb-0">@localizer[Resources.NavConnect_PrusaConnectDescription]</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">@localizer[Resources.NavPrinters_PrinterUuid]</label>
+                    <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">@localizer[Resources.NavPrinters_ApiKey]</label>
+                    <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter API key" />
+                </div>
+            }
             else
             {
                 @* API-based backends: PrusaLink, Moonraker, OctoPrint, BambuLab *@
                 <div class="mb-3">
-                    <label class="form-label">URL</label>
+                    <label class="form-label">@localizer[Resources.NavPrinters_Url]</label>
                     <input type="text" class="form-control" @bind="_editApiSettings.Url" placeholder="http://192.168.1.100" />
                 </div>
 
                 @if (_editConnectionType == PrinterConnectionType.BambuLab)
                 {
                     <div class="mb-3">
-                        <label class="form-label">Serial Number</label>
+                        <label class="form-label">@localizer[Resources.NavPrinters_SerialNumber]</label>
                         <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Enter printer serial number" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Access Code</label>
+                        <label class="form-label">@localizer[Resources.NavPrinters_AccessCode]</label>
                         <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter access code" />
                     </div>
                 }
                 else if (_editConnectionType == PrinterConnectionType.OctoPrint)
                 {
                     <div class="mb-3">
-                        <label class="form-label">API Key</label>
+                        <label class="form-label">@localizer[Resources.NavPrinters_ApiKey]</label>
                         <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Enter OctoPrint API key" />
                     </div>
                 }
                 else
                 {
                     <div class="mb-3">
-                        <label class="form-label">Username</label>
+                        <label class="form-label">@localizer[Resources.NavPrinters_Username]</label>
                         <input type="text" class="form-control" @bind="_editApiSettings.UserName" placeholder="Username" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Password / API Key</label>
+                        <label class="form-label">@localizer[Resources.NavPrinters_PasswordOrApiKey]</label>
                         <input type="password" class="form-control" @bind="_editApiSettings.Password" placeholder="Password or API key" />
                     </div>
                 }
@@ -255,7 +269,7 @@
         }
         else
         {
-            <button class="btn btn-secondary" @onclick="ClosePrintersModal">Close</button>
+            <button class="btn btn-secondary" @onclick="ClosePrintersModal">@localizer[Resources.NavPrinters_Close]</button>
         }
     </FooterTemplate>
 </Modal>
@@ -359,7 +373,7 @@
     {
         if (string.IsNullOrWhiteSpace(_editDefinition.Name))
         {
-            ToastService.Notify(new ToastMessage(ToastType.Warning, "Printer name is required"));
+            ToastService.Notify(new ToastMessage(ToastType.Warning, localizer[Resources.NavPrinters_PrinterNameRequired]));
             return;
         }
 
@@ -376,18 +390,18 @@
             if (_isEditing)
             {
                 await ConnectionManager.UpdatePrinterAsync(_editDefinition);
-                ToastService.Notify(new ToastMessage(ToastType.Success, "Printer updated"));
+                ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.NavPrinters_PrinterUpdated]));
             }
             else
             {
                 await ConnectionManager.AddPrinterAsync(_editDefinition);
-                ToastService.Notify(new ToastMessage(ToastType.Success, "Printer added"));
+                ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.NavPrinters_PrinterAdded]));
             }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to save printer definition");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Failed to save printer", ex.Message));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_SaveFailed], ex.Message));
         }
 
         _showAddEditForm = false;
@@ -402,7 +416,7 @@
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to connect printer");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Connection failed", ex.Message));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_ConnectFailed], ex.Message));
         }
     }
 
@@ -415,7 +429,7 @@
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to disconnect printer");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Disconnect failed", ex.Message));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_DisconnectFailed], ex.Message));
         }
     }
 
@@ -429,12 +443,12 @@
         try
         {
             await ConnectionManager.RemovePrinterAsync(id);
-            ToastService.Notify(new ToastMessage(ToastType.Success, "Printer removed"));
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.NavPrinters_PrinterRemoved]));
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to delete printer");
-            ToastService.Notify(new ToastMessage(ToastType.Danger, "Delete failed", ex.Message));
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_DeleteFailed], ex.Message));
         }
     }
 
