@@ -16,6 +16,8 @@ namespace MakerPrompt.Shared.Utils
 			services.AddSingleton<ISerialService, L>();
 			services.AddSingleton<PrusaLinkApiService>();
 			services.AddSingleton<PrusaConnectApiService>();
+			services.AddSingleton<PrusaConnectPrinterService>();
+			services.AddScoped<PrusaConnectProvider>();
 			services.AddSingleton<MoonrakerApiService>();
 			services.AddSingleton<BambuLabApiService>();
 			services.AddSingleton<OctoPrintApiService>();

@@ -481,7 +481,7 @@ namespace MakerPrompt.Shared.Services
                 PrinterConnectionType.Demo => new DemoPrinterService(),
                 PrinterConnectionType.Serial => _serialService,
                 PrinterConnectionType.PrusaLink => new PrusaLinkApiService(),
-                PrinterConnectionType.PrusaConnect => new PrusaConnectApiService(),
+                PrinterConnectionType.PrusaConnect => new PrusaConnectPrinterService(),
                 PrinterConnectionType.Moonraker => new MoonrakerApiService(),
                 PrinterConnectionType.BambuLab => new BambuLabApiService(),
                 PrinterConnectionType.OctoPrint => new OctoPrintApiService(),

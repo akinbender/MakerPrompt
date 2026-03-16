@@ -4,6 +4,7 @@
         ISerialService serialService,
         PrusaLinkApiService prusaLinkApiService,
         PrusaConnectApiService prusaConnectApiService,
+        PrusaConnectPrinterService prusaConnectPrinterService,
         MoonrakerApiService moonrakerApiService,
         BambuLabApiService bambuLabApiService,
         OctoPrintApiService octoPrintApiService) : IAsyncDisposable
@@ -15,6 +16,7 @@
 		private readonly ISerialService serialService = serialService;
 		private readonly PrusaLinkApiService prusaLinkApiService = prusaLinkApiService;
 		private readonly PrusaConnectApiService prusaConnectApiService = prusaConnectApiService;
+		private readonly PrusaConnectPrinterService prusaConnectPrinterService = prusaConnectPrinterService;
 		private readonly MoonrakerApiService moonrakerApiService = moonrakerApiService;
 		private readonly BambuLabApiService bambuLabApiService = bambuLabApiService;
 		private readonly OctoPrintApiService octoPrintApiService = octoPrintApiService;
@@ -31,7 +33,7 @@
                 PrinterConnectionType.Demo => new DemoPrinterService(),
                 PrinterConnectionType.Serial => serialService,
 				PrinterConnectionType.PrusaLink => prusaLinkApiService,
-				PrinterConnectionType.PrusaConnect => prusaConnectApiService,
+				PrinterConnectionType.PrusaConnect => prusaConnectPrinterService,
 				PrinterConnectionType.Moonraker => moonrakerApiService,
 				PrinterConnectionType.BambuLab => bambuLabApiService,
 				PrinterConnectionType.OctoPrint => octoPrintApiService,
@@ -71,6 +73,7 @@
             await DisconnectAsync();
 			await serialService.DisposeAsync();
 			await prusaLinkApiService.DisposeAsync();
+			await prusaConnectPrinterService.DisposeAsync();
 			await moonrakerApiService.DisposeAsync();
 			await bambuLabApiService.DisposeAsync();
 			await octoPrintApiService.DisposeAsync();

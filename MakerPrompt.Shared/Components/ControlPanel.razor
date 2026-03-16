@@ -155,6 +155,18 @@
                 <span class="fw-semibold">@Localizer[Resources.ControlPanel_Heating]</span>
             </div>
             <div class="card-body pb-1">
+                @* Preheat presets *@
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                    @foreach (var (label, hotend, bed) in PreheatProfiles)
+                    {
+                        var h = hotend; var b = bed;
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                @onclick="() => PreheatAsync(h, b)" disabled="@(!IsConnected)"
+                                title="@($"Hotend {hotend}°C / Bed {bed}°C")">
+                            @label
+                        </button>
+                    }
+                </div>
                 @* Hotend *@
                 <div class="dash-temp-row mb-3">
                     <div class="d-flex align-items-center justify-content-between mb-1">
@@ -198,6 +210,25 @@
                         <button class="btn btn-outline-warning" @onclick="SetBedTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
                     </div>
                 </div>
+                @* Chamber temp (shown when data is available from printer) *@
+                @if (Telemetry.ChamberTemp > 0 || Telemetry.ChamberTarget > 0)
+                {
+                    <div class="dash-temp-row mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="d-flex align-items-center gap-2">
+                                <i class="bi bi-box text-primary"></i>
+                                <span class="fw-semibold small">Chamber</span>
+                            </span>
+                            <span class="font-monospace fw-bold @(Telemetry.ChamberTemp > 30 ? "text-primary" : "")">
+                                @($"{Telemetry.ChamberTemp:F1}")°C
+                                <small class="text-muted fw-normal">/ @($"{Telemetry.ChamberTarget:F0}")°C</small>
+                            </span>
+                        </div>
+                        <div class="progress mb-2" style="height:3px;">
+                            <div class="progress-bar bg-primary" style="width:@($"{Math.Min(Telemetry.ChamberTemp / 90.0 * 100, 100):F0}%")"></div>
+                        </div>
+                    </div>
+                }
                 @* Fan *@
                 <div class="dash-temp-row">
                     <div class="d-flex align-items-center justify-content-between mb-1">
@@ -211,7 +242,7 @@
                         <div class="progress-bar bg-info" style="width:@Telemetry.FanSpeed%"></div>
                     </div>
                     <div class="input-group input-group-sm">
-                        <input type="number" min="0" max="100" class="form-control" @bind="printSpeed" disabled="@(!IsConnected)" placeholder="Fan %">
+                        <input type="number" min="0" max="100" class="form-control" @bind="fanTarget" disabled="@(!IsConnected)" placeholder="Fan %">
                         <span class="input-group-text">%</span>
                         <button class="btn btn-outline-info" @onclick="SetFanSpeedAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
                     </div>
@@ -307,6 +338,7 @@
 @code {
     private int hotendTarget = 0;
     private int bedTarget = 0;
+    private int fanTarget = 0;
     private int extrudeLength = 5;
     private int extrudeSpeed = 100;
     private int xySpeed = 1000;
@@ -314,6 +346,15 @@
     private int printSpeed = 100;
     private int printFlow = 100;
 
+    private static readonly (string Label, int Hotend, int Bed)[] PreheatProfiles =
+    [
+        ("PLA",       200,  60),
+        ("PETG",      230,  70),
+        ("ABS",       240, 100),
+        ("ASA",       245, 105),
+        ("TPU",       220,  40),
+        ("Cooldown",    0,   0),
+    ];
     private bool isInverse;
     private int[] moveLenghts = { 1, 10, 100, 500 };
     private AxisTab ActiveTab = AxisTab.Y;
@@ -388,7 +429,17 @@
     private Task SetFanSpeedAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.SetFanSpeed(printSpeed) ?? Task.CompletedTask;
+        return printer?.SetFanSpeed(fanTarget) ?? Task.CompletedTask;
+    }
+
+    private async Task PreheatAsync(int hotend, int bed)
+    {
+        var printer = PrinterServiceFactory.Current;
+        if (printer == null) return;
+        hotendTarget = hotend;
+        bedTarget = bed;
+        await printer.SetHotendTemp(hotend);
+        await printer.SetBedTemp(bed);
     }
 
     private Task ExtrudeAsync(int amount)

@@ -47,6 +47,9 @@ namespace MakerPrompt.Shared.Services
                     PrinterConnectionType.PrusaConnect when current is PrusaConnectApiService prusaConnect =>
                         await prusaConnect.GetCamerasAsync(cancellationToken).ConfigureAwait(false),
 
+                    PrinterConnectionType.PrusaConnect when current is PrusaConnectPrinterService mobilePrusa =>
+                        await mobilePrusa.GetCamerasAsync(cancellationToken).ConfigureAwait(false),
+
                     _ => Array.Empty<PrinterCamera>()
                 };
             }

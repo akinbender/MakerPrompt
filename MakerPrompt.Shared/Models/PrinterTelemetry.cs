@@ -55,6 +55,20 @@ namespace MakerPrompt.Shared.Models
             set => SetField(ref _bedTarget, value, nameof(BedTarget));
         }
 
+        private double _chamberTemp;
+        public double ChamberTemp
+        {
+            get => _chamberTemp;
+            set => SetField(ref _chamberTemp, value, nameof(ChamberTemp));
+        }
+
+        private double _chamberTarget;
+        public double ChamberTarget
+        {
+            get => _chamberTarget;
+            set => SetField(ref _chamberTarget, value, nameof(ChamberTarget));
+        }
+
         private Vector3 _position = new();
         public Vector3 Position
         {

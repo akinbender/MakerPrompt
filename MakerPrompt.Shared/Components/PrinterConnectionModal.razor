@@ -165,7 +165,11 @@
     private PrinterConnectionType _editConnectionType = PrinterConnectionType.Demo;
     private List<string> _availablePorts = new();
     private readonly List<int> BaudRates = [9600, 19200, 38400, 57600, 115200, 250000];
-    private readonly PrinterConnectionType[] _connectionTypes = Enum.GetValues<PrinterConnectionType>();
+    // PrusaConnect uses the fleet-picker flow (PrusaConnectProvider), not this modal.
+    private static readonly PrinterConnectionType[] _connectionTypes =
+        Enum.GetValues<PrinterConnectionType>()
+            .Where(t => t != PrinterConnectionType.PrusaConnect)
+            .ToArray();
 
     public async Task ShowAddAsync()
     {
