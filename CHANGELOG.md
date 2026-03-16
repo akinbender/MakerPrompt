@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.4.0"></a>
+## [0.4.0](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.4.0) (2026-03-16)
+
+### Features
+
+* inventory and analytics etc ([a88e72a](https://www.github.com/akinbender/MakerPrompt/commit/a88e72adb92ea2fa02c670c247495acda029e500))
+* sidebar-collapse, global error handling ([fd1b00b](https://www.github.com/akinbender/MakerPrompt/commit/fd1b00b33e32cd551a42ec2577fef80afeb7c23e))
+
+### Bug Fixes
+
+* changes ([6bdd2c6](https://www.github.com/akinbender/MakerPrompt/commit/6bdd2c6f5d9f06dfcb21a49a289f87d2ea47bef9))
+* changes ([23d34da](https://www.github.com/akinbender/MakerPrompt/commit/23d34dadc500930f887d267bd11689372ffe01ae))
+* e2e tests ([c6f966d](https://www.github.com/akinbender/MakerPrompt/commit/c6f966d68e500755c2f3e1436c18229a015a7db5))
+* fixes ([277f25b](https://www.github.com/akinbender/MakerPrompt/commit/277f25b9276b2a5ccc070d1ca2111fc402960dc3))
+* fixes ([68ab0d4](https://www.github.com/akinbender/MakerPrompt/commit/68ab0d49fe7801357f64072b0c6579e203d80919))
+* telemetry issues ([d96aa4f](https://www.github.com/akinbender/MakerPrompt/commit/d96aa4fa74b635364016940f896bb0eabd288f15))
+
 <a name="0.3.10"></a>
 ## [0.3.10](https://www.github.com/akinbender/MakerPrompt/releases/tag/v0.3.10) (2026-01-21)
 
