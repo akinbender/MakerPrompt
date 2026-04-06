@@ -33,6 +33,7 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
     private string? _printerUuid;
 
     public override PrinterConnectionType ConnectionType => PrinterConnectionType.PrusaConnect;
+    public bool SupportsDirectControl => false;
 
     public PrusaConnectApiService() { }
 
