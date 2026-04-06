@@ -1,5 +1,4 @@
 ﻿@inherits ConnectionComponentBase
-@using MakerPrompt.Shared.Services
 @inject PrinterStorageProvider PrinterStorage
 @inject IAppLocalStorageProvider AppStorage
 
@@ -555,9 +554,9 @@
 
     private async Task RefreshPrinterQueueAsync()
     {
-        if (PrinterServiceFactory.Current is MoonrakerApiService moonraker)
+        if (PrinterServiceFactory.Current is { SupportsPrinterQueue: true } printer)
         {
-            _printerQueue = await moonraker.GetPrinterQueueAsync();
+            _printerQueue = await printer.GetPrinterQueueAsync();
             await InvokeAsync(StateHasChanged);
         }
     }

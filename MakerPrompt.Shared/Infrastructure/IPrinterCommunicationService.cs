@@ -29,6 +29,11 @@
         Task WriteDataAsync(string command);
         Task<PrinterTelemetry> GetPrinterTelemetryAsync();
         Task<List<FileEntry>> GetFilesAsync();
+        /// <summary>
+        /// Returns the printer-side print queue entries. Returns an empty list
+        /// for backends that do not support a print queue (<see cref="SupportsPrinterQueue"/> is false).
+        /// </summary>
+        Task<List<PrintQueueEntry>> GetPrinterQueueAsync() => Task.FromResult(new List<PrintQueueEntry>());
         Task SetHotendTemp(int targetTemp = 0);
         Task SetBedTemp(int targetTemp = 0);
         Task Home(bool x = true, bool y = true, bool z = true);
