@@ -368,8 +368,8 @@
         <div class="card mt-3">
             <div class="card-header d-flex align-items-center gap-2 py-2">
                 <i class="bi bi-collection-play text-primary"></i>
-                <span class="fw-semibold">Printer Queue</span>
-                <button class="btn btn-sm btn-outline-secondary ms-auto" @onclick="RefreshPrinterQueueAsync" disabled="@(!IsConnected)" title="Refresh">
+                <span class="fw-semibold">@Localizer[Resources.ControlPanel_PrinterQueue]</span>
+                <button class="btn btn-sm btn-outline-secondary ms-auto" @onclick="SafeRefreshPrinterQueueAsync" disabled="@(!IsConnected)" title="@Localizer[Resources.PrintQueue_Refresh]">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
             </div>
@@ -378,7 +378,7 @@
                 {
                     <div class="text-center text-muted py-3">
                         <i class="bi bi-inbox" style="font-size: 1.5rem;"></i>
-                        <p class="mt-1 mb-0 small">No jobs in printer queue</p>
+                        <p class="mt-1 mb-0 small">@Localizer[Resources.ControlPanel_PrinterQueueEmpty]</p>
                     </div>
                 }
                 else
@@ -542,14 +542,14 @@
     {
         base.OnInitialized();
         if (SupportsPrinterQueue)
-            _ = RefreshPrinterQueueAsync();
+            _ = SafeRefreshPrinterQueueAsync();
     }
 
     protected override void HandleConnectionChanged(object? sender, bool connected)
     {
         base.HandleConnectionChanged(sender, connected);
         if (connected && SupportsPrinterQueue)
-            _ = RefreshPrinterQueueAsync();
+            _ = SafeRefreshPrinterQueueAsync();
     }
 
     private async Task RefreshPrinterQueueAsync()
@@ -560,6 +560,10 @@
             await InvokeAsync(StateHasChanged);
         }
     }
+
+    // Wraps RefreshPrinterQueueAsync with error handling for fire-and-forget calls
+    private Task SafeRefreshPrinterQueueAsync() =>
+        RunAsync(RefreshPrinterQueueAsync, Localizer[Resources.ControlPanel_PrinterQueue]);
 
     private readonly PrinterTelemetry fallbackTelemetry = new();
     private PrinterTelemetry Telemetry => PrinterServiceFactory.Current?.LastTelemetry ?? fallbackTelemetry;

@@ -483,6 +483,12 @@
   <data name="ControlPanel_FanSpeed" xml:space="preserve">
     <value>Fan speed</value>
   </data>
+  <data name="ControlPanel_PrinterQueue" xml:space="preserve">
+    <value>Printer Queue</value>
+  </data>
+  <data name="ControlPanel_PrinterQueueEmpty" xml:space="preserve">
+    <value>No jobs in printer queue</value>
+  </data>
   <data name="ControlPanel_HomeAll" xml:space="preserve">
     <value>Home all</value>
   </data>

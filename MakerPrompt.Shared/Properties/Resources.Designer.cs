@@ -671,6 +671,18 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("ControlPanel_FanSpeed", resourceCulture);
             }
         }
+
+        public static string ControlPanel_PrinterQueue {
+            get {
+                return ResourceManager.GetString("ControlPanel_PrinterQueue", resourceCulture);
+            }
+        }
+
+        public static string ControlPanel_PrinterQueueEmpty {
+            get {
+                return ResourceManager.GetString("ControlPanel_PrinterQueueEmpty", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Heating.

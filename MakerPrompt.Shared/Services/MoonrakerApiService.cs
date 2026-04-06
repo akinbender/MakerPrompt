@@ -325,6 +325,8 @@
             }
             catch
             {
+                // Swallow API errors silently — the caller (ControlPanel) handles
+                // the empty-list case and uses RunAsync for user-facing error reporting.
                 return [];
             }
         }
