@@ -58,28 +58,8 @@
                     <span class="sidebar-label">@Resources.PageTitle_BrailleRAP</span>
                 </NavLink>
             </li>
-            <li class="nav-item">
-                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="about">
-                    <i class="bi bi-info-circle sidebar-icon"></i>
-                    <span class="sidebar-label">@Resources.PageTitle_About</span>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link sidebar-link px-3 py-2 rounded" href="settings">
-                    <i class="bi bi-gear sidebar-icon"></i>
-                    <span class="sidebar-label">@localizer[Resources.PageTitle_Settings]</span>
-                </NavLink>
-            </li>
         </ul>
         <hr class="mx-2 my-1" />
-        @if (ConfigService.Configuration.FarmModeEnabled && !string.IsNullOrWhiteSpace(ConfigService.Configuration.FarmName))
-        {
-            <div class="px-3 mb-1">
-                <small class="sidebar-label text-info fw-semibold" style="font-size:0.75rem;">
-                    <i class="bi bi-building sidebar-icon"></i> @ConfigService.Configuration.FarmName
-                </small>
-            </div>
-        }
         <div class="px-2 d-flex align-items-center gap-2">
             <button class="btn btn-link sidebar-toggle-btn flex-shrink-0 px-3 py-2 rounded" @onclick="OnToggle" title="Toggle navigation">
                 <i class="bi @(Collapsed ? "bi-chevron-double-right" : "bi-chevron-double-left") sidebar-icon"></i>

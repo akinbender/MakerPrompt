@@ -1,4 +1,6 @@
-﻿<nav class="navbar navbar-expand px-2">
+﻿@inject IStringLocalizer<Resources> localizer
+
+<nav class="navbar navbar-expand px-2">
     <div class="container-fluid">
         <div class="me-2">
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -8,6 +10,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="https://github.com/akinbender/MakerPrompt" target="_blank" rel="noopener noreferrer" title="GitHub">
                             <i class="bi bi-github"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings" title="@localizer[Resources.PageTitle_Settings]">
+                            <i class="bi bi-gear"></i>
                         </a>
                     </li>
                     <li class="nav-item d-md-none">
