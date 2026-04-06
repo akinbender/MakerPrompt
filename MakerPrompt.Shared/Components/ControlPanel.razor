@@ -1,4 +1,5 @@
 ﻿@inherits ConnectionComponentBase
+@using MakerPrompt.Shared.Services
 @inject PrinterStorageProvider PrinterStorage
 @inject IAppLocalStorageProvider AppStorage
 
@@ -66,6 +67,8 @@
 <div class="row g-3">
 
     @* ── Left: Position + Webcam ── *@
+    @if (SupportsDirectControl)
+    {
     <div class="col-lg-6 col-md-12">
         <div class="card">
             <div class="card-header d-flex align-items-center gap-2 py-2">
@@ -144,6 +147,15 @@
             <WebcamPanel />
         </div>
     </div>
+    }
+    else
+    {
+    <div class="col-lg-6 col-md-12">
+        <div class="mt-3">
+            <WebcamPanel />
+        </div>
+    </div>
+    }
 
     @* ── Right: Temps + Extrude + Speed/Flow + Calibration ── *@
     <div class="col-lg-6 col-md-12">
@@ -155,18 +167,21 @@
                 <span class="fw-semibold">@Localizer[Resources.ControlPanel_Heating]</span>
             </div>
             <div class="card-body pb-1">
-                @* Preheat presets *@
-                <div class="d-flex flex-wrap gap-1 mb-3">
-                    @foreach (var (label, hotend, bed) in PreheatProfiles)
-                    {
-                        var h = hotend; var b = bed;
-                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                                @onclick="() => PreheatAsync(h, b)" disabled="@(!IsConnected)"
-                                title="@($"Hotend {hotend}°C / Bed {bed}°C")">
-                            @label
-                        </button>
-                    }
-                </div>
+                @* Preheat presets (control-capable backends only) *@
+                @if (SupportsDirectControl)
+                {
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        @foreach (var (label, hotend, bed) in PreheatProfiles)
+                        {
+                            var h = hotend; var b = bed;
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    @onclick="() => PreheatAsync(h, b)" disabled="@(!IsConnected)"
+                                    title="@($"Hotend {hotend}°C / Bed {bed}°C")">
+                                @label
+                            </button>
+                        }
+                    </div>
+                }
                 @* Hotend *@
                 <div class="dash-temp-row mb-3">
                     <div class="d-flex align-items-center justify-content-between mb-1">
@@ -183,11 +198,14 @@
                         <div class="progress-bar @(Telemetry.HotendTemp > 150 ? "bg-danger" : Telemetry.HotendTemp > 60 ? "bg-warning" : "bg-secondary")"
                              style="width:@($"{Math.Min(Telemetry.HotendTemp / 300.0 * 100, 100):F0}%")"></div>
                     </div>
-                    <div class="input-group input-group-sm">
-                        <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" disabled="@(!IsConnected)" placeholder="Target °C">
-                        <span class="input-group-text">°C</span>
-                        <button class="btn btn-outline-danger" @onclick="SetHotendTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
-                    </div>
+                    @if (SupportsDirectControl)
+                    {
+                        <div class="input-group input-group-sm">
+                            <input type="number" min="0" max="300" class="form-control" @bind="hotendTarget" disabled="@(!IsConnected)" placeholder="Target °C">
+                            <span class="input-group-text">°C</span>
+                            <button class="btn btn-outline-danger" @onclick="SetHotendTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                        </div>
+                    }
                 </div>
                 @* Bed *@
                 <div class="dash-temp-row mb-3">
@@ -204,11 +222,14 @@
                     <div class="progress mb-2" style="height:3px;">
                         <div class="progress-bar bg-warning" style="width:@($"{Math.Min(Telemetry.BedTemp / 120.0 * 100, 100):F0}%")"></div>
                     </div>
-                    <div class="input-group input-group-sm">
-                        <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" disabled="@(!IsConnected)" placeholder="Target °C">
-                        <span class="input-group-text">°C</span>
-                        <button class="btn btn-outline-warning" @onclick="SetBedTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
-                    </div>
+                    @if (SupportsDirectControl)
+                    {
+                        <div class="input-group input-group-sm">
+                            <input type="number" min="0" max="120" class="form-control" @bind="bedTarget" disabled="@(!IsConnected)" placeholder="Target °C">
+                            <span class="input-group-text">°C</span>
+                            <button class="btn btn-outline-warning" @onclick="SetBedTempAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                        </div>
+                    }
                 </div>
                 @* Chamber temp (shown when data is available from printer) *@
                 @if (Telemetry.ChamberTemp > 0 || Telemetry.ChamberTarget > 0)
@@ -241,16 +262,21 @@
                     <div class="progress mb-2" style="height:3px;">
                         <div class="progress-bar bg-info" style="width:@Telemetry.FanSpeed%"></div>
                     </div>
-                    <div class="input-group input-group-sm">
-                        <input type="number" min="0" max="100" class="form-control" @bind="fanTarget" disabled="@(!IsConnected)" placeholder="Fan %">
-                        <span class="input-group-text">%</span>
-                        <button class="btn btn-outline-info" @onclick="SetFanSpeedAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
-                    </div>
+                    @if (SupportsDirectControl)
+                    {
+                        <div class="input-group input-group-sm">
+                            <input type="number" min="0" max="100" class="form-control" @bind="fanTarget" disabled="@(!IsConnected)" placeholder="Fan %">
+                            <span class="input-group-text">%</span>
+                            <button class="btn btn-outline-info" @onclick="SetFanSpeedAsync" disabled="@(!IsConnected)">@Localizer[Resources.ControlPanel_Set]</button>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
 
-        @* Extrude *@
+        @* Extrude (direct-control backends only) *@
+        @if (SupportsDirectControl)
+        {
         <div class="card mb-3">
             <div class="card-header d-flex align-items-center gap-2 py-2">
                 <i class="bi bi-moisture text-secondary"></i>
@@ -283,6 +309,7 @@
                 </div>
             </div>
         </div>
+        }
 
         @* Speed / Flow *@
         <div class="card mb-3">
@@ -297,26 +324,34 @@
                             @Localizer[Resources.ControlPanel_PrintSpeed]
                             <span class="badge bg-primary ms-1">@Telemetry.FeedRate%</span>
                         </label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" min="1" max="300" class="form-control" @bind="printSpeed" @bind:after="UpdatePrintSpeedAsync" disabled="@(!IsConnected)">
-                            <span class="input-group-text">%</span>
-                        </div>
+                        @if (SupportsDirectControl)
+                        {
+                            <div class="input-group input-group-sm">
+                                <input type="number" min="1" max="300" class="form-control" @bind="printSpeed" @bind:after="UpdatePrintSpeedAsync" disabled="@(!IsConnected)">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        }
                     </div>
                     <div class="col">
                         <label class="form-label small text-muted mb-1">
                             @Localizer[Resources.ControlPanel_PrintFlow]
                             <span class="badge bg-secondary ms-1">@Telemetry.FlowRate%</span>
                         </label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" min="1" max="300" class="form-control" @bind="printFlow" @bind:after="UpdatePrintFlowAsync" disabled="@(!IsConnected)">
-                            <span class="input-group-text">%</span>
-                        </div>
+                        @if (SupportsDirectControl)
+                        {
+                            <div class="input-group input-group-sm">
+                                <input type="number" min="1" max="300" class="form-control" @bind="printFlow" @bind:after="UpdatePrintFlowAsync" disabled="@(!IsConnected)">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
         </div>
 
-        @* Calibration *@
+        @* Calibration (direct-control backends only) *@
+        @if (SupportsDirectControl)
+        {
         <div class="card">
             <div class="card-header d-flex align-items-center gap-2 py-2">
                 <i class="bi bi-rulers text-secondary"></i>
@@ -326,6 +361,45 @@
                 <Calibration />
             </div>
         </div>
+        }
+
+        @* Printer Queue (Moonraker only) *@
+        @if (SupportsPrinterQueue)
+        {
+        <div class="card mt-3">
+            <div class="card-header d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-collection-play text-primary"></i>
+                <span class="fw-semibold">Printer Queue</span>
+                <button class="btn btn-sm btn-outline-secondary ms-auto" @onclick="RefreshPrinterQueueAsync" disabled="@(!IsConnected)" title="Refresh">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+            <div class="card-body p-0">
+                @if (!_printerQueue.Any())
+                {
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-inbox" style="font-size: 1.5rem;"></i>
+                        <p class="mt-1 mb-0 small">No jobs in printer queue</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var job in _printerQueue)
+                        {
+                            <div class="list-group-item px-3 py-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-file-earmark-code text-muted"></i>
+                                    <span class="text-truncate flex-grow-1 small fw-semibold" title="@job.FileName">@job.FileName</span>
+                                    <small class="text-muted flex-shrink-0">@DateTimeOffset.FromUnixTimeSeconds((long)job.TimeAdded).ToLocalTime().ToString("HH:mm")</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        }
     </div>
 
     @* ── File storage ── *@
@@ -345,6 +419,11 @@
     private int zSpeed = 100;
     private int printSpeed = 100;
     private int printFlow = 100;
+
+    private List<PrintQueueEntry> _printerQueue = [];
+
+    private bool SupportsDirectControl => PrinterServiceFactory.Current?.SupportsDirectControl ?? true;
+    private bool SupportsPrinterQueue => PrinterServiceFactory.Current?.SupportsPrinterQueue ?? false;
 
     private static readonly (string Label, int Hotend, int Bed)[] PreheatProfiles =
     [
@@ -458,6 +537,29 @@
     {
         var printer = PrinterServiceFactory.Current;
         return printer?.SetPrintFlow(printFlow) ?? Task.CompletedTask;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (SupportsPrinterQueue)
+            _ = RefreshPrinterQueueAsync();
+    }
+
+    protected override void HandleConnectionChanged(object? sender, bool connected)
+    {
+        base.HandleConnectionChanged(sender, connected);
+        if (connected && SupportsPrinterQueue)
+            _ = RefreshPrinterQueueAsync();
+    }
+
+    private async Task RefreshPrinterQueueAsync()
+    {
+        if (PrinterServiceFactory.Current is MoonrakerApiService moonraker)
+        {
+            _printerQueue = await moonraker.GetPrinterQueueAsync();
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private readonly PrinterTelemetry fallbackTelemetry = new();

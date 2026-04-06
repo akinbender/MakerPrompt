@@ -1958,9 +1958,15 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("PageTitle_Fleet", resourceCulture);
             }
         }
+
+        public static string PageTitle_ProjectHub {
+            get {
+                return ResourceManager.GetString("PageTitle_ProjectHub", resourceCulture);
+            }
+        }
         
         /// <summary>
-        ///   Looks up a localized string similar to Print Queue.
+        ///   Looks up a localized string similar to Project Hub.
         /// </summary>
         public static string PrintQueue_Title {
             get {

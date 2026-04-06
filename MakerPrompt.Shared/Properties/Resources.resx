@@ -750,8 +750,11 @@
   <data name="PageTitle_Fleet" xml:space="preserve">
     <value>Fleet</value>
   </data>
+  <data name="PageTitle_ProjectHub" xml:space="preserve">
+    <value>Project Hub</value>
+  </data>
   <data name="PrintQueue_Title" xml:space="preserve">
-    <value>Print Queue</value>
+    <value>Project Hub</value>
   </data>
   <data name="PrintQueue_NoFiles" xml:space="preserve">
     <value>No files available. Connect a printer to browse files.</value>

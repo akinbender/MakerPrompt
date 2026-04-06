@@ -9,6 +9,7 @@
         private string _jwtToken = string.Empty;
         private string _refreshToken = string.Empty;
         public override PrinterConnectionType ConnectionType { get; } = PrinterConnectionType.Moonraker;
+        public bool SupportsPrinterQueue => true;
 
         public MoonrakerApiService()
         {
@@ -289,6 +290,43 @@
                     ModifiedDate = f.ModifiedDate,
                     IsAvailable = f.Permissions.Contains("rw"),
                 }).ToList();
+        }
+
+        /// <summary>
+        /// Returns the current Moonraker print queue (queued job entries).
+        /// Returns an empty list when not connected or the API call fails.
+        /// </summary>
+        public async Task<List<PrintQueueEntry>> GetPrinterQueueAsync()
+        {
+            if (!IsConnected) return [];
+
+            try
+            {
+                var response = await Client.GetAsync("/server/print_queue", _cts.Token);
+                if (!response.IsSuccessStatusCode) return [];
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                if (!doc.RootElement.TryGetProperty("result", out var result)) return [];
+                if (!result.TryGetProperty("queued_jobs", out var jobs) ||
+                    jobs.ValueKind != JsonValueKind.Array) return [];
+
+                var entries = new List<PrintQueueEntry>();
+                foreach (var job in jobs.EnumerateArray())
+                {
+                    entries.Add(new PrintQueueEntry
+                    {
+                        JobId = job.TryGetProperty("job_id", out var id) ? id.GetString() ?? string.Empty : string.Empty,
+                        FileName = job.TryGetProperty("filename", out var fn) ? fn.GetString() ?? string.Empty : string.Empty,
+                        TimeAdded = job.TryGetProperty("time_added", out var ta) ? ta.GetDouble() : 0,
+                    });
+                }
+                return entries;
+            }
+            catch
+            {
+                return [];
+            }
         }
 
         public async Task<Stream?> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
@@ -618,4 +656,15 @@
 
     }
 
+}
+
+/// <summary>
+/// Represents a single entry in the Moonraker print queue.
+/// </summary>
+public sealed class PrintQueueEntry
+{
+    public string JobId { get; init; } = string.Empty;
+    public string FileName { get; init; } = string.Empty;
+    /// <summary>Unix timestamp when the job was added to the queue.</summary>
+    public double TimeAdded { get; init; }
 }
