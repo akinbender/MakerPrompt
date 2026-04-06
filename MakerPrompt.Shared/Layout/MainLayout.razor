@@ -11,7 +11,7 @@
     </a>
     @if (ConfigService.Configuration.FarmModeEnabled && !string.IsNullOrWhiteSpace(ConfigService.Configuration.FarmName))
     {
-        <span class="ms-2 fw-semibold text-body-secondary d-none d-md-inline">@ConfigService.Configuration.FarmName</span>
+        <span class="ms-2 fw-semibold text-body-secondary text-truncate" style="min-width:0">@ConfigService.Configuration.FarmName</span>
     }
     <div class="ms-auto">
         <NavTop />
