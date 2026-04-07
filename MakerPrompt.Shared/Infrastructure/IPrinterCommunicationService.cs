@@ -24,6 +24,12 @@
         /// </summary>
         bool SupportsPrinterQueue => false;
 
+        /// <summary>
+        /// True when the backend supports sending raw G-code commands via <see cref="WriteDataAsync"/>.
+        /// Backends that use a proprietary protocol with no command terminal should return false.
+        /// </summary>
+        bool SupportsCommandPrompt => true;
+
         Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings);
         Task DisconnectAsync();
         Task WriteDataAsync(string command);

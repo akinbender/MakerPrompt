@@ -595,6 +595,9 @@
   <data name="PageTitle_BrailleRAP" xml:space="preserve">
     <value>BrailleRAP</value>
   </data>
+  <data name="PageTitle_Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
   <data name="BrailleRAP_Description" xml:space="preserve">
     <value>Metni Braille'e dönüştürün ve BrailleRAP kabartma için G-kodu oluşturun.</value>
   </data>

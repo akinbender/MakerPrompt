@@ -595,6 +595,9 @@
   <data name="PageTitle_BrailleRAP" xml:space="preserve">
     <value>BrailleRAP</value>
   </data>
+  <data name="PageTitle_Settings" xml:space="preserve">
+    <value>Configuraci&#243;n</value>
+  </data>
   <data name="BrailleRAP_Description" xml:space="preserve">
     <value>Convertir texto a Braille y generar código G para grabado BrailleRAP.</value>
   </data>

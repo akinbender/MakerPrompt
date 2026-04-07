@@ -27,7 +27,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="farmModeEnabled" @bind="_config.FarmModeEnabled" />
+                        <input class="form-check-input" type="checkbox" id="farmModeEnabled" @bind="_config.FarmModeEnabled" @bind:after="OnFarmModeChangedAsync" />
                         <label class="form-check-label" for="farmModeEnabled">@localizer[Resources.Settings_EnableFarmMode]</label>
                         <div class="form-text">@localizer[Resources.Settings_FarmModeDescription]</div>
                     </div>
@@ -80,43 +80,25 @@
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="enableFilamentInventory" @bind="_config.EnableFilamentInventory" />
+                        <input class="form-check-input" type="checkbox" id="enableFilamentInventory" @bind="_config.EnableFilamentInventory" @bind:after="SaveFeaturesAsync" />
                         <label class="form-check-label" for="enableFilamentInventory">@localizer[Resources.Settings_EnableFilamentInventory]</label>
                         <div class="form-text">@localizer[Resources.Settings_FilamentInventoryDescription]</div>
                     </div>
 
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="enablePrintAnalytics" @bind="_config.EnablePrintAnalytics" />
+                        <input class="form-check-input" type="checkbox" id="enablePrintAnalytics" @bind="_config.EnablePrintAnalytics" @bind:after="SaveFeaturesAsync" />
                         <label class="form-check-label" for="enablePrintAnalytics">@localizer[Resources.Settings_EnablePrintAnalytics]</label>
                         <div class="form-text">@localizer[Resources.Settings_PrintAnalyticsDescription]</div>
                     </div>
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    <strong>@localizer[Resources.Settings_TelemetryAnalytics]</strong>
-                </div>
-                <div class="card-body">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="analyticsEnabled" @bind="_config.AnalyticsEnabled" />
-                        <label class="form-check-label" for="analyticsEnabled">@localizer[Resources.Settings_EnableAppTelemetry]</label>
-                        <div class="form-text">@localizer[Resources.Settings_TelemetryDescription]</div>
-                    </div>
-                </div>
             </div>
-
-        </div>
         <div class="col-md-6 col-sm-12">
             <StorageExplorer Title="@localizer[Resources.Settings_AppStorage]" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <button class="btn btn-primary" @onclick="SaveSettingsAsync" data-testid="save-settings-btn">@localizer[Resources.Settings_SaveButton]</button>
-        </div>
     </div>
-</div>
 
 @code {
     private AppConfiguration _config = new();
@@ -144,21 +126,15 @@
         await FarmService.InitializeAsync();
     }
 
-    private async Task SaveSettingsAsync()
+    private async Task OnFarmModeChangedAsync()
     {
-        var wasInFarmMode = ConfigService.Configuration.FarmModeEnabled;
+        var wasEnabled = ConfigService.Configuration.FarmModeEnabled;
+        var enabling = _config.FarmModeEnabled;
 
-        ConfigService.Configuration.Theme = _config.Theme;
-        ConfigService.Configuration.Language = _config.Language;
-        ConfigService.Configuration.FarmModeEnabled = _config.FarmModeEnabled;
-        ConfigService.Configuration.ActiveFarmId = _config.ActiveFarmId;
-        ConfigService.Configuration.AnalyticsEnabled = _config.AnalyticsEnabled;
-        ConfigService.Configuration.EnableFilamentInventory = _config.EnableFilamentInventory;
-        ConfigService.Configuration.EnablePrintAnalytics = _config.EnablePrintAnalytics;
+        ConfigService.Configuration.FarmModeEnabled = enabling;
         ConfigService.Configuration.LastUpdated = DateTime.UtcNow;
 
-        // When disabling farm mode, clear the farm-loaded printers and reset the farm name
-        if (wasInFarmMode && !_config.FarmModeEnabled)
+        if (wasEnabled && !enabling)
         {
             ConfigService.Configuration.FarmName = string.Empty;
             ConfigService.Configuration.ActiveFarmId = null;
@@ -166,12 +142,19 @@
         }
 
         await ConfigService.SaveConfigurationAsync();
-        ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_Saved], localizer[Resources.Settings_Toast_SavedMessage]));
 
-        if (!wasInFarmMode && _config.FarmModeEnabled)
+        if (!wasEnabled && enabling)
             Navigation.NavigateTo("/fleet", replace: true);
-        else if (wasInFarmMode && !_config.FarmModeEnabled)
+        else if (wasEnabled && !enabling)
             Navigation.NavigateTo("/dashboard", replace: true);
+    }
+
+    private async Task SaveFeaturesAsync()
+    {
+        ConfigService.Configuration.EnableFilamentInventory = _config.EnableFilamentInventory;
+        ConfigService.Configuration.EnablePrintAnalytics = _config.EnablePrintAnalytics;
+        ConfigService.Configuration.LastUpdated = DateTime.UtcNow;
+        await ConfigService.SaveConfigurationAsync();
     }
 
     private async Task CreateFarmAsync()

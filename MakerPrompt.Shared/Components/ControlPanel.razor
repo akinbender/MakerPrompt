@@ -406,6 +406,18 @@
         <StorageExplorer Title="Printer storage" Provider="PrinterStorage" TargetProvider="AppStorage"
                          EnableUpload="false" EnableDelete="true" EnableOpen="true" EnableCopy="true" />
     </div>
+
+    @* ── Command Prompt / Project Hub ── *@
+    <div class="col-12" style="min-height: 300px;">
+        @if (SupportsCommandPrompt)
+        {
+            <CommandPrompt />
+        }
+        else
+        {
+            <ProjectHub />
+        }
+    </div>
 </div>
 
 @code {
@@ -423,6 +435,7 @@
 
     private bool SupportsDirectControl => PrinterServiceFactory.Current?.SupportsDirectControl ?? true;
     private bool SupportsPrinterQueue => PrinterServiceFactory.Current?.SupportsPrinterQueue ?? false;
+    private bool SupportsCommandPrompt => PrinterServiceFactory.Current?.SupportsCommandPrompt ?? true;
 
     private static readonly (string Label, int Hotend, int Bed)[] PreheatProfiles =
     [

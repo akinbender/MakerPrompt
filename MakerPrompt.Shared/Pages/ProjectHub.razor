@@ -1,20 +1,3 @@
-@page "/projecthub"
-@inject IAppConfigurationService ConfigService
-@inject NavigationManager Navigation
-
-<LocalizedTitle TitleKey="@Resources.PageTitle_ProjectHub" />
-
 <div class="container-fluid">
     <PrintQueue />
 </div>
-
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        await ConfigService.InitializeAsync();
-        if (!ConfigService.Configuration.FarmModeEnabled)
-        {
-            Navigation.NavigateTo("/dashboard", replace: true);
-        }
-    }
-}
