@@ -483,6 +483,12 @@
   <data name="ControlPanel_FanSpeed" xml:space="preserve">
     <value>Fan speed</value>
   </data>
+  <data name="ControlPanel_PrinterQueue" xml:space="preserve">
+    <value>Printer Queue</value>
+  </data>
+  <data name="ControlPanel_PrinterQueueEmpty" xml:space="preserve">
+    <value>No jobs in printer queue</value>
+  </data>
   <data name="ControlPanel_HomeAll" xml:space="preserve">
     <value>Home all</value>
   </data>
@@ -750,8 +756,11 @@
   <data name="PageTitle_Fleet" xml:space="preserve">
     <value>Fleet</value>
   </data>
+  <data name="PageTitle_ProjectHub" xml:space="preserve">
+    <value>Project Hub</value>
+  </data>
   <data name="PrintQueue_Title" xml:space="preserve">
-    <value>Print Queue</value>
+    <value>Project Hub</value>
   </data>
   <data name="PrintQueue_NoFiles" xml:space="preserve">
     <value>No files available. Connect a printer to browse files.</value>

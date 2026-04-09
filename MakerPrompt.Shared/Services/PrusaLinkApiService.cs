@@ -10,6 +10,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
     private Uri? _baseUri;
 
     public override PrinterConnectionType ConnectionType => PrinterConnectionType.PrusaLink;
+    public bool SupportsDirectControl => false;
 
     public PrusaLinkApiService()
     {

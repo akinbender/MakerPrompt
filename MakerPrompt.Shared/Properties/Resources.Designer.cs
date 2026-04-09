@@ -671,6 +671,18 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("ControlPanel_FanSpeed", resourceCulture);
             }
         }
+
+        public static string ControlPanel_PrinterQueue {
+            get {
+                return ResourceManager.GetString("ControlPanel_PrinterQueue", resourceCulture);
+            }
+        }
+
+        public static string ControlPanel_PrinterQueueEmpty {
+            get {
+                return ResourceManager.GetString("ControlPanel_PrinterQueueEmpty", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Heating.
@@ -1958,9 +1970,15 @@ namespace MakerPrompt.Shared.Properties {
                 return ResourceManager.GetString("PageTitle_Fleet", resourceCulture);
             }
         }
+
+        public static string PageTitle_ProjectHub {
+            get {
+                return ResourceManager.GetString("PageTitle_ProjectHub", resourceCulture);
+            }
+        }
         
         /// <summary>
-        ///   Looks up a localized string similar to Print Queue.
+        ///   Looks up a localized string similar to Project Hub.
         /// </summary>
         public static string PrintQueue_Title {
             get {

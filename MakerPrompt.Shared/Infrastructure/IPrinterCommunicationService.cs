@@ -11,11 +11,29 @@
         bool IsConnected { get; }
         bool IsPrinting { get; }
 
+        /// <summary>
+        /// True when the backend supports direct printer control commands
+        /// (temperature set, motion, extrusion, fan, etc.).
+        /// Monitoring-only backends (PrusaLink, PrusaConnect) return false.
+        /// </summary>
+        bool SupportsDirectControl => true;
+
+        /// <summary>
+        /// True when the backend exposes a queryable printer-side print queue.
+        /// Currently only Moonraker supports this.
+        /// </summary>
+        bool SupportsPrinterQueue => false;
+
         Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings);
         Task DisconnectAsync();
         Task WriteDataAsync(string command);
         Task<PrinterTelemetry> GetPrinterTelemetryAsync();
         Task<List<FileEntry>> GetFilesAsync();
+        /// <summary>
+        /// Returns the printer-side print queue entries. Returns an empty list
+        /// for backends that do not support a print queue (<see cref="SupportsPrinterQueue"/> is false).
+        /// </summary>
+        Task<List<PrintQueueEntry>> GetPrinterQueueAsync() => Task.FromResult(new List<PrintQueueEntry>());
         Task SetHotendTemp(int targetTemp = 0);
         Task SetBedTemp(int targetTemp = 0);
         Task Home(bool x = true, bool y = true, bool z = true);
