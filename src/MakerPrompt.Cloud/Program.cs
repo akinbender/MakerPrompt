@@ -1,5 +1,6 @@
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
+using MakerPrompt.Infrastructure.Camera;
 using MakerPrompt.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -101,8 +102,11 @@ builder.Services.AddAuthorization(options =>
 
 // ── Services ─────────────────────────────────────────────────────────────────
 
-// Local in-memory telemetry store (swap for a real persistence layer in production).
+// Local in-memory telemetry store (swap for SqliteTelemetryStore / InfluxDbTelemetryStore in production).
 builder.Services.AddSingleton<ITelemetryStore, InMemoryTelemetryStore>();
+
+// In-memory camera snapshot store (swap for SqliteCameraSnapshotStore in production).
+builder.Services.AddSingleton<ICameraSnapshotStore, InMemoryCameraSnapshotStore>();
 
 // API Explorer for potential future Swagger integration.
 builder.Services.AddEndpointsApiExplorer();
@@ -165,6 +169,55 @@ app.MapGet("/api/telemetry/{printerId}/history", async (
 })
 .WithName("GetTelemetryHistory")
 .WithTags("Telemetry")
+.RequireAuthorization("MemberRead");
+
+// ── Camera endpoints ──────────────────────────────────────────────────────────
+
+// Ingest a camera snapshot from an EdgeAgent.
+// Requires the "makerprompt:ingest" scope (same as telemetry ingest).
+app.MapPost("/api/camera/{cameraId}/snapshot", async (
+    string cameraId,
+    [FromBody] CameraSnapshot snapshot,
+    ICameraSnapshotStore cameraStore,
+    CancellationToken ct) =>
+{
+    snapshot.CameraId = cameraId;
+    await cameraStore.SaveAsync(snapshot, ct);
+    return Results.Accepted();
+})
+.WithName("IngestCameraSnapshot")
+.WithTags("Camera")
+.RequireAuthorization("EdgeAgent");
+
+// Retrieve the latest JPEG snapshot for a camera (returns raw JPEG bytes).
+app.MapGet("/api/camera/{cameraId}/latest", async (
+    string cameraId,
+    ICameraSnapshotStore cameraStore,
+    CancellationToken ct) =>
+{
+    var snapshot = await cameraStore.GetLatestAsync(cameraId, ct);
+    if (snapshot is null) return Results.NotFound();
+
+    return snapshot.JpegData.Length > 0
+        ? Results.File(snapshot.JpegData, "image/jpeg")
+        : Results.NotFound();
+})
+.WithName("GetLatestCameraSnapshot")
+.WithTags("Camera")
+.RequireAuthorization("MemberRead");
+
+// Retrieve snapshot metadata history for a camera (no image data).
+app.MapGet("/api/camera/{cameraId}/history", async (
+    string cameraId,
+    ICameraSnapshotStore cameraStore,
+    [FromQuery] int count = 20,
+    CancellationToken ct = default) =>
+{
+    var history = await cameraStore.GetHistoryAsync(cameraId, count, ct);
+    return Results.Ok(history);
+})
+.WithName("GetCameraSnapshotHistory")
+.WithTags("Camera")
 .RequireAuthorization("MemberRead");
 
 // ── Run ───────────────────────────────────────────────────────────────────────

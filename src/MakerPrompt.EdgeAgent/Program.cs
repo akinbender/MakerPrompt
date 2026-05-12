@@ -1,20 +1,29 @@
 using MakerPrompt.Application.Services;
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.EdgeAgent.Workers;
+using MakerPrompt.Infrastructure.Camera;
 using MakerPrompt.Infrastructure.Telemetry;
 
 var builder = Host.CreateApplicationBuilder(args);
+var configuration = builder.Configuration;
 
-// ── Services ──────────────────────────────────────────────────────────────────
-
-// Local in-memory telemetry store (swap for SQLite persistence in production).
+// ── Telemetry store ───────────────────────────────────────────────────────────
+// Default: in-memory ring buffer.
+// Swap to SqliteTelemetryStore or InfluxDbTelemetryStore via DI registration below.
 builder.Services.AddSingleton<ITelemetryStore, InMemoryTelemetryStore>();
 
-// Application-layer fleet manager.
+// ── Camera snapshot store ─────────────────────────────────────────────────────
+builder.Services.AddSingleton<ICameraSnapshotStore, InMemoryCameraSnapshotStore>();
+
+// ── Application-layer fleet manager ──────────────────────────────────────────
 builder.Services.AddSingleton<PrinterFleetService>();
 
-// Background worker that polls printers and forwards telemetry.
+// ── Background workers ────────────────────────────────────────────────────────
+// Telemetry polling — polls each connected printer, saves to ITelemetryStore.
 builder.Services.AddHostedService<PrinterPollingWorker>();
+
+// Camera polling — captures MJPEG snapshots, saves to ICameraSnapshotStore.
+builder.Services.AddHostedService<CameraPollingWorker>();
 
 // ── Build & Run ───────────────────────────────────────────────────────────────
 
