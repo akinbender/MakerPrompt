@@ -23,7 +23,7 @@ public partial class SerialCommunicationService
         {
             PortName = settings.PortName
                 ?? throw new ArgumentException("PortName is required for Serial connections"),
-            BaudRate = settings.BaudRate == 0 ? 250_000 : settings.BaudRate,
+            BaudRate = settings.BaudRate == 0 ? DefaultBaudRate : settings.BaudRate,
             DataBits = 8,
             Parity = Parity.None,
             StopBits = StopBits.One,
@@ -54,9 +54,10 @@ public partial class SerialCommunicationService
             cts.Cancel();
 
             if (_sendTask is not null)
-                await _sendTask.ContinueWith(_ => { }); // suppress exceptions
+                // Suppress faults from the shutting-down send loop — intentional.
+                await _sendTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
             if (_receiveTask is not null)
-                await _receiveTask.ContinueWith(_ => { });
+                await _receiveTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
         }
 
         if (_serialPort is { IsOpen: true })

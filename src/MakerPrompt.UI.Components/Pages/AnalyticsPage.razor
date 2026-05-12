@@ -59,7 +59,7 @@ else
                                 @foreach (var (id, time, grams) in _byPrinter)
                                 {
                                     <tr>
-                                        <td><code>@id.ToString()[..8]…</code></td>
+                                        <td><code>@TruncateId(id)</code></td>
                                         <td>@FormatDuration(time)</td>
                                         <td>@grams.ToString("F1")</td>
                                     </tr>
@@ -148,6 +148,12 @@ else
         => ts.TotalHours >= 1
             ? $"{(int)ts.TotalHours}h {ts.Minutes:D2}m"
             : $"{ts.Minutes}m {ts.Seconds:D2}s";
+
+    private static string TruncateId(Guid id)
+    {
+        var s = id.ToString();
+        return s.Length > 8 ? s[..8] + "…" : s;
+    }
 
     public void Dispose() => Analytics.AnalyticsUpdated -= OnAnalyticsUpdated;
 }

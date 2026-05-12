@@ -8,6 +8,10 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const int JwtClockSkewMinutes = 5;
+
 // ── Authentication — JWT Bearer / OIDC ───────────────────────────────────────
 //
 // The Cloud API validates JWTs issued by any OIDC-compliant provider
@@ -41,7 +45,7 @@ builder.Services
                 ValidateIssuer = true,
                 ValidateAudience = !string.IsNullOrWhiteSpace(audience),
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(5),
+                ClockSkew = TimeSpan.FromMinutes(JwtClockSkewMinutes),
             };
         }
         else

@@ -20,7 +20,7 @@ public partial class SerialCommunicationService
     {
         var deviceName = settings.PortName
             ?? throw new ArgumentException("PortName (device name) is required for Android serial connections");
-        var baudRate = settings.BaudRate == 0 ? 250_000 : settings.BaudRate;
+        var baudRate = settings.BaudRate == 0 ? DefaultBaudRate : settings.BaudRate;
 
         // Locate the USB device by name.
         var usbDevice = UsbManagerHelper.GetAllUsbDevices()
@@ -49,7 +49,7 @@ public partial class SerialCommunicationService
         _androidCts?.Cancel();
 
         if (_androidReceiveTask is not null)
-            await _androidReceiveTask.ContinueWith(_ => { });
+            await _androidReceiveTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
 
         try { _usbDriver?.Close(); }
         catch { /* Ignore close errors */ }

@@ -1,4 +1,4 @@
-/* MakerPrompt.UI.Blazor – minimal shell styles */
+/* MakerPrompt.UI.MAUI – minimal shell styles */
 html, body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; height: 100%; }
 .page { display: flex; min-height: 100vh; }
 .sidebar { width: 220px; background-color: #1a1a2e; color: #eee; padding-top: 1rem; flex-shrink: 0; }

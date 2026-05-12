@@ -60,6 +60,13 @@
     {
         // Persist via IAppLocalStorageProvider in future phases.
         _saved = true;
-        _ = Task.Delay(2000).ContinueWith(_ => InvokeAsync(() => { _saved = false; StateHasChanged(); }));
+        // Fire-and-forget to clear the saved flag after 2 s; exceptions are logged to console.
+        Task.Delay(2000)
+            .ContinueWith(
+                _ => InvokeAsync(() => { _saved = false; StateHasChanged(); }),
+                TaskContinuationOptions.OnlyOnRanToCompletion)
+            .ContinueWith(
+                t => Console.WriteLine($"[SettingsPage] Error clearing saved flag: {t.Exception?.GetBaseException().Message}"),
+                TaskContinuationOptions.OnlyOnFaulted);
     }
 }

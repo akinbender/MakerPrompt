@@ -45,13 +45,25 @@ public abstract class SerialCommunicationServiceBase : IPrinterCommunicationServ
     public bool IsPrinting { get; protected set; }
 
     // ── Private fields ───────────────────────────────────────────────────────
-    private readonly System.Timers.Timer _telemetryTimer = new(TimeSpan.FromSeconds(3));
+    /// <summary>Default baud rate for Marlin/RepRap firmware. 250 000 bps is standard.</summary>
+    protected const int DefaultBaudRate = 250_000;
+    private static readonly TimeSpan TelemetryPollInterval = TimeSpan.FromSeconds(3);
+
+    private readonly System.Timers.Timer _telemetryTimer = new(TelemetryPollInterval);
     private readonly StringBuilder _receiveBuffer = new();
 
     protected SerialCommunicationServiceBase()
     {
-        _telemetryTimer.Elapsed += async (_, _) => await PollTelemetryAsync();
+        _telemetryTimer.Elapsed += (_, _) => SafePollTelemetry();
         _telemetryTimer.AutoReset = true;
+    }
+
+    // Non-async timer callback that fires-and-forgets with exception guarding.
+    private void SafePollTelemetry()
+    {
+        _ = PollTelemetryAsync().ContinueWith(
+            t => Console.WriteLine($"[SerialCommunicationServiceBase] Telemetry poll error: {t.Exception?.GetBaseException().Message}"),
+            System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
     }
 
     // ── Abstract transport hooks ─────────────────────────────────────────────

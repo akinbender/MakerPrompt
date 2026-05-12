@@ -21,7 +21,7 @@ public partial class SerialCommunicationService
     {
         var portName = settings.PortName
             ?? throw new ArgumentException("PortName is required for macOS serial connections");
-        var baudRate = settings.BaudRate == 0 ? 250_000 : settings.BaudRate;
+        var baudRate = settings.BaudRate == 0 ? DefaultBaudRate : settings.BaudRate;
 
         _manager?.Close();
         _manager = new UsbSerialManager();
@@ -44,9 +44,9 @@ public partial class SerialCommunicationService
         _macCts?.Cancel();
 
         if (_macSendTask is not null)
-            await _macSendTask.ContinueWith(_ => { });
+            await _macSendTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
         if (_macReceiveTask is not null)
-            await _macReceiveTask.ContinueWith(_ => { });
+            await _macReceiveTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
 
         try { _manager?.Close(); }
         catch { /* Swallow close errors */ }
