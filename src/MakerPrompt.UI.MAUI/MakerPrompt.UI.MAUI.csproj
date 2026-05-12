@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm64;android-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MakerPrompt.UI.MAUI</RootNamespace>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDefaultCssItems>false</EnableDefaultCssItems>
+    <Nullable>enable</Nullable>
+
+    <ApplicationTitle>MakerPrompt</ApplicationTitle>
+    <ApplicationId>com.makerprompt.maui.v2</ApplicationId>
+    <ApplicationDisplayVersion>0.5.0</ApplicationDisplayVersion>
+    <ApplicationVersion>0.5.0</ApplicationVersion>
+
+    <WindowsPackageType>None</WindowsPackageType>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <!-- Platform-specific file exclusions ──────────────────────────────────── -->
+  <ItemGroup Condition="$(TargetFramework.Contains('-android')) != true">
+    <Compile Remove="**\*.Android.cs" />
+    <None Include="**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.Contains('-ios')) != true">
+    <Compile Remove="**\*.iOS.cs" />
+    <None Include="**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.Contains('-maccatalyst')) != true">
+    <Compile Remove="**\*.MacOS.cs" />
+    <None Include="**\*.MacOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.Contains('-windows')) != true">
+    <Compile Remove="**\*.Windows.cs" />
+    <None Include="**\*.Windows.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+  </ItemGroup>
+
+  <!-- Resources ──────────────────────────────────────────────────────────── -->
+  <ItemGroup>
+    <MauiIcon Include="Resources\AppIcon\appicon.png" Color="#151E3F" />
+    <MauiSplashScreen Include="Resources\AppIcon\appicon.png" Color="#151E3F" BaseSize="128,128" />
+    <MauiFont Include="Resources\Fonts\*" />
+  </ItemGroup>
+
+  <!-- Packages ───────────────────────────────────────────────────────────── -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.30" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.2" />
+    <PackageReference Include="UsbSerialForAndroid.Net" Version="1.0.4"
+      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
+    <PackageReference Include="UsbSerialForMacOS" Version="0.9.5"
+      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'" />
+  </ItemGroup>
+
+  <!-- Project references ─────────────────────────────────────────────────── -->
+  <ItemGroup>
+    <ProjectReference Include="..\MakerPrompt.UI.Components\MakerPrompt.UI.Components.csproj" />
+    <ProjectReference Include="..\MakerPrompt.Application\MakerPrompt.Application.csproj" />
+    <ProjectReference Include="..\MakerPrompt.Infrastructure\MakerPrompt.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

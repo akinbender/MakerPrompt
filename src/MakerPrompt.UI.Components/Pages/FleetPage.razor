@@ -1,0 +1,125 @@
+@page "/fleet"
+@inject PrinterFleetService FleetService
+@inject ILogger<FleetPage> Logger
+@implements IDisposable
+
+<h1>Printer Fleet</h1>
+
+@if (!_printerIds.Any())
+{
+    <div class="alert alert-info mt-3">
+        No printers connected. Add a printer to get started.
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mt-2">
+        @foreach (var id in _printerIds)
+        {
+            var conn = FleetService.GetConnection(id);
+            if (conn is null) continue;
+            <div class="col">
+                <div class="card h-100 @(conn.IsConnected ? "border-success" : "border-secondary")">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>
+                            <span class="bi @(conn.IsConnected ? "bi-circle-fill text-success" : "bi-circle text-secondary")" aria-hidden="true"></span>
+                            <strong class="ms-2">@(string.IsNullOrEmpty(conn.ConnectionName) ? id : conn.ConnectionName)</strong>
+                        </span>
+                        <span class="badge bg-secondary">@conn.ConnectionType</span>
+                    </div>
+                    <div class="card-body">
+                        @if (conn.IsConnected)
+                        {
+                            var t = conn.LastTelemetry;
+                            <dl class="row mb-0">
+                                <dt class="col-6">Status</dt>
+                                <dd class="col-6">@t.Status</dd>
+                                <dt class="col-6">Hotend</dt>
+                                <dd class="col-6">@t.HotendTemp.ToString("F1") °C / @t.HotendTarget.ToString("F0") °C</dd>
+                                <dt class="col-6">Bed</dt>
+                                <dd class="col-6">@t.BedTemp.ToString("F1") °C / @t.BedTarget.ToString("F0") °C</dd>
+                                @if (t.Status == PrinterStatus.Printing)
+                                {
+                                    <dt class="col-6">Progress</dt>
+                                    <dd class="col-6">
+                                        <div class="progress" style="height:8px;">
+                                            <div class="progress-bar bg-success"
+                                                 role="progressbar"
+                                                 style="width:@t.PrintProgress.ToString("F0")%"
+                                                 aria-valuenow="@t.PrintProgress"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">@t.PrintProgress.ToString("F1") %</small>
+                                    </dd>
+                                }
+                            </dl>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">Not connected</p>
+                        }
+                    </div>
+                    <div class="card-footer d-flex gap-2">
+                        @if (conn.IsConnected)
+                        {
+                            <button class="btn btn-sm btn-outline-danger"
+                                    @onclick="() => DisconnectAsync(id)">
+                                Disconnect
+                            </button>
+                        }
+                        <button class="btn btn-sm btn-outline-secondary"
+                                @onclick="() => RemoveAsync(id)">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private IReadOnlyCollection<string> _printerIds = [];
+
+    protected override void OnInitialized()
+    {
+        FleetService.FleetChanged += OnFleetChanged;
+        Refresh();
+    }
+
+    private void Refresh() =>
+        _printerIds = FleetService.PrinterIds;
+
+    private void OnFleetChanged(object? sender, EventArgs e) =>
+        InvokeAsync(() => { Refresh(); StateHasChanged(); });
+
+    private async Task DisconnectAsync(string printerId)
+    {
+        var conn = FleetService.GetConnection(printerId);
+        if (conn is null) return;
+        try
+        {
+            await conn.DisconnectAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error disconnecting printer {PrinterId}", printerId);
+        }
+    }
+
+    private async Task RemoveAsync(string printerId)
+    {
+        try
+        {
+            await FleetService.RemoveAsync(printerId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error removing printer {PrinterId}", printerId);
+        }
+    }
+
+    public void Dispose() => FleetService.FleetChanged -= OnFleetChanged;
+}

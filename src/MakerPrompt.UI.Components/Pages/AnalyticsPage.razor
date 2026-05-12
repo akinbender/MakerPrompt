@@ -1,0 +1,153 @@
+@page "/analytics"
+@inject AnalyticsService Analytics
+@inject ILogger<AnalyticsPage> Logger
+@implements IDisposable
+
+<h1>Analytics</h1>
+
+@if (_records is null)
+{
+    <p><em>Loading…</em></p>
+}
+else
+{
+    <!-- Summary row -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small">Total Jobs</p>
+                    <p class="display-6 mb-0">@_records.Count</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small">Total Print Time</p>
+                    <p class="display-6 mb-0">@FormatDuration(_totalPrintTime)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1 small">Total Filament (g)</p>
+                    <p class="display-6 mb-0">@_totalFilament.ToString("F0")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- By printer -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">Print Time by Printer</div>
+                <div class="card-body">
+                    @if (!_byPrinter.Any())
+                    {
+                        <p class="text-muted">No data recorded yet.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr><th>Printer ID</th><th>Time</th><th>Filament (g)</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var (id, time, grams) in _byPrinter)
+                                {
+                                    <tr>
+                                        <td><code>@id.ToString()[..8]…</code></td>
+                                        <td>@FormatDuration(time)</td>
+                                        <td>@grams.ToString("F1")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent jobs -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">Recent Jobs</div>
+                <div class="card-body" style="max-height:320px;overflow-y:auto;">
+                    @if (!_records.Any())
+                    {
+                        <p class="text-muted">No jobs recorded yet.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr><th>Job</th><th>Duration</th><th>Date</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in _records.OrderByDescending(r => r.Timestamp).Take(20))
+                                {
+                                    <tr>
+                                        <td>@r.JobName</td>
+                                        <td>@FormatDuration(r.Duration)</td>
+                                        <td>@r.Timestamp.ToString("MM/dd HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<PrintJobUsageRecord>? _records;
+    private TimeSpan _totalPrintTime;
+    private double _totalFilament;
+    private List<(Guid Id, TimeSpan Time, double Grams)> _byPrinter = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Analytics.AnalyticsUpdated += OnAnalyticsUpdated;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            _records = await Analytics.GetRecordsAsync();
+
+            _totalPrintTime = TimeSpan.FromTicks(_records.Sum(r => r.Duration.Ticks));
+            _totalFilament = _records.Sum(r => r.EffectiveFilamentGrams);
+
+            _byPrinter = _records
+                .GroupBy(r => r.PrinterId)
+                .Select(g => (
+                    Id: g.Key,
+                    Time: TimeSpan.FromTicks(g.Sum(r => r.Duration.Ticks)),
+                    Grams: g.Sum(r => r.EffectiveFilamentGrams)))
+                .OrderByDescending(x => x.Time)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load analytics");
+            _records = [];
+        }
+    }
+
+    private void OnAnalyticsUpdated(object? sender, EventArgs e) =>
+        InvokeAsync(async () => { await LoadAsync(); StateHasChanged(); });
+
+    private static string FormatDuration(TimeSpan ts)
+        => ts.TotalHours >= 1
+            ? $"{(int)ts.TotalHours}h {ts.Minutes:D2}m"
+            : $"{ts.Minutes}m {ts.Seconds:D2}s";
+
+    public void Dispose() => Analytics.AnalyticsUpdated -= OnAnalyticsUpdated;
+}
