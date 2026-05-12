@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MakerPrompt.Core\MakerPrompt.Core.csproj" />
-    <ProjectReference Include="..\MakerPrompt.Application\MakerPrompt.Application.csproj" />
   </ItemGroup>
 
 </Project>

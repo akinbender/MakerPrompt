@@ -39,7 +39,7 @@ public sealed class TelemetryAggregationService : IDisposable
     private void OnFleetChanged(object? sender, EventArgs e)
     {
         var snapshot = _fleet.GetFleetTelemetry();
-        _ = PersistSnapshotAsync(snapshot);
+        Task.Run(() => PersistSnapshotAsync(snapshot));
     }
 
     private async Task PersistSnapshotAsync(IReadOnlyDictionary<string, PrinterTelemetry> snapshot)
