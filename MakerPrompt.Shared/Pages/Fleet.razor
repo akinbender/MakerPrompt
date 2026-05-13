@@ -45,11 +45,16 @@ else
 {
     <div class="container-fluid">
         @* ── Toolbar ── *@
-        <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <button class="btn btn-outline-secondary" @onclick="() => _importModal!.ShowAsync()" data-testid="fleet-prusaconnect-import-btn">
+                <i class="bi bi-cloud-download me-1"></i>Import from PrusaConnect
+            </button>
             <button class="btn btn-outline-primary" @onclick="() => ConnectionModal!.ShowAddAsync()" data-testid="fleet-add-btn">
                 <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
             </button>
         </div>
+
+        <PrusaConnectImportModal @ref="_importModal" />
 
         @if (!ConnectionManager.Printers.Any())
         {
@@ -203,6 +208,8 @@ else
 
 @code {
     [CascadingParameter] private PrinterConnectionModal? ConnectionModal { get; set; }
+
+    private PrusaConnectImportModal? _importModal;
 
     private readonly Dictionary<Guid, PrinterCamera?> _cameras = new();
 

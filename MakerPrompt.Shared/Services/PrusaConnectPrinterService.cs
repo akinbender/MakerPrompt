@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace MakerPrompt.Shared.Services;
 
 /// <summary>
@@ -29,6 +31,7 @@ public sealed class PrusaConnectPrinterService : BasePrinterConnectionService, I
     private HttpClient? _httpClient;
     private bool _timerInitialized;
     private string? _printerUuid;
+    private readonly ILogger<PrusaConnectPrinterService>? _logger;
 
     private static readonly JsonSerializerOptions s_jsonOptions = new()
     {
@@ -38,8 +41,13 @@ public sealed class PrusaConnectPrinterService : BasePrinterConnectionService, I
 
     public override PrinterConnectionType ConnectionType => PrinterConnectionType.PrusaConnect;
 
-    public PrusaConnectPrinterService() { }
+    // DI constructor — logger is injected automatically when registered in the container.
+    public PrusaConnectPrinterService(ILogger<PrusaConnectPrinterService>? logger = null)
+    {
+        _logger = logger;
+    }
 
+    // Test constructor — bypasses DI; logger is unavailable.
     public PrusaConnectPrinterService(HttpMessageHandler handler)
     {
         _httpClient = new HttpClient(handler, false) { BaseAddress = new Uri(BaseUrl) };
@@ -301,49 +309,84 @@ public sealed class PrusaConnectPrinterService : BasePrinterConnectionService, I
     private async Task<PrusaConnectMobilePrinterResponse?> FetchPrinterAsync(CancellationToken ct)
     {
         using var response = await Client.GetAsync($"/api/v1/printers/{_printerUuid}", ct);
-        if (!response.IsSuccessStatusCode) return null;
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger?.LogWarning("PrusaConnect printer endpoint returned {Status}", response.StatusCode);
+            return null;
+        }
 
-        await using var stream = await response.Content.ReadAsStreamAsync(ct);
-        return await JsonSerializer.DeserializeAsync<PrusaConnectMobilePrinterResponse>(stream, s_jsonOptions, ct);
+        var json = await response.Content.ReadAsStringAsync(ct);
+        _logger?.LogDebug("PrusaConnect GET /api/v1/printers/{Uuid} response: {Json}", _printerUuid, json);
+
+        var result = JsonSerializer.Deserialize<PrusaConnectMobilePrinterResponse>(json, s_jsonOptions);
+        if (result is not null)
+        {
+            if (result.EffectiveState is null)
+                _logger?.LogWarning("PrusaConnect: 'state'/'printer_state' field is null/missing in printer response");
+            if (result.Telemetry is null)
+                _logger?.LogWarning("PrusaConnect: 'telemetry' object is null/missing in printer response");
+            if (result.EffectiveJobInfo is null)
+                _logger?.LogDebug("PrusaConnect: 'job_info'/'job' is null in printer response (expected when idle)");
+        }
+        return result;
     }
 
     private async Task<PrusaConnectMobileTelemetryResponse?> FetchTelemetryAsync(CancellationToken ct)
     {
         using var response = await Client.GetAsync($"/api/v1/printers/{_printerUuid}/telemetry", ct);
-        if (!response.IsSuccessStatusCode) return null;
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger?.LogWarning("PrusaConnect telemetry endpoint returned {Status} — telemetry will use inline printer data only", response.StatusCode);
+            return null;
+        }
 
-        await using var stream = await response.Content.ReadAsStreamAsync(ct);
-        return await JsonSerializer.DeserializeAsync<PrusaConnectMobileTelemetryResponse>(stream, s_jsonOptions, ct);
+        var json = await response.Content.ReadAsStringAsync(ct);
+        _logger?.LogDebug("PrusaConnect GET /api/v1/printers/{Uuid}/telemetry response: {Json}", _printerUuid, json);
+
+        return JsonSerializer.Deserialize<PrusaConnectMobileTelemetryResponse>(json, s_jsonOptions);
     }
 
     private void ApplyTelemetry(PrusaConnectMobileTelemetryResponse t)
     {
-        LastTelemetry.HotendTemp   = t.TempNozzle  ?? LastTelemetry.HotendTemp;
+        LastTelemetry.HotendTemp   = t.TempNozzle   ?? LastTelemetry.HotendTemp;
         LastTelemetry.HotendTarget = t.TargetNozzle ?? LastTelemetry.HotendTarget;
         LastTelemetry.BedTemp      = t.TempBed      ?? LastTelemetry.BedTemp;
         LastTelemetry.BedTarget    = t.TargetBed    ?? LastTelemetry.BedTarget;
         LastTelemetry.FeedRate     = t.PrintSpeed   ?? LastTelemetry.FeedRate;
 
-        if (t.ZHeight.HasValue)
-            LastTelemetry.Position = LastTelemetry.Position with { Z = t.ZHeight.Value };
+        var z = t.EffectiveZHeight;
+        if (z.HasValue)
+            LastTelemetry.Position = LastTelemetry.Position with { Z = z.Value };
+
+        if (t.ExtraFields?.Count > 0)
+            _logger?.LogDebug("PrusaConnect telemetry has unmapped fields: {Fields}",
+                string.Join(", ", t.ExtraFields.Keys));
     }
 
     private void ApplyPrinterState(PrusaConnectMobilePrinterResponse p)
     {
-        LastTelemetry.Status = MapState(p.State);
+        LastTelemetry.Status = MapState(p.EffectiveState);
 
         if (p.Telemetry is not null)
             ApplyTelemetry(p.Telemetry);
 
-        if (p.JobInfo is not null)
+        var job = p.EffectiveJobInfo;
+        if (job is not null)
         {
-            LastTelemetry.SDCard.Progress = p.JobInfo.Progress ?? LastTelemetry.SDCard.Progress;
+            LastTelemetry.SDCard.Progress = job.Progress ?? LastTelemetry.SDCard.Progress;
             LastTelemetry.SDCard.Printing = LastTelemetry.Status == PrinterStatus.Printing;
             IsPrinting = LastTelemetry.SDCard.Printing;
 
-            if (p.JobInfo.TimePrinting.HasValue)
-                LastTelemetry.PrintDuration = TimeSpan.FromSeconds(p.JobInfo.TimePrinting.Value);
+            if (job.TimePrinting.HasValue)
+                LastTelemetry.PrintDuration = TimeSpan.FromSeconds(job.TimePrinting.Value);
+
+            if (!string.IsNullOrEmpty(job.FileName))
+                LastTelemetry.PrintJobName = job.FileName;
         }
+
+        if (p.ExtraFields?.Count > 0)
+            _logger?.LogDebug("PrusaConnect printer response has unmapped fields: {Fields}",
+                string.Join(", ", p.ExtraFields.Keys));
 
         LastTelemetry.LastResponse = "PrusaConnect telemetry update";
     }
@@ -378,14 +421,47 @@ public sealed class PrusaConnectMobilePrinterResponse
     [JsonPropertyName("printer_type")]
     public string? PrinterType { get; set; }
 
+    // Some API versions nest state in { "printer_state": { "text": "PRINTING" } };
+    // we keep both and resolve in ApplyPrinterState.
     [JsonPropertyName("state")]
     public string? State { get; set; }
+
+    [JsonPropertyName("printer_state")]
+    public PrusaConnectMobilePrinterState? PrinterState { get; set; }
 
     [JsonPropertyName("telemetry")]
     public PrusaConnectMobileTelemetryResponse? Telemetry { get; set; }
 
+    // PrusaConnect cloud uses "job_info"; some endpoints use "job".
     [JsonPropertyName("job_info")]
     public PrusaConnectMobileJobInfo? JobInfo { get; set; }
+
+    [JsonPropertyName("job")]
+    public PrusaConnectMobileJobInfo? Job { get; set; }
+
+    /// <summary>Captures any fields not matched above so they appear in debug logs.</summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtraFields { get; set; }
+
+    /// <summary>Returns the effective job info regardless of which field is present.</summary>
+    [JsonIgnore]
+    public PrusaConnectMobileJobInfo? EffectiveJobInfo => JobInfo ?? Job;
+
+    /// <summary>Returns the effective state string, handling nested printer_state objects.</summary>
+    [JsonIgnore]
+    public string? EffectiveState => State ?? PrinterState?.Text;
+}
+
+public sealed class PrusaConnectMobilePrinterState
+{
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
+
+    [JsonPropertyName("state")]
+    public string? State { get; set; }
+
+    [JsonIgnore]
+    public string? EffectiveState => Text ?? State;
 }
 
 public sealed class PrusaConnectMobileTelemetryResponse
@@ -405,9 +481,20 @@ public sealed class PrusaConnectMobileTelemetryResponse
     [JsonPropertyName("print_speed")]
     public int? PrintSpeed { get; set; }
 
+    // Some firmware reports Z as "axis_z"; others use "z_height".
     [JsonPropertyName("z_height")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public float? ZHeight { get; set; }
+
+    [JsonPropertyName("axis_z")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+    public float? AxisZ { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtraFields { get; set; }
+
+    [JsonIgnore]
+    public float? EffectiveZHeight => ZHeight ?? AxisZ;
 }
 
 public sealed class PrusaConnectMobileJobInfo
@@ -420,4 +507,7 @@ public sealed class PrusaConnectMobileJobInfo
 
     [JsonPropertyName("time_printing")]
     public int? TimePrinting { get; set; }
+
+    [JsonPropertyName("file_name")]
+    public string? FileName { get; set; }
 }
