@@ -1,5 +1,5 @@
-﻿using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Models;
+﻿using MakerPrompt.Core.Models;
+using MakerPrompt.UI.Components.Infrastructure;
 using MakerPrompt.UI.Components.Services;
 using Microsoft.JSInterop;
 
@@ -60,8 +60,8 @@ namespace MakerPrompt.UI.Blazor.Services
 
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
-            if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Serial == null) throw new ArgumentException();
-            await OpenPortAsync(connectionSettings.Serial.PortName, connectionSettings.Serial.BaudRate); 
+            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrEmpty(connectionSettings.PortName)) throw new ArgumentException();
+            await OpenPortAsync(connectionSettings.PortName, connectionSettings.BaudRate); 
             return IsConnected;
         }
 

@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.IO.Ports;
 using System.Threading.Tasks.Dataflow;
+using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Models;
 using MakerPrompt.UI.Components.Utils;
 using MakerPrompt.UI.Components.Services;
 
@@ -38,18 +38,18 @@ namespace MakerPrompt.UI.MAUI.Services
         {
             if (IsConnected) return IsConnected;
 
-            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrWhiteSpace(connectionSettings.Serial.PortName)) return false;
+            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrWhiteSpace(connectionSettings.PortName)) return false;
 
-            _serialPort.PortName = connectionSettings.Serial.PortName;
-            _serialPort.BaudRate = connectionSettings.Serial.BaudRate == 0
+            _serialPort.PortName = connectionSettings.PortName;
+            _serialPort.BaudRate = connectionSettings.BaudRate == 0
                 ? 250000
-                : connectionSettings.Serial.BaudRate;
+                : connectionSettings.BaudRate;
 
             try
             {
                 await Task.Run(() => _serialPort.Open());
                 IsConnected = true;
-                ConnectionName = connectionSettings.Serial.PortName;
+                ConnectionName = connectionSettings.PortName;
                 _sendTask = Task.Run(() => SendLoopAsync(_cts.Token));
                 _receiveTask = Task.Run(() => ReceiveLoopAsync(_cts.Token));
                 updateTimer.Elapsed += async (s, e) => await GetPrinterTelemetryAsync();

@@ -201,12 +201,12 @@
             AssignedFilamentSpoolId = definition.AssignedFilamentSpoolId,
         };
         _editConnectionType = definition.ConnectionType;
-        _editApiSettings = definition.Settings.Api is not null
-            ? new ApiConnectionSettings(definition.Settings.Api.Url, definition.Settings.Api.UserName, definition.Settings.Api.Password)
-            : new ApiConnectionSettings();
-        _editSerialSettings = definition.Settings.Serial is not null
-            ? new SerialConnectionSettings { PortName = definition.Settings.Serial.PortName, BaudRate = definition.Settings.Serial.BaudRate }
-            : new SerialConnectionSettings();
+        _editApiSettings = string.IsNullOrEmpty(definition.Settings.ApiUrl)
+            ? new ApiConnectionSettings()
+            : new ApiConnectionSettings(definition.Settings.ApiUrl, definition.Settings.UserName ?? string.Empty, definition.Settings.Password ?? string.Empty);
+        _editSerialSettings = string.IsNullOrEmpty(definition.Settings.PortName)
+            ? new SerialConnectionSettings()
+            : new SerialConnectionSettings { PortName = definition.Settings.PortName, BaudRate = definition.Settings.BaudRate };
         await _modal.ShowAsync();
     }
 
@@ -235,9 +235,9 @@
         _editDefinition.ConnectionType = _editConnectionType;
         _editDefinition.Settings = _editConnectionType switch
         {
-            PrinterConnectionType.Serial => new PrinterConnectionSettings(_editSerialSettings),
+            PrinterConnectionType.Serial => new PrinterConnectionSettings { ConnectionType = PrinterConnectionType.Serial, PortName = _editSerialSettings.PortName, BaudRate = _editSerialSettings.BaudRate },
             PrinterConnectionType.Demo => new PrinterConnectionSettings(),
-            _ => new PrinterConnectionSettings(_editApiSettings, _editConnectionType)
+            _ => new PrinterConnectionSettings { ConnectionType = _editConnectionType, ApiUrl = _editApiSettings.Url, UserName = _editApiSettings.UserName, Password = _editApiSettings.Password }
         };
 
         _isSaving = true;

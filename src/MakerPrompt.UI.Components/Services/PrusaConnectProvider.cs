@@ -1,3 +1,6 @@
+using MakerPrompt.Core.Abstractions;
+using MakerPrompt.Core.Models;
+
 namespace MakerPrompt.UI.Components.Services;
 
 /// <summary>
@@ -7,7 +10,7 @@ namespace MakerPrompt.UI.Components.Services;
 /// Auth: Authorization: Bearer {token}
 ///
 /// Usage:
-///   provider.Configure(bearerToken);
+///   await provider.ConfigureAsync(bearerToken);
 ///   var printers = await provider.GetPrintersAsync();  // GET /api/v1/printers
 /// </summary>
 public sealed class PrusaConnectProvider : IPrinterProvider
@@ -33,26 +36,29 @@ public sealed class PrusaConnectProvider : IPrinterProvider
         _httpClient = new HttpClient(handler, false) { BaseAddress = new Uri(BaseUrl) };
     }
 
+    public PrinterConnectionType ProviderType => PrinterConnectionType.PrusaConnect;
+
     /// <summary>Sets the Bearer token used for all subsequent requests.</summary>
-    public void Configure(string bearerToken)
+    public Task ConfigureAsync(string bearerToken, CancellationToken cancellationToken = default)
     {
         _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", bearerToken);
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Returns all printers associated with the configured account.
     /// Returns an empty list on auth failure or network error.
     /// </summary>
-    public async Task<IReadOnlyList<RemotePrinterInfo>> GetPrintersAsync()
+    public async Task<IReadOnlyList<PrinterInfo>> GetPrintersAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            using var response = await _httpClient.GetAsync("/api/v1/printers?page=1&itemsPerPage=100");
+            using var response = await _httpClient.GetAsync("/api/v1/printers?page=1&itemsPerPage=100", cancellationToken);
             if (!response.IsSuccessStatusCode) return [];
 
-            await using var stream = await response.Content.ReadAsStreamAsync();
-            using var doc = await JsonDocument.ParseAsync(stream);
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
 
             var root = doc.RootElement;
             JsonElement printerArray;
@@ -63,7 +69,7 @@ public sealed class PrusaConnectProvider : IPrinterProvider
             else
                 return [];
 
-            var result = new List<RemotePrinterInfo>();
+            var result = new List<PrinterInfo>();
             foreach (var item in printerArray.EnumerateArray())
             {
                 var id     = item.TryGetProperty("uuid",         out var p1) ? p1.GetString() ?? string.Empty : string.Empty;
@@ -73,7 +79,7 @@ public sealed class PrusaConnectProvider : IPrinterProvider
 
                 if (string.IsNullOrEmpty(id)) continue;
 
-                result.Add(new RemotePrinterInfo { Id = id, Name = name, Model = model, Status = status });
+                result.Add(new PrinterInfo { Id = id, Name = name, Model = model, RawStatus = status, ProviderType = PrinterConnectionType.PrusaConnect });
             }
 
             return result;
@@ -84,3 +90,4 @@ public sealed class PrusaConnectProvider : IPrinterProvider
         }
     }
 }
+

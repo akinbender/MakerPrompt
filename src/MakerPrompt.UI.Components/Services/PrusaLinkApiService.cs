@@ -6,7 +6,6 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
     private readonly HttpMessageHandler? _customHandler;
     private HttpClient? _httpClient;
     private bool _ownsClient;
-    private ApiConnectionSettings? _connectionSettings;
     private Uri? _baseUri;
 
     public override PrinterConnectionType ConnectionType => PrinterConnectionType.PrusaLink;
@@ -33,13 +32,12 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
 
     public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
     {
-        if (connectionSettings.Api is null)
+        if (string.IsNullOrEmpty(connectionSettings.ApiUrl))
         {
             throw new ArgumentException("PrusaLink connection requires API settings.", nameof(connectionSettings));
         }
 
-        _connectionSettings = connectionSettings.Api;
-        ConfigureClient(_connectionSettings);
+        ConfigureClient(connectionSettings);
 
         try
         {
@@ -52,7 +50,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
             }
 
             var info = await GetInfoAsync(_cts.Token);
-            ConnectionName = _baseUri?.AbsoluteUri ?? _connectionSettings.Url;
+            ConnectionName = _baseUri?.AbsoluteUri ?? connectionSettings.ApiUrl;
             LastTelemetry.PrinterName = info?.Name ?? LastTelemetry.PrinterName;
             LastTelemetry.ConnectionTime ??= DateTime.UtcNow;
 
@@ -246,9 +244,9 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         return Task.FromResult((IReadOnlyList<PrinterCamera>)Array.Empty<PrinterCamera>());
     }
 
-    private void ConfigureClient(ApiConnectionSettings settings)
+    private void ConfigureClient(PrinterConnectionSettings settings)
     {
-        _baseUri = new Uri(settings.Url);
+        _baseUri = new Uri(settings.ApiUrl!);
         // In Blazor WebAssembly (browser) we cannot use HttpClientHandler.Credentials or
         // most handler-specific features. Instead, rely on the platform HttpClient and
         // send Basic auth via headers when credentials are supplied.

@@ -549,24 +549,18 @@ namespace MakerPrompt.UI.Components.Services
 
         private void EncryptSensitiveFields(PrinterConnectionDefinition def)
         {
-            if (def.Settings.Api != null)
-            {
-                if (!string.IsNullOrEmpty(def.Settings.Api.Password))
-                    def.Settings.Api.Password = _encryption.Encrypt(def.Settings.Api.Password);
-                if (!string.IsNullOrEmpty(def.Settings.Api.UserName))
-                    def.Settings.Api.UserName = _encryption.Encrypt(def.Settings.Api.UserName);
-            }
+            if (!string.IsNullOrEmpty(def.Settings.Password))
+                def.Settings.Password = _encryption.Encrypt(def.Settings.Password);
+            if (!string.IsNullOrEmpty(def.Settings.UserName))
+                def.Settings.UserName = _encryption.Encrypt(def.Settings.UserName);
         }
 
         private void DecryptSensitiveFields(PrinterConnectionDefinition def)
         {
-            if (def.Settings.Api != null)
-            {
-                if (!string.IsNullOrEmpty(def.Settings.Api.Password))
-                    def.Settings.Api.Password = _encryption.Decrypt(def.Settings.Api.Password);
-                if (!string.IsNullOrEmpty(def.Settings.Api.UserName))
-                    def.Settings.Api.UserName = _encryption.Decrypt(def.Settings.Api.UserName);
-            }
+            if (!string.IsNullOrEmpty(def.Settings.Password))
+                def.Settings.Password = _encryption.Decrypt(def.Settings.Password);
+            if (!string.IsNullOrEmpty(def.Settings.UserName))
+                def.Settings.UserName = _encryption.Decrypt(def.Settings.UserName);
         }
 
         private static PrinterConnectionDefinition CloneDefinition(PrinterConnectionDefinition original)

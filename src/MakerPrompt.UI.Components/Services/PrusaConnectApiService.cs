@@ -45,11 +45,11 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
 
     public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
     {
-        if (connectionSettings.Api is null)
+        if (string.IsNullOrEmpty(connectionSettings.UserName))
             throw new ArgumentException("PrusaConnect connection requires API settings.", nameof(connectionSettings));
 
-        _printerUuid = connectionSettings.Api.UserName;
-        ConfigureClient(connectionSettings.Api.Password);
+        _printerUuid = connectionSettings.UserName;
+        ConfigureClient(connectionSettings.Password);
 
         try
         {

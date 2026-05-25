@@ -4,7 +4,7 @@
     {
         private readonly Regex _tempRegex = new(@"T:([\d.]+)\s/\s*([\d.]+)\sB:([\d.]+)\s/\s*([\d.]+)");
         private readonly Regex _posRegex = new(@"X:([\d.]+)\sY:([\d.]+)\sZ:([\d.]+)");
-        public override Enums.PrinterConnectionType ConnectionType => Enums.PrinterConnectionType.Serial;
+        public override PrinterConnectionType ConnectionType => PrinterConnectionType.Serial;
         
         StringBuilder _receiveBuffer = new();
 

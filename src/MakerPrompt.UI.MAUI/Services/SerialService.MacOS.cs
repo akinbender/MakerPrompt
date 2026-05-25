@@ -1,5 +1,5 @@
-﻿using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Models;
+﻿using MakerPrompt.Core.Models;
+using MakerPrompt.UI.Components.Infrastructure;
 using MakerPrompt.UI.Components.Services;
 using MakerPrompt.UI.Components.Utils;
 using System.Text;
@@ -22,13 +22,13 @@ namespace MakerPrompt.UI.MAUI.Services
         public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
         {
             if (IsConnected) return IsConnected;
-            if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Serial == null)
+            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrEmpty(connectionSettings.PortName))
                 throw new ArgumentException("Invalid connection settings");
 
-            var portName = connectionSettings.Serial.PortName;
-            var baudRate = connectionSettings.Serial.BaudRate == 0
+            var portName = connectionSettings.PortName;
+            var baudRate = connectionSettings.BaudRate == 0
                 ? 250000
-                : connectionSettings.Serial.BaudRate;
+                : connectionSettings.BaudRate;
 
             try
             {

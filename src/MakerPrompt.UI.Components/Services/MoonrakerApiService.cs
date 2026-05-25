@@ -52,7 +52,7 @@
         {
             if (IsConnected) return IsConnected;
 
-            if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Api == null) throw new ArgumentException();
+            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrEmpty(connectionSettings.ApiUrl)) throw new ArgumentException();
 
             if (_cts.IsCancellationRequested)
             {
@@ -60,12 +60,12 @@
                 _cts = new CancellationTokenSource();
             }
 
-            _baseUri = new Uri(connectionSettings.Api.Url);
-            ConfigureClient(connectionSettings.Api);
+            _baseUri = new Uri(connectionSettings.ApiUrl);
+            ConfigureClient(connectionSettings);
 
-            if (!string.IsNullOrEmpty(connectionSettings.Api.UserName) && !string.IsNullOrEmpty(connectionSettings.Api.Password))
+            if (!string.IsNullOrEmpty(connectionSettings.UserName) && !string.IsNullOrEmpty(connectionSettings.Password))
             {
-                IsConnected = await AuthenticateAsync(connectionSettings.Api.UserName, connectionSettings.Api.Password);
+                IsConnected = await AuthenticateAsync(connectionSettings.UserName, connectionSettings.Password);
                 if (!IsConnected) return IsConnected;
             }
 
@@ -375,7 +375,7 @@
             return ValueTask.CompletedTask;
         }
 
-        private void ConfigureClient(ApiConnectionSettings settings)
+        private void ConfigureClient(PrinterConnectionSettings settings)
         {
             var client = Client;
             client.BaseAddress = _baseUri;

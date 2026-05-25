@@ -1,5 +1,5 @@
+using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Models;
 using MakerPrompt.UI.Components.Services;
 using UsbSerialForAndroid.Net;
 using UsbSerialForAndroid.Net.Drivers;
@@ -20,10 +20,10 @@ namespace MakerPrompt.UI.MAUI.Services
 
             try
             {
-                var deviceName = connectionSettings.Serial.PortName; // fix to id
-                var baudRate = connectionSettings.Serial.BaudRate == 0
+                var deviceName = connectionSettings.PortName; // fix to id
+                var baudRate = connectionSettings.BaudRate == 0
                     ? 250000
-                    : connectionSettings.Serial.BaudRate;
+                    : connectionSettings.BaudRate;
                 var dataBits = (byte)8;
                 var stopBits = UsbSerialForAndroid.Net.Enums.StopBits.One;
                 var parity = UsbSerialForAndroid.Net.Enums.Parity.None;

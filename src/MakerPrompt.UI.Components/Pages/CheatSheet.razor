@@ -79,7 +79,7 @@
             </Content>
         </BlazorBootstrap.Tab>
 
-        @if (IsConnected && PrinterServiceFactory.Current?.ConnectionType == MakerPrompt.UI.Components.Utils.Enums.PrinterConnectionType.Moonraker)
+        @if (IsConnected && PrinterServiceFactory.Current?.ConnectionType == PrinterConnectionType.Moonraker)
         {
             <BlazorBootstrap.Tab Title="Moonraker G-code Help">
                 <Content>
@@ -168,7 +168,7 @@
     {
         _needsRender = true;
         base.HandleConnectionChanged(sender, connected);
-        if (connected && PrinterServiceFactory.Current?.ConnectionType == MakerPrompt.UI.Components.Utils.Enums.PrinterConnectionType.Moonraker)
+        if (connected && PrinterServiceFactory.Current?.ConnectionType == PrinterConnectionType.Moonraker)
         {
             _ = TryLoadMoonrakerHelpAsync();
         }

@@ -52,11 +52,11 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
     {
         if (IsConnected) return true;
 
-        if (connectionSettings.Api is null)
+        if (string.IsNullOrEmpty(connectionSettings.ApiUrl))
             throw new ArgumentException("OctoPrint connection requires API settings.", nameof(connectionSettings));
 
-        _baseUri = new Uri(connectionSettings.Api.Url);
-        ConfigureClient(connectionSettings.Api);
+        _baseUri = new Uri(connectionSettings.ApiUrl);
+        ConfigureClient(connectionSettings);
 
         try
         {
@@ -491,10 +491,10 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         }
     }
 
-    private void ConfigureClient(ApiConnectionSettings settings)
+    private void ConfigureClient(PrinterConnectionSettings settings)
     {
         var client = Client;
-        _baseUri = new Uri(settings.Url);
+        _baseUri = new Uri(settings.ApiUrl!);
         client.BaseAddress = _baseUri;
         client.Timeout = TimeSpan.FromSeconds(30);
         client.DefaultRequestHeaders.Accept.Clear();

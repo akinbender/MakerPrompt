@@ -230,9 +230,9 @@
                 var connectionSettings = ActiveTab switch
                 {
                     PrinterConnectionType.Demo => new PrinterConnectionSettings(),
-                    PrinterConnectionType.Serial => new PrinterConnectionSettings(SerialConnectionSettings),
-                    PrinterConnectionType.Moonraker => new PrinterConnectionSettings(ApiConnectionSettings, ActiveTab),
-                    PrinterConnectionType.PrusaLink => new PrinterConnectionSettings(ApiConnectionSettings, ActiveTab),
+                    PrinterConnectionType.Serial => new PrinterConnectionSettings { ConnectionType = PrinterConnectionType.Serial, PortName = SerialConnectionSettings.PortName, BaudRate = SerialConnectionSettings.BaudRate },
+                    PrinterConnectionType.Moonraker => new PrinterConnectionSettings { ConnectionType = ActiveTab, ApiUrl = ApiConnectionSettings.Url, UserName = ApiConnectionSettings.UserName, Password = ApiConnectionSettings.Password },
+                    PrinterConnectionType.PrusaLink => new PrinterConnectionSettings { ConnectionType = ActiveTab, ApiUrl = ApiConnectionSettings.Url, UserName = ApiConnectionSettings.UserName, Password = ApiConnectionSettings.Password },
                     _ => new PrinterConnectionSettings()
                 };
 

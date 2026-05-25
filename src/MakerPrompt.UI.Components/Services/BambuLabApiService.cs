@@ -67,16 +67,16 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
             throw new ArgumentException("BambuLab connection type mismatch.", nameof(connectionSettings));
         }
 
-        if (connectionSettings.Api is null)
+        if (string.IsNullOrEmpty(connectionSettings.ApiUrl))
         {
             return false;
         }
 
-        _httpBaseUri = new Uri(connectionSettings.Api.Url);
-        ConfigureClient(connectionSettings.Api);
+        _httpBaseUri = new Uri(connectionSettings.ApiUrl);
+        ConfigureClient(connectionSettings);
 
-        _accessCode = connectionSettings.Api.Password;
-        _serial = connectionSettings.Api.UserName;
+        _accessCode = connectionSettings.Password;
+        _serial = connectionSettings.UserName;
 
         if (string.IsNullOrWhiteSpace(_accessCode) || string.IsNullOrWhiteSpace(_serial))
         {
@@ -568,7 +568,7 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
         return ValueTask.CompletedTask;
     }
 
-    private void ConfigureClient(ApiConnectionSettings settings)
+    private void ConfigureClient(PrinterConnectionSettings settings)
     {
         var client = Client;
         client.BaseAddress = _httpBaseUri;

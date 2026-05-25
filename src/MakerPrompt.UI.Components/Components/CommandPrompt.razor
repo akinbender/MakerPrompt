@@ -38,10 +38,10 @@
     <div class="input-group mt-auto">
         <input type="text" class="form-control bg-dark-subtle border-light-subtle"
                placeholder="@Localizer[Resources.CommandPrompt_EnterCommand]" @bind="inputCommand"
-               disabled="@(!IsConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)"
+               disabled="@(!IsConnected && PrinterServiceFactory.Current?.ConnectionType != PrinterConnectionType.PrusaLink)"
                @onkeypress="HandleKeyPress" />
         <button class="btn btn-outline-secondary" @onclick="SendCommand"
-                disabled="@(!IsConnected && PrinterServiceFactory.Current?.ConnectionType != Enums.PrinterConnectionType.PrusaLink)">
+                disabled="@(!IsConnected && PrinterServiceFactory.Current?.ConnectionType != PrinterConnectionType.PrusaLink)">
             @Localizer[Resources.CommandPrompt_Send]
         </button>
     </div>
