@@ -3,12 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.Shared", "MakerPrompt.Shared\MakerPrompt.Shared.csproj", "{1659CECC-713A-4F76-B7F3-4D74C0603E97}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.Blazor", "MakerPrompt.Blazor\MakerPrompt.Blazor.csproj", "{15F52CFF-63A3-427D-8795-95370626C764}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.MAUI", "MakerPrompt.MAUI\MakerPrompt.MAUI.csproj", "{67704D6B-0609-472D-A78A-473B780D4D1A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\azure-static-web-apps-yellow-sea-04668c503.yml = .github\workflows\azure-static-web-apps-yellow-sea-04668c503.yml
@@ -24,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gh-pages", "gh-pages", "{02
 		.github\workflows\gh-pages\decode.js = .github\workflows\gh-pages\decode.js
 		.github\workflows\gh-pages\index.html = .github\workflows\gh-pages\index.html
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.Tests", "MakerPrompt.Tests\MakerPrompt.Tests.csproj", "{7BD83CCA-F9F2-4B00-B373-209946049150}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.E2E.Wasm", "MakerPrompt.E2E.Wasm\MakerPrompt.E2E.Wasm.csproj", "{73B2A329-BE69-4E67-912B-0CB2E65088E2}"
 EndProject
@@ -53,55 +45,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Debug|x64.Build.0 = Debug|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Debug|x86.Build.0 = Debug|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Release|x64.ActiveCfg = Release|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Release|x64.Build.0 = Release|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Release|x86.ActiveCfg = Release|Any CPU
-		{1659CECC-713A-4F76-B7F3-4D74C0603E97}.Release|x86.Build.0 = Release|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Debug|x64.Build.0 = Debug|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Debug|x86.Build.0 = Debug|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Release|x64.ActiveCfg = Release|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Release|x64.Build.0 = Release|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Release|x86.ActiveCfg = Release|Any CPU
-		{15F52CFF-63A3-427D-8795-95370626C764}.Release|x86.Build.0 = Release|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Debug|x64.Build.0 = Debug|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Debug|x86.Build.0 = Debug|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Release|x64.ActiveCfg = Release|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Release|x64.Build.0 = Release|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Release|x86.ActiveCfg = Release|Any CPU
-		{67704D6B-0609-472D-A78A-473B780D4D1A}.Release|x86.Build.0 = Release|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Debug|x64.Build.0 = Debug|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Debug|x86.Build.0 = Debug|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Release|x64.ActiveCfg = Release|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Release|x64.Build.0 = Release|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Release|x86.ActiveCfg = Release|Any CPU
-		{7BD83CCA-F9F2-4B00-B373-209946049150}.Release|x86.Build.0 = Release|Any CPU
 		{73B2A329-BE69-4E67-912B-0CB2E65088E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{73B2A329-BE69-4E67-912B-0CB2E65088E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73B2A329-BE69-4E67-912B-0CB2E65088E2}.Debug|x64.ActiveCfg = Debug|Any CPU
