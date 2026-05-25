@@ -74,7 +74,7 @@ jobs:
 
       - name: Build MAUI app (Debug — enables CDP debugging port)
         run: >
-          dotnet build MakerPrompt.MAUI/MakerPrompt.MAUI.csproj
+          dotnet build src/MakerPrompt.UI.MAUI/MakerPrompt.UI.MAUI.csproj
           -c Debug
           -f net10.0-windows10.0.19041.0
           -p:RuntimeIdentifierOverride=win-x64
@@ -90,7 +90,7 @@ jobs:
 
       - name: Run MAUI E2E tests
         env:
-          MAUI_APP_PATH: ${{ github.workspace }}\MakerPrompt.MAUI\bin\Debug\net10.0-windows10.0.19041.0\win-x64\MakerPrompt.MAUI.exe
+          MAUI_APP_PATH: ${{ github.workspace }}\src\MakerPrompt.UI.MAUI\bin\Debug\net10.0-windows10.0.19041.0\win-x64\MakerPrompt.UI.MAUI.exe
         run: |
           dotnet test MakerPrompt.E2E.Maui/MakerPrompt.E2E.Maui.csproj `
             --no-build `

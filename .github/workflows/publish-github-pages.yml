@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  WASM_PROJECT: 'MakerPrompt.Blazor/MakerPrompt.Blazor.csproj'
+  WASM_PROJECT: 'src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj'
   OUTPUT_DIR: 'publish_wasm'
 
 concurrency:

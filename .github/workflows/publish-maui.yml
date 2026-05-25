@@ -6,8 +6,8 @@ on:
     - 'v*'
 
 env:
-  MAUI_PROJECT_DIR: 'MakerPrompt.MAUI/'
-  MAUI_PROJECT: 'MakerPrompt.MAUI/MakerPrompt.MAUI.csproj'
+  MAUI_PROJECT_DIR: 'src/MakerPrompt.UI.MAUI/'
+  MAUI_PROJECT: 'src/MakerPrompt.UI.MAUI/MakerPrompt.UI.MAUI.csproj'
   OUTPUT_DIR: 'publish'
 
 jobs:

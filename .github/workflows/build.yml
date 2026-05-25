@@ -28,13 +28,13 @@ jobs:
         dotnet workload install maui-windows
         
     - name: Restore dependencies (Blazor)
-      run: dotnet restore MakerPrompt.Blazor/MakerPrompt.Blazor.csproj
+      run: dotnet restore src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj
 
     - name: Build (Windows)
-      run: dotnet build MakerPrompt.MAUI/MakerPrompt.MAUI.csproj -c Release -f net10.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64
+      run: dotnet build src/MakerPrompt.UI.MAUI/MakerPrompt.UI.MAUI.csproj -c Release -f net10.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64
 
     - name: Build (Blazor WebAssembly)
-      run: dotnet build MakerPrompt.Blazor/MakerPrompt.Blazor.csproj -c Release --no-restore
+      run: dotnet build src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj -c Release --no-restore
 
     - name: Test (Unit)
-      run: dotnet test MakerPrompt.Tests/MakerPrompt.Tests.csproj -c Release
+      run: dotnet test src/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj -c Release
