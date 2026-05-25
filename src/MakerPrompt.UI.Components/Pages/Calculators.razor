@@ -1,0 +1,86 @@
+﻿@page "/calculators"
+@inherits ConnectionComponentBase
+
+<LocalizedTitle TitleKey="@Resources.PageTitle_Calculators" />
+
+<div class="alert alert-info d-flex justify-content-between align-items-center">
+    <p class="mb-0">@Localizer[Resources.Calculators_RememberSave]: <code title="@Localizer[Resources.CommandPrompt_CopyCommand]" @onclick="async () => await CopyM500()">M500</code></p>
+    <button class="btn btn-sm btn-outline-primary" disabled="@(!IsConnected)"
+            title="@(IsConnected? Localizer[Resources.CommandPrompt_RunCommand] : Localizer[Resources.PrinterStatus_Disconnected])">
+        <i class="bi bi-play-fill"></i>
+    </button>
+</div>
+
+<div class="accordion mb-2">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button @(ActiveTab == CalculatorTabs.BeltSteps ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(CalculatorTabs.BeltSteps)">
+                @CalculatorTabs.BeltSteps.GetLocalizedDisplayName()
+            </button>
+        </h2>
+        <div class="accordion-collapse @(ActiveTab == CalculatorTabs.BeltSteps ? "show" : "collapse")">
+            <div class="accordion-body">
+                <BeltStepsCalculator />
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button @(ActiveTab == CalculatorTabs.LeadScrewSteps ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(CalculatorTabs.LeadScrewSteps)">
+                @CalculatorTabs.LeadScrewSteps.GetLocalizedDisplayName()
+            </button>
+        </h2>
+        <div class="accordion-collapse @(ActiveTab == CalculatorTabs.LeadScrewSteps ? "show" : "collapse")">
+            <div class="accordion-body">
+                <LeadScrewCalculator />
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button @(ActiveTab == CalculatorTabs.ExtruderSteps ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(CalculatorTabs.ExtruderSteps)">
+                @CalculatorTabs.ExtruderSteps.GetLocalizedDisplayName()
+            </button>
+        </h2>
+        <div class="accordion-collapse @(ActiveTab == CalculatorTabs.ExtruderSteps ? "show" : "collapse")">
+            <div class="accordion-body">
+                <ExtruderStepsCalculator />
+            </div>
+        </div>
+    </div>
+@*     <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button @(ActiveTab == CalculatorTabs.PrintPrice ? string.Empty : "collapsed")" type="button" @onclick="() => ShowTab(CalculatorTabs.PrintPrice)">
+                @CalculatorTabs.PrintPrice.GetDisplayName();
+            </button>
+        </h2>
+        <div class="accordion-collapse @(ActiveTab == CalculatorTabs.PrintPrice ? "show" : "collapse")">
+            <div class="accordion-body">
+                <PrintPriceCalculator />
+            </div>
+        </div>
+    </div> *@
+</div>
+
+@code {
+    enum CalculatorTabs { 
+        [Display(Name = nameof(Resources.Calculators_PrintPrice), ResourceType = typeof(Resources))]
+        PrintPrice,
+        [Display(Name = nameof(Resources.Calculators_BeltSteps), ResourceType = typeof(Resources))]
+        BeltSteps,
+        [Display(Name = nameof(Resources.Calculators_LeadScrewSteps), ResourceType = typeof(Resources))]
+        LeadScrewSteps,
+        [Display(Name = nameof(Resources.Calculators_ExtruderSteps), ResourceType = typeof(Resources))]
+        ExtruderSteps
+    }
+
+    private CalculatorTabs ActiveTab = CalculatorTabs.BeltSteps;
+
+
+    private void ShowTab(CalculatorTabs tab)
+    {
+        ActiveTab = tab;
+    }
+
+    public async Task CopyM500() => await JS.CopyToClipboard("M500");
+}

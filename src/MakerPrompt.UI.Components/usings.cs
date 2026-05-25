@@ -1,0 +1,15 @@
+﻿global using static MakerPrompt.UI.Components.Utils.Enums;
+global using System.Text;
+global using System.Text.Json;
+global using System.Text.RegularExpressions;
+global using System.Text.Json.Serialization;
+global using System.Reflection;
+global using System.Numerics;
+global using System.Net;
+global using System.Net.Http.Headers;
+global using MakerPrompt.UI.Components.Infrastructure;
+global using MakerPrompt.UI.Components.Properties;
+global using MakerPrompt.UI.Components.Services;
+global using MakerPrompt.UI.Components.Models;
+global using MakerPrompt.UI.Components.Utils;
+global using Microsoft.JSInterop;

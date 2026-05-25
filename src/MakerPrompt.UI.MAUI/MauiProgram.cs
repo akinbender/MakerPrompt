@@ -1,10 +1,12 @@
-using MakerPrompt.Application.Services;
-using MakerPrompt.Core.Abstractions;
-using MakerPrompt.Infrastructure.Analytics;
-using MakerPrompt.Infrastructure.Farm;
-using MakerPrompt.Infrastructure.Inventory;
-using MakerPrompt.Infrastructure.Projects;
-using MakerPrompt.Infrastructure.Telemetry;
+using System.Globalization;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using MakerPrompt.UI.Components.Utils;
+using MakerPrompt.UI.Components.Services;
+using MakerPrompt.UI.MAUI.Services;
+using MakerPrompt.UI.MAUI.Storage;
+using MakerPrompt.UI.Components.Infrastructure;
+using MakerPrompt.UI.Components.Models;
 
 namespace MakerPrompt.UI.MAUI;
 
@@ -21,37 +23,59 @@ public static class MauiProgram
             });
 
         builder.Services.AddMauiBlazorWebView();
-
-        // Enable GPU rasterisation in the embedded WebView2 on Windows.
+        // Enable WebGL in the embedded WebView2 on Windows.
         var webViewArgs = "--ignore-gpu-blocklist --enable-gpu-rasterization";
 #if DEBUG
-        webViewArgs += " --remote-debugging-port=9223";
+        // Append remote-debugging port so E2E tests can connect via CDP / Playwright.
+        webViewArgs += " --remote-debugging-port=9222";
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
         Environment.SetEnvironmentVariable("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", webViewArgs);
 
-        // ── Infrastructure stores (in-memory) ────────────────────────────────
-        builder.Services.AddSingleton<ITelemetryStore, InMemoryTelemetryStore>();
-        builder.Services.AddSingleton<IFilamentInventoryStore, InMemoryFilamentInventoryStore>();
-        builder.Services.AddSingleton<IPrintJobAnalyticsStore, InMemoryPrintJobAnalyticsStore>();
-        builder.Services.AddSingleton<IPrintProjectRepository, InMemoryPrintProjectRepository>();
-        builder.Services.AddSingleton<IFarmRepository, InMemoryFarmRepository>();
+        // Restore the user's saved language from MAUI Preferences before Blazor starts.
+        RestoreSavedCulture(new AppConfiguration().SupportedCultures);
 
-        // ── Application services ─────────────────────────────────────────────
-        builder.Services.AddSingleton<PrinterFleetService>();
-        builder.Services.AddSingleton<TelemetryAggregationService>();
-        builder.Services.AddSingleton<FilamentInventoryService>();
-        builder.Services.AddSingleton<AnalyticsService>();
-        builder.Services.AddSingleton<PrintProjectService>();
-        builder.Services.AddSingleton<FarmService>();
-
-        // ── Platform-specific serial service ─────────────────────────────────
-        // SerialCommunicationService is a partial class with platform-specific
-        // transport implementations compiled conditionally per-platform.
-        // It implements IPrinterCommunicationService via SerialCommunicationServiceBase.
-        builder.Services.AddTransient<Services.SerialCommunicationService>();
+        builder.Services.RegisterMakerPromptSharedServices<AppConfigurationService, SerialService>();
+        // Override the passthrough camera proxy with MAUI native HttpClient fetcher
+        builder.Services.AddSingleton<ICameraProxyService, MauiCameraProxyService>();
+        builder.Services.AddScoped<IAppLocalStorageProvider, MauiAppLocalStorageProvider>();
+        // MAUI: Use AES-256-GCM encryption for stored credentials
+        var deviceId = DeviceInfo.Current.Idiom.ToString();
+        var deviceName = DeviceInfo.Current.Name ?? "default";
+        builder.Services.AddSingleton<IConnectionEncryptionService>(
+            new AesConnectionEncryptionService($"MakerPrompt-{deviceId}-{deviceName}"));
 
         return builder.Build();
     }
+
+    /// <summary>
+    /// Reads the saved language from MAUI Preferences and applies it to the
+    /// current thread before Blazor starts, so the first render uses the correct
+    /// culture.
+    /// </summary>
+    private static void RestoreSavedCulture(string[] supportedCultures)
+    {
+        try
+        {
+            var json = Preferences.Get("Mak3rPromptAppConfig", (string?)null);
+            if (json == null) return;
+
+            using var doc = JsonDocument.Parse(json);
+            if (!doc.RootElement.TryGetProperty("Language", out var langProp)) return;
+
+            var lang = langProp.GetString();
+            if (string.IsNullOrEmpty(lang)) return;
+            if (!supportedCultures.Contains(lang, StringComparer.OrdinalIgnoreCase)) return;
+
+            var culture = new CultureInfo(lang);
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+        }
+        catch
+        {
+            // Config not saved yet or corrupt — use default culture.
+        }
+    }
 }
+

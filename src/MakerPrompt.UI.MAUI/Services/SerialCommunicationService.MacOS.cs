@@ -59,7 +59,7 @@ public partial class SerialCommunicationService
     protected override Task WriteTransportAsync(string data, CancellationToken cancellationToken)
     {
         if (_manager is null) return Task.CompletedTask;
-        return _macCommandQueue.SendAsync(data, cancellationToken).AsTask();
+        return _macCommandQueue.SendAsync(data, cancellationToken);
     }
 
     // ── Send loop (macOS) ────────────────────────────────────────────────────

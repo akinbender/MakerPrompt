@@ -1,0 +1,17 @@
+﻿@page "/about"
+@inject IStringLocalizer<Resources> localizer
+<LocalizedTitle TitleKey="@Resources.PageTitle_About" />
+
+<div class="row">
+    <div class="col-12">
+        @aboutContent
+    </div>
+</div>
+@code {
+    private MarkupString aboutContent;
+
+    protected override void OnInitialized()
+    {
+        aboutContent = new MarkupString(localizer[Resources.AboutPage_Content]);
+    }
+}

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GCodeCategory_Calibration" xml:space="preserve"><value>校准</value></data>
+  <data name="GCodeCategory_Fan" xml:space="preserve"><value>风扇</value></data>
+  <data name="GCodeCategory_Reporting" xml:space="preserve"><value>报告</value></data>
+  <data name="GCodeCategory_Settings" xml:space="preserve"><value>设置</value></data>
+  <data name="GCodeCategory_Movement" xml:space="preserve"><value>运动</value></data>
+  <data name="GCodeCategory_SdCard" xml:space="preserve"><value>SD 卡</value></data>
+  <data name="GCodeCategory_Temperature" xml:space="preserve"><value>温度</value></data>
+  <data name="GCodeCommand_Command" xml:space="preserve"><value>命令</value></data>
+  <data name="GCodeCommand_Description" xml:space="preserve"><value>描述</value></data>
+  <data name="GCodeCommand_Category" xml:space="preserve"><value>类别</value></data>
+  <data name="GCodeCommand_Parameter" xml:space="preserve"><value>参数</value></data>
+  <data name="GCodeDescription_G0" xml:space="preserve"><value>快速直线运动（不挤料）</value></data>
+  <data name="GCodeDescription_G1" xml:space="preserve"><value>受控直线运动（打印）</value></data>
+  <data name="GCodeDescription_G28" xml:space="preserve"><value>将所有或指定轴归零</value></data>
+  <data name="GCodeDescription_G29" xml:space="preserve"><value>自动调平热床</value></data>
+  <data name="GCodeDescription_G90" xml:space="preserve"><value>设置绝对定位模式</value></data>
+  <data name="GCodeDescription_G91" xml:space="preserve"><value>设置相对定位模式</value></data>
+  <data name="GCodeDescription_G92" xml:space="preserve"><value>设置当前位置（重置坐标）</value></data>
+  <data name="GCodeDescription_M3" xml:space="preserve"><value>主轴/激光开启（顺时针）</value></data>
+  <data name="GCodeDescription_M4" xml:space="preserve"><value>主轴/激光开启（逆时针）</value></data>
+  <data name="GCodeDescription_M5" xml:space="preserve"><value>主轴/激光关闭</value></data>
+  <data name="GCodeDescription_M17" xml:space="preserve"><value>启用步进电机</value></data>
+  <data name="GCodeDescription_M18" xml:space="preserve"><value>禁用步进电机</value></data>
+  <data name="GCodeDescription_M20" xml:space="preserve"><value>列出 SD 卡内容</value></data>
+  <data name="GCodeDescription_M21" xml:space="preserve"><value>初始化 SD 卡</value></data>
+  <data name="GCodeDescription_M22" xml:space="preserve"><value>释放 SD 卡</value></data>
+  <data name="GCodeDescription_M23" xml:space="preserve"><value>从 SD 卡选择文件</value></data>
+  <data name="GCodeDescription_M24" xml:space="preserve"><value>开始/继续 SD 卡打印</value></data>
+  <data name="GCodeDescription_M25" xml:space="preserve"><value>暂停 SD 卡打印</value></data>
+  <data name="GCodeDescription_M26" xml:space="preserve"><value>设置 SD 卡读取位置</value></data>
+  <data name="GCodeDescription_M27" xml:space="preserve"><value>显示 SD 打印状态</value></data>
+  <data name="GCodeDescription_M28" xml:space="preserve"><value>写入 SD 卡</value></data>
+  <data name="GCodeDescription_M29" xml:space="preserve"><value>停止写入 SD 卡</value></data>
+  <data name="GCodeDescription_M30" xml:space="preserve"><value>删除 SD 卡文件</value></data>
+  <data name="GCodeDescription_M32" xml:space="preserve"><value>选择文件并开始打印</value></data>
+  <data name="GCodeDescription_M92" xml:space="preserve"><value>读取/设置每单位步数</value></data>
+  <data name="GCodeDescription_M104" xml:space="preserve"><value>设置喷嘴温度（非阻塞）</value></data>
+  <data name="GCodeDescription_M105" xml:space="preserve"><value>显示当前温度</value></data>
+  <data name="GCodeDescription_M106" xml:space="preserve"><value>设置风扇速度（S: 0–255）</value></data>
+  <data name="GCodeDescription_M107" xml:space="preserve"><value>关闭风扇</value></data>
+  <data name="GCodeDescription_M109" xml:space="preserve"><value>设置喷嘴温度并等待</value></data>
+  <data name="GCodeDescription_M112" xml:space="preserve"><value>紧急停止</value></data>
+  <data name="GCodeDescription_M114" xml:space="preserve"><value>获取当前位置</value></data>
+  <data name="GCodeDescription_M115" xml:space="preserve"><value>获取固件信息</value></data>
+  <data name="GCodeDescription_M117" xml:space="preserve"><value>设置 LCD 显示信息</value></data>
+  <data name="GCodeDescription_M140" xml:space="preserve"><value>设置热床温度（非阻塞）</value></data>
+  <data name="GCodeDescription_M190" xml:space="preserve"><value>设置热床温度并等待</value></data>
+  <data name="GCodeDescription_M220" xml:space="preserve"><value>读取/设置所有运动的进给倍率</value></data>
+  <data name="GCodeDescription_M221" xml:space="preserve"><value>读取/设置挤出流量</value></data>
+  <data name="GCodeDescription_M301" xml:space="preserve"><value>设置喷嘴 PID 参数</value></data>
+  <data name="GCodeDescription_M303" xml:space="preserve"><value>自动 PID 校准</value></data>
+  <data name="GCodeDescription_M304" xml:space="preserve"><value>设置热床 PID 参数</value></data>
+  <data name="GCodeDescription_M306" xml:space="preserve"><value>热模型校准</value></data>
+  <data name="GCodeDescription_M500" xml:space="preserve"><value>将设置保存到 EEPROM</value></data>
+  <data name="GCodeDescription_M501" xml:space="preserve"><value>从 EEPROM 加载设置</value></data>
+  <data name="GCodeDescription_M502" xml:space="preserve"><value>重置为出厂设置</value></data>
+  <data name="GCodeDescription_M503" xml:space="preserve"><value>显示当前 EEPROM 设置</value></data>
+  <data name="GCodeDescription_M504" xml:space="preserve"><value>验证 EEPROM 内容</value></data>
+  <data name="GCodeDescription_C_Cycle" xml:space="preserve"><value>循环次数（3–20）</value></data>
+  <data name="GCodeDescription_D_Derivative" xml:space="preserve"><value>微分值</value></data>
+  <data name="GCodeDescription_E_Amount" xml:space="preserve"><value>挤出量</value></data>
+  <data name="GCodeDescription_E_Position" xml:space="preserve"><value>E 轴位置</value></data>
+  <data name="GCodeDescription_F_Feedrate" xml:space="preserve"><value>进给速率</value></data>
+  <data name="GCodeDescription_F_File" xml:space="preserve"><value>文件路径</value></data>
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve"><value>内联模式（开/关）</value></data>
+  <data name="GCodeDescription_I_Integral" xml:space="preserve"><value>积分值</value></data>
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve"><value>主轴/激光功率（PWM 0–255）</value></data>
+  <data name="GCodeDescription_P_Proportional" xml:space="preserve"><value>比例值</value></data>
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve"><value>主轴/激光速度</value></data>
+  <data name="GCodeDescription_S_TargetTemp" xml:space="preserve"><value>目标温度</value></data>
+  <data name="GCodeDescription_X_Position" xml:space="preserve"><value>X 轴位置</value></data>
+  <data name="GCodeDescription_Y_Position" xml:space="preserve"><value>Y 轴位置</value></data>
+  <data name="GCodeDescription_Z_Position" xml:space="preserve"><value>Z 轴位置</value></data>
+  <data name="Calculators_ActualExtrusionLength" xml:space="preserve"><value>实际挤出长度（毫米）</value></data>
+  <data name="Calculators_BeltPitch" xml:space="preserve"><value>皮带齿距（毫米）</value></data>
+  <data name="Calculators_BeltSteps" xml:space="preserve"><value>皮带步进/毫米计算器</value></data>
+  <data name="Calculators_CurrentEsteps" xml:space="preserve"><value>当前 E 步数（步/毫米）</value></data>
+  <data name="Calculators_Esteps_HowTo" xml:space="preserve"><value>如何校准 E 步数</value></data>
+  <data name="Calculators_ExtruderSteps" xml:space="preserve"><value>E 步数计算器</value></data>
+  <data name="Calculators_GCodeExample" xml:space="preserve"><value>G-Code 示例</value></data>
+  <data name="Calculators_GearRatio" xml:space="preserve"><value>传动比</value></data>
+  <data name="Calculators_LeadscrewPitch" xml:space="preserve"><value>丝杠螺距（毫米/转）</value></data>
+  <data name="Calculators_LeadScrewSteps" xml:space="preserve"><value>丝杠步进/毫米计算器</value></data>
+  <data name="Calculators_MeasureCaliper" xml:space="preserve"><value>用卡尺测量</value></data>
+  <data name="Calculators_Microstepping" xml:space="preserve"><value>驱动器细分</value></data>
+  <data name="Calculators_MotorAngle" xml:space="preserve"><value>电机步进角</value></data>
+  <data name="Calculators_PrintPrice" xml:space="preserve"><value>打印成本计算器</value></data>
+  <data name="Calculators_PulleyToothCount" xml:space="preserve"><value>皮带轮齿数</value></data>
+  <data name="Calculators_RememberSave" xml:space="preserve"><value>测试后记得保存</value></data>
+  <data name="Calculators_RequestedExtrusionLength" xml:space="preserve"><value>请求挤出长度（毫米）</value></data>
+  <data name="Calculators_Resolution" xml:space="preserve"><value>分辨率</value></data>
+  <data name="Calculators_Steps" xml:space="preserve"><value>步数/毫米</value></data>
+  <data name="CalibrationPage_HeaterIndex" xml:space="preserve"><value>加热器编号</value></data>
+  <data name="CalibrationPage_PidTuning" xml:space="preserve"><value>PID 调节</value></data>
+  <data name="CalibrationPage_Result" xml:space="preserve"><value>结果</value></data>
+  <data name="CalibrationPage_Start" xml:space="preserve"><value>开始</value></data>
+  <data name="CalibrationPage_ThermalModel" xml:space="preserve"><value>热模型</value></data>
+  <data name="CheatSheetPage_None" xml:space="preserve"><value>无</value></data>
+  <data name="CheatSheetPage_SearchCommands" xml:space="preserve"><value>搜索命令...</value></data>
+  <data name="CommandPrompt_ConnectedMessage" xml:space="preserve"><value>连接已建立。</value></data>
+  <data name="CommandPrompt_CopyCommand" xml:space="preserve"><value>复制命令</value></data>
+  <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve"><value>连接已关闭。</value></data>
+  <data name="CommandPrompt_EnterCommand" xml:space="preserve"><value>输入命令...</value></data>
+  <data name="CommandPrompt_ErrorMessage" xml:space="preserve"><value>发送命令时出错：{0}。</value></data>
+  <data name="CommandPrompt_RunCommand" xml:space="preserve"><value>运行命令</value></data>
+  <data name="CommandPrompt_Send" xml:space="preserve"><value>发送</value></data>
+  <data name="ControlPanel_Current" xml:space="preserve"><value>当前</value></data>
+  <data name="ControlPanel_Extrude" xml:space="preserve"><value>挤出</value></data>
+  <data name="ControlPanel_FanSpeed" xml:space="preserve"><value>风扇速度</value></data>
+  <data name="ControlPanel_Heating" xml:space="preserve"><value>加热</value></data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve"><value>所有轴归零</value></data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve"><value>所选轴归零</value></data>
+  <data name="ControlPanel_Length" xml:space="preserve"><value>长度</value></data>
+  <data name="ControlPanel_MotorsOff" xml:space="preserve"><value>关闭电机</value></data>
+  <data name="ControlPanel_Position" xml:space="preserve"><value>位置</value></data>
+  <data name="ControlPanel_PrintFlow" xml:space="preserve"><value>打印流量</value></data>
+  <data name="ControlPanel_PrintSpeed" xml:space="preserve"><value>打印速度</value></data>
+  <data name="ControlPanel_Reverse" xml:space="preserve"><value>回抽</value></data>
+  <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve"><value>未插入</value></data>
+  <data name="ControlPanel_SdCard_Ready" xml:space="preserve"><value>就绪</value></data>
+  <data name="ControlPanel_Set" xml:space="preserve"><value>设置</value></data>
+  <data name="ControlPanel_Set_FanSpeed" xml:space="preserve"><value>设置风扇速度</value></data>
+  <data name="ControlPanel_Set_XYSpeed" xml:space="preserve"><value>X 和 Y 速度（毫米/分钟）</value></data>
+  <data name="ControlPanel_Set_ZSpeed" xml:space="preserve"><value>Z 轴速度（毫米/分钟）</value></data>
+  <data name="ControlPanel_SetBedTemp" xml:space="preserve"><value>设置热床温度</value></data>
+  <data name="ControlPanel_SetHotendTemp" xml:space="preserve"><value>设置喷嘴温度</value></data>
+  <data name="ControlPanel_Speed" xml:space="preserve"><value>速度</value></data>
+  <data name="ControlPanel_Status" xml:space="preserve"><value>状态</value></data>
+  <data name="ControlPanel_Target" xml:space="preserve"><value>目标</value></data>
+  <data name="Dashboard_ControlPanel" xml:space="preserve"><value>控制面板</value></data>
+  <data name="Dashboard_FileExplorer" xml:space="preserve"><value>文件</value></data>
+  <data name="Files_DateModified" xml:space="preserve"><value>修改日期</value></data>
+  <data name="Files_Name" xml:space="preserve"><value>名称</value></data>
+  <data name="Files_Refresh" xml:space="preserve"><value>刷新</value></data>
+  <data name="Files_Size" xml:space="preserve"><value>大小</value></data>
+  <data name="NavConnection_BrowserNotSupported" xml:space="preserve"><value>浏览器不受支持。</value></data>
+  <data name="NavConnection_Connect" xml:space="preserve"><value>连接</value></data>
+  <data name="NavConnection_DemoServiceDescription" xml:space="preserve"><value>模拟正在运行的 3D 打印机的演示服务。</value></data>
+  <data name="NavConnection_Disconnect" xml:space="preserve"><value>断开</value></data>
+  <data name="NavConnection_RefreshPorts" xml:space="preserve"><value>刷新端口</value></data>
+  <data name="NavConnection_SelectPort" xml:space="preserve"><value>选择端口</value></data>
+  <data name="PageTitle_About" xml:space="preserve"><value>关于</value></data>
+  <data name="PageTitle_BrailleRAP" xml:space="preserve"><value>BrailleRAP</value></data>
+  <data name="PageTitle_Calculators" xml:space="preserve"><value>计算器</value></data>
+  <data name="PageTitle_CommandPrompt" xml:space="preserve"><value>控制台</value></data>
+  <data name="PageTitle_GCodeList" xml:space="preserve"><value>G-Code 参考</value></data>
+  <data name="PageTitle_GCodeViewer" xml:space="preserve"><value>G-Code 查看器</value></data>
+  <data name="PageTitle_Homepage" xml:space="preserve"><value>仪表板</value></data>
+  <data name="PrinterComponent_Heatbed" xml:space="preserve"><value>热床</value></data>
+  <data name="PrinterComponent_Hotend" xml:space="preserve"><value>热端</value></data>
+  <data name="PrinterStatus_Connected" xml:space="preserve"><value>已连接</value></data>
+  <data name="PrinterStatus_Disconnected" xml:space="preserve"><value>已断开</value></data>
+  <data name="PrinterStatus_Error" xml:space="preserve"><value>错误</value></data>
+  <data name="PrinterStatus_Paused" xml:space="preserve"><value>已暂停</value></data>
+  <data name="PrinterStatus_Printing" xml:space="preserve"><value>打印中</value></data>
+  <data name="Theme_Auto" xml:space="preserve"><value>自动</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>深色</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>浅色</value></data>
+  <data name="BrailleRAP_Clear" xml:space="preserve"><value>清除</value></data>
+  <data name="BrailleRAP_Columns" xml:space="preserve"><value>每行列数</value></data>
+  <data name="BrailleRAP_Configuration" xml:space="preserve"><value>配置</value></data>
+  <data name="BrailleRAP_CopiedToClipboard" xml:space="preserve"><value>已复制到剪贴板</value></data>
+  <data name="BrailleRAP_Copy" xml:space="preserve"><value>复制</value></data>
+  <data name="BrailleRAP_Description" xml:space="preserve"><value>将文本转换为盲文并生成用于 BrailleRAP 压印的 G-Code。</value></data>
+  <data name="BrailleRAP_EnterText" xml:space="preserve"><value>输入要转换为盲文的文字</value></data>
+  <data name="BrailleRAP_FeedRate" xml:space="preserve"><value>进给速率</value></data>
+  <data name="BrailleRAP_GCodeGenerated" xml:space="preserve"><value>G-Code 生成成功</value></data>
+  <data name="BrailleRAP_GeneratedGCode" xml:space="preserve"><value>G-Code</value></data>
+  <data name="BrailleRAP_GenerateFirst" xml:space="preserve"><value>请先生成 G-Code</value></data>
+  <data name="BrailleRAP_GenerateGCode" xml:space="preserve"><value>生成 G-Code</value></data>
+  <data name="BrailleRAP_Language" xml:space="preserve"><value>翻译语言</value></data>
+  <data name="BrailleRAP_Lines" xml:space="preserve"><value>行数</value></data>
+  <data name="BrailleRAP_LineSpacing" xml:space="preserve"><value>行间距</value></data>
+  <data name="BrailleRAP_MachineSettings" xml:space="preserve"><value>机器设置</value></data>
+  <data name="BrailleRAP_NoPreview" xml:space="preserve"><value>输入文字以查看盲文预览</value></data>
+  <data name="BrailleRAP_NotConnected" xml:space="preserve"><value>请先连接打印机</value></data>
+  <data name="BrailleRAP_OffsetX" xml:space="preserve"><value>X 偏移</value></data>
+  <data name="BrailleRAP_OffsetY" xml:space="preserve"><value>Y 偏移</value></data>
+  <data name="BrailleRAP_Page" xml:space="preserve"><value>页面</value></data>
+  <data name="BrailleRAP_PageNavigation" xml:space="preserve"><value>页面导航</value></data>
+  <data name="BrailleRAP_Pages" xml:space="preserve"><value>页数</value></data>
+  <data name="BrailleRAP_PageSettings" xml:space="preserve"><value>页面设置</value></data>
+  <data name="BrailleRAP_Preview" xml:space="preserve"><value>盲文预览</value></data>
+  <data name="BrailleRAP_Rows" xml:space="preserve"><value>每页行数</value></data>
+  <data name="BrailleRAP_SendToPrinter" xml:space="preserve"><value>发送到打印机</value></data>
+  <data name="BrailleRAP_SentSuccessfully" xml:space="preserve"><value>G-Code 已成功发送到打印机</value></data>
+  <data name="BrailleRAP_TextInput" xml:space="preserve"><value>文字输入</value></data>
+  <data name="BrailleRAP_TextPlaceholder" xml:space="preserve"><value>在此处输入或粘贴文字...</value></data>
+  <data name="GCode_Title" xml:space="preserve"><value>G-Code</value></data>
+  <data name="CommandPrompt_ShowTelemetry" xml:space="preserve"><value>显示遥测输出</value></data>
+  <data name="PageTitle_Dashboard" xml:space="preserve"><value>仪表板</value></data>
+  <data name="PageTitle_Settings" xml:space="preserve"><value>设置</value></data>
+  <data name="PageTitle_FilamentInventory" xml:space="preserve"><value>耗材库存</value></data>
+  <data name="PageTitle_Analytics" xml:space="preserve"><value>数据分析</value></data>
+  <data name="PageTitle_Fleet" xml:space="preserve"><value>打印机群</value></data>
+  <data name="Dashboard_Welcome" xml:space="preserve"><value>欢迎使用 MakerPrompt</value></data>
+  <data name="Dashboard_ConnectPrompt" xml:space="preserve"><value>配置并连接打印机以开始使用。</value></data>
+  <data name="Settings_FarmMode" xml:space="preserve"><value>农场模式</value></data>
+  <data name="Settings_Delete" xml:space="preserve"><value>删除</value></data>
+  <data name="Settings_EnableFarmMode" xml:space="preserve"><value>启用农场模式</value></data>
+  <data name="Settings_FarmModeDescription" xml:space="preserve"><value>启用后，打印机群页面为默认主页，农场管理功能可用。</value></data>
+  <data name="Settings_FarmConfigurations" xml:space="preserve"><value>农场配置</value></data>
+  <data name="Settings_SelectFarm" xml:space="preserve"><value>— 选择农场 —</value></data>
+  <data name="Settings_NewFarmName" xml:space="preserve"><value>新农场名称</value></data>
+  <data name="Settings_Create" xml:space="preserve"><value>创建</value></data>
+  <data name="Settings_Export" xml:space="preserve"><value>导出</value></data>
+  <data name="Settings_Import" xml:space="preserve"><value>导入</value></data>
+  <data name="Settings_Features" xml:space="preserve"><value>功能</value></data>
+  <data name="Settings_EnableFilamentInventory" xml:space="preserve"><value>启用耗材库存</value></data>
+  <data name="Settings_FilamentInventoryDescription" xml:space="preserve"><value>追踪耗材卷轴及剩余重量。</value></data>
+  <data name="Settings_EnablePrintAnalytics" xml:space="preserve"><value>启用打印分析</value></data>
+  <data name="Settings_PrintAnalyticsDescription" xml:space="preserve"><value>记录打印任务历史、时长和耗材用量。</value></data>
+  <data name="Settings_TelemetryAnalytics" xml:space="preserve"><value>遥测与分析</value></data>
+  <data name="Settings_EnableAppTelemetry" xml:space="preserve"><value>启用应用遥测</value></data>
+  <data name="Settings_TelemetryDescription" xml:space="preserve"><value>允许 MakerPrompt 收集匿名使用数据以改进应用。</value></data>
+  <data name="Settings_AppStorage" xml:space="preserve"><value>应用存储</value></data>
+  <data name="Settings_SaveButton" xml:space="preserve"><value>保存设置</value></data>
+  <data name="Settings_Toast_Saved" xml:space="preserve"><value>设置已保存</value></data>
+  <data name="Settings_Toast_SavedMessage" xml:space="preserve"><value>您的设置已成功保存。</value></data>
+  <data name="Settings_Toast_FarmCreated" xml:space="preserve"><value>农场已创建</value></data>
+  <data name="Settings_Toast_FarmCreatedMessage" xml:space="preserve"><value>农场"{0}"已创建。</value></data>
+  <data name="Settings_Toast_FarmSwitched" xml:space="preserve"><value>已切换农场</value></data>
+  <data name="Settings_Toast_FarmSwitchedMessage" xml:space="preserve"><value>已切换到"{0}"。</value></data>
+  <data name="Settings_Toast_FarmDeleted" xml:space="preserve"><value>农场已删除</value></data>
+  <data name="Settings_Toast_FarmDeletedMessage" xml:space="preserve"><value>农场配置已删除。</value></data>
+  <data name="Settings_Toast_FarmDeletedDisabled" xml:space="preserve"><value>农场配置已删除，农场模式已关闭。</value></data>
+  <data name="Settings_Toast_Exported" xml:space="preserve"><value>已导出</value></data>
+  <data name="Settings_Toast_ExportedMessage" xml:space="preserve"><value>农场配置已导出。</value></data>
+  <data name="Settings_Toast_Imported" xml:space="preserve"><value>已导入</value></data>
+  <data name="Settings_Toast_ImportedMessage" xml:space="preserve"><value>农场"{0}"已导入。</value></data>
+  <data name="Settings_Toast_Error" xml:space="preserve"><value>错误</value></data>
+  <data name="Settings_Toast_CreateFarmError" xml:space="preserve"><value>无法创建农场。</value></data>
+  <data name="Settings_Toast_SwitchFarmError" xml:space="preserve"><value>无法切换农场。</value></data>
+  <data name="Settings_Toast_DeleteFarmError" xml:space="preserve"><value>无法删除农场。</value></data>
+  <data name="Settings_Toast_ExportError" xml:space="preserve"><value>无法导出农场配置。</value></data>
+  <data name="Settings_Toast_ImportError" xml:space="preserve"><value>无法导入农场配置。</value></data>
+  <data name="Fleet_Title" xml:space="preserve"><value>打印机群</value></data>
+  <data name="Fleet_NoPrinters" xml:space="preserve"><value>没有已配置的打印机，请添加一台以开始使用。</value></data>
+  <data name="Fleet_AddPrinter" xml:space="preserve"><value>添加打印机</value></data>
+  <data name="Fleet_EditPrinter" xml:space="preserve"><value>编辑打印机</value></data>
+  <data name="Fleet_ManagePrinters" xml:space="preserve"><value>管理打印机</value></data>
+  <data name="Fleet_DeletePrinter" xml:space="preserve"><value>删除打印机</value></data>
+  <data name="Fleet_PrinterName" xml:space="preserve"><value>打印机名称</value></data>
+  <data name="Fleet_ConnectionType" xml:space="preserve"><value>连接类型</value></data>
+  <data name="Fleet_AutoConnect" xml:space="preserve"><value>启动时自动连接</value></data>
+  <data name="Fleet_Save" xml:space="preserve"><value>保存</value></data>
+  <data name="Fleet_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="Fleet_Connecting" xml:space="preserve"><value>连接中...</value></data>
+  <data name="Fleet_Disconnecting" xml:space="preserve"><value>断开中...</value></data>
+  <data name="Fleet_SetActive" xml:space="preserve"><value>设为活动</value></data>
+  <data name="Fleet_Active" xml:space="preserve"><value>活动中</value></data>
+  <data name="Fleet_Printers" xml:space="preserve"><value>打印机</value></data>
+  <data name="Fleet_DeleteConfirm" xml:space="preserve"><value>确定要删除此打印机吗？</value></data>
+  <data name="Fleet_Progress" xml:space="preserve"><value>进度</value></data>
+  <data name="Fleet_Camera" xml:space="preserve"><value>摄像头</value></data>
+  <data name="NavPrinters_Back" xml:space="preserve"><value>返回</value></data>
+  <data name="NavPrinters_Close" xml:space="preserve"><value>关闭</value></data>
+  <data name="NavPrinters_Port" xml:space="preserve"><value>端口</value></data>
+  <data name="NavPrinters_Url" xml:space="preserve"><value>URL</value></data>
+  <data name="NavPrinters_SerialNumber" xml:space="preserve"><value>序列号</value></data>
+  <data name="NavPrinters_AccessCode" xml:space="preserve"><value>访问码</value></data>
+  <data name="NavPrinters_ApiKey" xml:space="preserve"><value>API 密钥</value></data>
+  <data name="NavPrinters_Username" xml:space="preserve"><value>用户名</value></data>
+  <data name="NavPrinters_PasswordOrApiKey" xml:space="preserve"><value>密码 / API 密钥</value></data>
+  <data name="NavPrinters_PrinterNameRequired" xml:space="preserve"><value>打印机名称为必填项</value></data>
+  <data name="NavPrinters_PrinterUpdated" xml:space="preserve"><value>打印机已更新</value></data>
+  <data name="NavPrinters_PrinterAdded" xml:space="preserve"><value>打印机已添加</value></data>
+  <data name="NavPrinters_SaveFailed" xml:space="preserve"><value>保存打印机失败</value></data>
+  <data name="NavPrinters_ConnectFailed" xml:space="preserve"><value>连接失败</value></data>
+  <data name="NavPrinters_DisconnectFailed" xml:space="preserve"><value>断开失败</value></data>
+  <data name="NavPrinters_PrinterRemoved" xml:space="preserve"><value>打印机已移除</value></data>
+  <data name="NavPrinters_DeleteFailed" xml:space="preserve"><value>删除失败</value></data>
+  <data name="PrintQueue_Title" xml:space="preserve"><value>打印队列</value></data>
+  <data name="PrintQueue_NoFiles" xml:space="preserve"><value>没有可用文件，连接打印机以查看文件。</value></data>
+  <data name="PrintQueue_SelectPrinter" xml:space="preserve"><value>发送到打印机</value></data>
+  <data name="PrintQueue_StartPrint" xml:space="preserve"><value>开始打印</value></data>
+  <data name="PrintQueue_NoPrintersAvailable" xml:space="preserve"><value>没有可用的打印机</value></data>
+  <data name="PrintQueue_PrintStarted" xml:space="preserve"><value>打印已开始</value></data>
+  <data name="PrintQueue_Refresh" xml:space="preserve"><value>刷新</value></data>
+  <data name="PrintQueue_NoProjects" xml:space="preserve"><value>暂无项目，创建一个以整理您的打印任务。</value></data>
+  <data name="PrintQueue_NewProject" xml:space="preserve"><value>新建项目</value></data>
+  <data name="PrintQueue_ProjectName" xml:space="preserve"><value>项目名称</value></data>
+  <data name="PrintQueue_UploadFiles" xml:space="preserve"><value>上传 G-Code</value></data>
+  <data name="PrintQueue_DeleteProject" xml:space="preserve"><value>删除项目</value></data>
+  <data name="PrintQueue_RemoveJob" xml:space="preserve"><value>移除</value></data>
+  <data name="PrintQueue_SendToPrinter" xml:space="preserve"><value>发送到打印机</value></data>
+  <data name="PrintQueue_Queued" xml:space="preserve"><value>排队中</value></data>
+  <data name="PrintQueue_Printing" xml:space="preserve"><value>打印中</value></data>
+  <data name="PrintQueue_Completed" xml:space="preserve"><value>已完成</value></data>
+  <data name="PrintQueue_Failed" xml:space="preserve"><value>失败</value></data>
+  <data name="StorageExplorer_Upload" xml:space="preserve"><value>上传</value></data>
+  <data name="StorageExplorer_Loading" xml:space="preserve"><value>加载中...</value></data>
+</root>

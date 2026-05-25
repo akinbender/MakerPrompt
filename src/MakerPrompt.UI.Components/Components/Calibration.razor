@@ -1,0 +1,34 @@
+﻿@inject IStringLocalizer<Resources> localizer
+
+<div class="calibration-tabs">
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link @(ActiveTab == DashboardTab.PID ? "active" : string.Empty)" @onclick="() => ShowTab(DashboardTab.PID)">@localizer[Resources.CalibrationPage_PidTuning]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ActiveTab == DashboardTab.Thermal ? "active" : string.Empty)" @onclick="() => ShowTab(DashboardTab.Thermal)">@localizer[Resources.CalibrationPage_ThermalModel]</a>
+        </li>
+    </ul>
+
+    @switch (ActiveTab)
+    {
+        default:
+        case DashboardTab.PID:
+            <PidCalibration />
+            break;
+        case DashboardTab.Thermal:
+            <ThermalModelCalibration />
+            break;
+    }
+</div>
+
+@code{
+    private DashboardTab ActiveTab = DashboardTab.PID;
+
+    private enum DashboardTab { PID, Thermal }
+
+    private void ShowTab(DashboardTab tab)
+    {
+        ActiveTab = tab;
+    }
+}

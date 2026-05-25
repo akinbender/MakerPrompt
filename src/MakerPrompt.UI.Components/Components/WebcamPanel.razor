@@ -1,0 +1,54 @@
+@inherits ConnectionComponentBase
+@inject IPrinterCameraProvider CameraProvider
+
+@if (Camera is not null)
+{
+    <div class="card mb-3">
+        <h4 class="card-header">Webcam</h4>
+        <div class="card-body">
+            <WebcamViewer Camera="Camera" />
+        </div>
+    </div>
+}
+
+@code {
+    private PrinterCamera? Camera;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (IsConnected)
+        {
+            await LoadCameraAsync();
+        }
+    }
+
+    protected override async void HandleConnectionChanged(object? sender, bool connected)
+    {
+        base.HandleConnectionChanged(sender, connected);
+
+        if (connected)
+        {
+            await LoadCameraAsync();
+        }
+        else
+        {
+            Camera = null;
+        }
+    }
+
+    private async Task LoadCameraAsync()
+    {
+        try
+        {
+            Camera = await CameraProvider.GetPrimaryCameraAsync();
+        }
+        catch
+        {
+            Camera = null;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

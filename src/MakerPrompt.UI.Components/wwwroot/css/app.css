@@ -1,0 +1,402 @@
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    overflow: hidden; /* avoid scrollbars from the oversized logical box */
+    /* Global 80 % zoom applied on <body> so that BOTH the #app content
+       AND Bootstrap's modal-backdrop (which JS appends to <body>) share
+       the same coordinate system. Using `zoom` (not `transform`) keeps
+       position:fixed elements working correctly. */
+    zoom: 0.8;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
+
+.loading-progress {
+    position: relative;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    margin: 20vh auto 1rem auto;
+}
+
+    .loading-progress circle {
+        fill: none;
+        stroke: #e0e0e0;
+        stroke-width: 0.6rem;
+        transform-origin: 50% 50%;
+        transform: rotate(-90deg);
+    }
+
+        .loading-progress circle:last-child {
+            stroke: #1b6ec2;
+            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+            transition: stroke-dasharray 0.05s ease-in-out;
+        }
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+    .loading-progress-text:after {
+        content: var(--blazor-load-percentage-text, "Loading");
+    }
+
+/* ─── Layout ───────────────────────────────────────────────── */
+
+.layout-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.layout-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.layout-content {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.layout-content.resizing {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.layout-page {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding: 0 1.5rem;
+}
+
+.layout-right {
+    width: var(--layout-right-width, 38%);
+    min-width: 600px;
+    max-width: 1600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-left: 1px solid var(--bs-border-color);
+}
+
+.layout-resizer {
+    width: 5px;
+    cursor: col-resize;
+    background-color: transparent;
+    transition: background-color 0.2s;
+    z-index: 10;
+}
+
+.layout-resizer:hover,
+.layout-resizer.active {
+    background-color: var(--bs-primary);
+}
+
+@media (max-width: 991.98px) {
+    .layout-right { display: none; }
+}
+
+.layout-right-top,
+.layout-right-bottom {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0.5rem;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────── */
+
+.sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--bs-secondary-bg);
+    border-right: 1px solid var(--bs-border-color);
+    transition: width 0.25s ease, min-width 0.25s ease;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* Collapsed = icon-only strip (48px) so the toggle button stays reachable */
+.sidebar.sidebar--collapsed {
+    width: 48px;
+    min-width: 48px;
+}
+
+/* Brand in header tracks sidebar width */
+.navbar-brand {
+    width: 220px;
+    min-width: 220px;
+    transition: width 0.25s ease, min-width 0.25s ease;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar-brand.brand--collapsed {
+    width: 48px;
+    min-width: 48px;
+}
+
+.brand-label {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.brand--collapsed .brand-label {
+    opacity: 0;
+}
+
+.sidebar-icon {
+    flex-shrink: 0;
+    width: 1.1rem;
+    text-align: center;
+}
+
+/* Labels fade+clip when collapsed */
+.sidebar-label {
+    margin-left: 0.6rem;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar--collapsed .sidebar-label {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-link,
+.sidebar-toggle-btn {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+    color: var(--bs-body-color) !important;
+    text-decoration: none !important;
+}
+
+.sidebar-link:hover,
+.sidebar-toggle-btn:hover {
+    background: rgba(var(--bs-emphasis-color-rgb, 0,0,0), 0.06);
+}
+
+.sidebar .nav-link.active {
+    color: var(--bs-body-text-emphasis);
+    background: rgba(var(--bs-emphasis-color-rgb, 0,0,0), 0.09);
+    font-weight: 500;
+}
+
+/* ─── Misc ───────────────────────────────────────────────────── */
+
+.action-button {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+tr:hover .action-button {
+    opacity: 1;
+}
+
+.alert:hover .action-button {
+    opacity: 1;
+}
+
+/*
+ * Navbar
+ */
+
+.navbar .navbar-toggler {
+    top: .25rem;
+    right: 1rem;
+}
+  
+  [data-bs-theme=mpdark] {
+    color-scheme: dark;
+    --bs-body-color: #EBF8FF;
+    --bs-body-color-rgb: 235, 248, 255;
+    --bs-body-bg: #030027;
+    --bs-body-bg-rgb: 3, 0, 39;
+    --bs-emphasis-color: #fff;
+    --bs-emphasis-color-rgb: 255, 255, 255;
+    --bs-secondary-color: rgba(235, 248, 255, 0.75);
+    --bs-secondary-color-rgb: 235, 248, 255;
+    --bs-secondary-bg: #151E3F;
+    --bs-secondary-bg-rgb: 21, 30, 63;
+    --bs-tertiary-color: rgba(235, 248, 255, 0.5);
+    --bs-tertiary-color-rgb: 235, 248, 255;
+    --bs-tertiary-bg: #0D1026;
+    --bs-tertiary-bg-rgb: 13, 16, 38;
+    
+    /* Text emphasis colors */
+    --bs-primary-text-emphasis: #85D4FF;
+    --bs-secondary-text-emphasis: #7A9090;
+    --bs-success-text-emphasis: #CEFF1F;
+    --bs-info-text-emphasis: #85D4FF;
+    --bs-warning-text-emphasis: #F2F3D9;
+    --bs-danger-text-emphasis: #EE4266;
+    --bs-light-text-emphasis: #EBF8FF;
+    --bs-dark-text-emphasis: #232C2F;
+    
+    /* Background subtle colors */
+    --bs-primary-bg-subtle: #001C2E;
+    --bs-secondary-bg-subtle: #0A0D1F;
+    --bs-success-bg-subtle: #2B3A00;
+    --bs-info-bg-subtle: #002A3D;
+    --bs-warning-bg-subtle: #3D3E2F;
+    --bs-danger-bg-subtle: #3D000D;
+    --bs-light-bg-subtle: #151E3F;
+    --bs-dark-bg-subtle: #0D1113;
+    
+    /* Border subtle colors */
+    --bs-primary-border-subtle: #0066A3;
+    --bs-secondary-border-subtle: #3D4B6B;
+    --bs-success-border-subtle: #A3CC00;
+    --bs-info-border-subtle: #0088C2;
+    --bs-warning-border-subtle: #B8B99D;
+    --bs-danger-border-subtle: #C2001A;
+    --bs-light-border-subtle: #3D4B6B;
+    --bs-dark-border-subtle: #3D4548;
+    
+    /* Other variables */
+    --bs-heading-color: inherit;
+    --bs-link-color: #85D4FF;
+    --bs-link-hover-color: #A8DFFF;
+    --bs-link-color-rgb: 133, 212, 255;
+    --bs-link-hover-color-rgb: 168, 223, 255;
+    --bs-code-color: #EE4266;
+    --bs-highlight-color: #F2F3D9;
+    --bs-highlight-bg: #3D3E2F;
+    --bs-border-color: #151E3F;
+    --bs-border-color-translucent: rgba(122, 144, 144, 0.15);
+    --bs-form-valid-color: #CEFF1F;
+    --bs-form-valid-border-color: #CEFF1F;
+    --bs-form-invalid-color: #EE4266;
+    --bs-form-invalid-border-color: #EE4266;
+  }
+}
+
+/* ─── Dashboard ──────────────────────────────────────────────── */
+
+.dash-print-banner {
+    border: 1px solid var(--bs-success-border-subtle);
+    background: linear-gradient(135deg, var(--bs-secondary-bg), var(--bs-body-bg));
+}
+
+/* SVG progress ring */
+.dash-ring-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+}
+
+.dash-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 0.8rem;
+    line-height: 1.1;
+    pointer-events: none;
+}
+
+.dash-ring-label strong {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* Stat boxes in the print banner */
+.dash-stat-box {
+    text-align: center;
+    min-width: 52px;
+}
+
+.dash-stat-box small {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.dash-stat-box strong {
+    font-size: 1rem;
+    display: block;
+    line-height: 1.2;
+}
+
+/* Position readout boxes */
+.dash-pos-box {
+    background: var(--bs-secondary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    padding: 0.3rem 0.4rem;
+}
+
+.dash-pos-box span {
+    font-size: 0.95rem;
+}
+
+/* Temperature rows with divider */
+.dash-temp-row {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+
+.dash-temp-row:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}

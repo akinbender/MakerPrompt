@@ -1,12 +1,17 @@
-@using System.Net.Http
-@using System.Net.Http.Json
+﻿@using System.ComponentModel
+@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Logging
-@using MakerPrompt.Core.Abstractions
-@using MakerPrompt.Core.Models
-@using MakerPrompt.Application.Services
+@using MakerPrompt.UI.Components.Models
+@using MakerPrompt.UI.Components.Infrastructure
+@using MakerPrompt.UI.Components.Utils
+@using MakerPrompt.UI.Components.Components
+@using MakerPrompt.UI.Components.Components.Calculators
 @using MakerPrompt.UI.Components.Layout
-@using MakerPrompt.UI.Components.Pages
+@using MakerPrompt.UI.Components.Properties
+@using MakerPrompt.UI.Components.Services
+@using BlazorBootstrap
+@using EnumExtensions = MakerPrompt.UI.Components.Utils.EnumExtensions

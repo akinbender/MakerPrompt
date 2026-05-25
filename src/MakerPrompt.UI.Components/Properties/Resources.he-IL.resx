@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GCodeCategory_Calibration" xml:space="preserve"><value>כיול</value></data>
+  <data name="GCodeCategory_Fan" xml:space="preserve"><value>מאוורר</value></data>
+  <data name="GCodeCategory_Reporting" xml:space="preserve"><value>דיווח</value></data>
+  <data name="GCodeCategory_Settings" xml:space="preserve"><value>הגדרות</value></data>
+  <data name="GCodeCategory_Movement" xml:space="preserve"><value>תנועה</value></data>
+  <data name="GCodeCategory_SdCard" xml:space="preserve"><value>כרטיס SD</value></data>
+  <data name="GCodeCategory_Temperature" xml:space="preserve"><value>טמפרטורה</value></data>
+  <data name="GCodeCommand_Command" xml:space="preserve"><value>פקודה</value></data>
+  <data name="GCodeCommand_Description" xml:space="preserve"><value>תיאור</value></data>
+  <data name="GCodeCommand_Category" xml:space="preserve"><value>קטגוריה</value></data>
+  <data name="GCodeCommand_Parameter" xml:space="preserve"><value>פרמטר</value></data>
+  <data name="GCodeDescription_G0" xml:space="preserve"><value>תנועה ליניארית מהירה (ללא שחול)</value></data>
+  <data name="GCodeDescription_G1" xml:space="preserve"><value>תנועה ליניארית מבוקרת (הדפסה)</value></data>
+  <data name="GCodeDescription_G28" xml:space="preserve"><value>כינוס לנקודת מוצא של כל הצירים או חלקם</value></data>
+  <data name="GCodeDescription_G29" xml:space="preserve"><value>ישור אוטומטי של המיטה</value></data>
+  <data name="GCodeDescription_G90" xml:space="preserve"><value>קביעת מיקום מוחלט</value></data>
+  <data name="GCodeDescription_G91" xml:space="preserve"><value>קביעת מיקום יחסי</value></data>
+  <data name="GCodeDescription_G92" xml:space="preserve"><value>קביעת מיקום נוכחי (אפס קואורדינטות)</value></data>
+  <data name="GCodeDescription_M3" xml:space="preserve"><value>ציר / לייזר פועל (כיוון שעון)</value></data>
+  <data name="GCodeDescription_M4" xml:space="preserve"><value>ציר / לייזר פועל (נגד כיוון שעון)</value></data>
+  <data name="GCodeDescription_M5" xml:space="preserve"><value>ציר / לייזר כבוי</value></data>
+  <data name="GCodeDescription_M17" xml:space="preserve"><value>הפעלת מנועי צעד</value></data>
+  <data name="GCodeDescription_M18" xml:space="preserve"><value>כיבוי מנועי צעד</value></data>
+  <data name="GCodeDescription_M20" xml:space="preserve"><value>הצגת תוכן כרטיס SD</value></data>
+  <data name="GCodeDescription_M21" xml:space="preserve"><value>אתחול כרטיס SD</value></data>
+  <data name="GCodeDescription_M22" xml:space="preserve"><value>שחרור כרטיס SD</value></data>
+  <data name="GCodeDescription_M23" xml:space="preserve"><value>בחירת קובץ מכרטיס SD</value></data>
+  <data name="GCodeDescription_M24" xml:space="preserve"><value>התחלה/המשך הדפסה מכרטיס SD</value></data>
+  <data name="GCodeDescription_M25" xml:space="preserve"><value>השהיית הדפסה מכרטיס SD</value></data>
+  <data name="GCodeDescription_M26" xml:space="preserve"><value>קביעת מיקום קריאה בכרטיס SD</value></data>
+  <data name="GCodeDescription_M27" xml:space="preserve"><value>הצגת סטטוס הדפסת SD</value></data>
+  <data name="GCodeDescription_M28" xml:space="preserve"><value>כתיבה לכרטיס SD</value></data>
+  <data name="GCodeDescription_M29" xml:space="preserve"><value>סיום כתיבה לכרטיס SD</value></data>
+  <data name="GCodeDescription_M30" xml:space="preserve"><value>מחיקת קובץ מכרטיס SD</value></data>
+  <data name="GCodeDescription_M32" xml:space="preserve"><value>בחירת קובץ והתחלת הדפסה</value></data>
+  <data name="GCodeDescription_M92" xml:space="preserve"><value>קריאה/קביעה של צעדים ליחידה</value></data>
+  <data name="GCodeDescription_M104" xml:space="preserve"><value>קביעת טמפרטורת ראש ההדפסה (לא חוסם)</value></data>
+  <data name="GCodeDescription_M105" xml:space="preserve"><value>הצגת טמפרטורות נוכחיות</value></data>
+  <data name="GCodeDescription_M106" xml:space="preserve"><value>קביעת מהירות מאוורר (S: 0–255)</value></data>
+  <data name="GCodeDescription_M107" xml:space="preserve"><value>כיבוי מאוורר</value></data>
+  <data name="GCodeDescription_M109" xml:space="preserve"><value>קביעת טמפרטורת ראש ההדפסה והמתנה</value></data>
+  <data name="GCodeDescription_M112" xml:space="preserve"><value>עצירת חירום</value></data>
+  <data name="GCodeDescription_M114" xml:space="preserve"><value>קבלת מיקום נוכחי</value></data>
+  <data name="GCodeDescription_M115" xml:space="preserve"><value>קבלת מידע על הקושחה</value></data>
+  <data name="GCodeDescription_M117" xml:space="preserve"><value>קביעת הודעת תצוגת LCD</value></data>
+  <data name="GCodeDescription_M140" xml:space="preserve"><value>קביעת טמפרטורת מיטה (לא חוסם)</value></data>
+  <data name="GCodeDescription_M190" xml:space="preserve"><value>קביעת טמפרטורת מיטה והמתנה</value></data>
+  <data name="GCodeDescription_M220" xml:space="preserve"><value>קביעה/קריאה של קצב הזנה לכל התנועות</value></data>
+  <data name="GCodeDescription_M221" xml:space="preserve"><value>קביעה/קריאה של קצב שחול</value></data>
+  <data name="GCodeDescription_M301" xml:space="preserve"><value>קביעת PID ראש ההדפסה</value></data>
+  <data name="GCodeDescription_M303" xml:space="preserve"><value>כיול PID אוטומטי</value></data>
+  <data name="GCodeDescription_M304" xml:space="preserve"><value>קביעת PID מיטה</value></data>
+  <data name="GCodeDescription_M306" xml:space="preserve"><value>כיול מודל תרמי</value></data>
+  <data name="GCodeDescription_M500" xml:space="preserve"><value>שמירת הגדרות ב-EEPROM</value></data>
+  <data name="GCodeDescription_M501" xml:space="preserve"><value>טעינת הגדרות מ-EEPROM</value></data>
+  <data name="GCodeDescription_M502" xml:space="preserve"><value>איפוס הגדרות להגדרות יצרן</value></data>
+  <data name="GCodeDescription_M503" xml:space="preserve"><value>הצגת הגדרות EEPROM נוכחיות</value></data>
+  <data name="GCodeDescription_M504" xml:space="preserve"><value>אימות תוכן EEPROM</value></data>
+  <data name="GCodeDescription_C_Cycle" xml:space="preserve"><value>מחזורים (3–20)</value></data>
+  <data name="GCodeDescription_D_Derivative" xml:space="preserve"><value>ערך נגזרת</value></data>
+  <data name="GCodeDescription_E_Amount" xml:space="preserve"><value>כמות שחול</value></data>
+  <data name="GCodeDescription_E_Position" xml:space="preserve"><value>מיקום E</value></data>
+  <data name="GCodeDescription_F_Feedrate" xml:space="preserve"><value>קצב הזנה</value></data>
+  <data name="GCodeDescription_F_File" xml:space="preserve"><value>נתיב קובץ</value></data>
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve"><value>מצב inline (הפעל / כבה)</value></data>
+  <data name="GCodeDescription_I_Integral" xml:space="preserve"><value>ערך אינטגרל</value></data>
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve"><value>עוצמת ציר / לייזר (PWM 0–255)</value></data>
+  <data name="GCodeDescription_P_Proportional" xml:space="preserve"><value>ערך פרופורציונלי</value></data>
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve"><value>מהירות ציר / לייזר</value></data>
+  <data name="GCodeDescription_S_TargetTemp" xml:space="preserve"><value>טמפרטורת יעד</value></data>
+  <data name="GCodeDescription_X_Position" xml:space="preserve"><value>מיקום X</value></data>
+  <data name="GCodeDescription_Y_Position" xml:space="preserve"><value>מיקום Y</value></data>
+  <data name="GCodeDescription_Z_Position" xml:space="preserve"><value>מיקום Z</value></data>
+  <data name="Calculators_ActualExtrusionLength" xml:space="preserve"><value>אורך שחול בפועל (מ"מ)</value></data>
+  <data name="Calculators_BeltPitch" xml:space="preserve"><value>צעד רצועה (מ"מ)</value></data>
+  <data name="Calculators_BeltSteps" xml:space="preserve"><value>מחשבון צעדים/מ"מ לרצועה</value></data>
+  <data name="Calculators_CurrentEsteps" xml:space="preserve"><value>E-Steps נוכחיים (צעדים/מ"מ)</value></data>
+  <data name="Calculators_Esteps_HowTo" xml:space="preserve"><value>כיצד לכייל E-Steps</value></data>
+  <data name="Calculators_ExtruderSteps" xml:space="preserve"><value>מחשבון E-Steps</value></data>
+  <data name="Calculators_GCodeExample" xml:space="preserve"><value>דוגמת G-Code</value></data>
+  <data name="Calculators_GearRatio" xml:space="preserve"><value>יחס הילוכים</value></data>
+  <data name="Calculators_LeadscrewPitch" xml:space="preserve"><value>צעד בורג הזזה (מ"מ/סיבוב)</value></data>
+  <data name="Calculators_LeadScrewSteps" xml:space="preserve"><value>מחשבון צעדים/מ"מ לבורג הזזה</value></data>
+  <data name="Calculators_MeasureCaliper" xml:space="preserve"><value>מדוד עם קליפר</value></data>
+  <data name="Calculators_Microstepping" xml:space="preserve"><value>מיקרו-צעדים של מנהל התקן</value></data>
+  <data name="Calculators_MotorAngle" xml:space="preserve"><value>זווית צעד מנוע</value></data>
+  <data name="Calculators_PrintPrice" xml:space="preserve"><value>מחשבון עלות הדפסה</value></data>
+  <data name="Calculators_PulleyToothCount" xml:space="preserve"><value>מספר שיני גלגלת</value></data>
+  <data name="Calculators_RememberSave" xml:space="preserve"><value>זכור לשמור לאחר הבדיקות</value></data>
+  <data name="Calculators_RequestedExtrusionLength" xml:space="preserve"><value>אורך שחול מבוקש (מ"מ)</value></data>
+  <data name="Calculators_Resolution" xml:space="preserve"><value>רזולוציה</value></data>
+  <data name="Calculators_Steps" xml:space="preserve"><value>צעדים למ"מ</value></data>
+  <data name="CalibrationPage_HeaterIndex" xml:space="preserve"><value>אינדקס מחמם</value></data>
+  <data name="CalibrationPage_PidTuning" xml:space="preserve"><value>כיוונון PID</value></data>
+  <data name="CalibrationPage_Result" xml:space="preserve"><value>תוצאה</value></data>
+  <data name="CalibrationPage_Start" xml:space="preserve"><value>התחל</value></data>
+  <data name="CalibrationPage_ThermalModel" xml:space="preserve"><value>מודל תרמי</value></data>
+  <data name="CheatSheetPage_None" xml:space="preserve"><value>ללא</value></data>
+  <data name="CheatSheetPage_SearchCommands" xml:space="preserve"><value>חיפוש פקודות...</value></data>
+  <data name="CommandPrompt_ConnectedMessage" xml:space="preserve"><value>החיבור נוצר.</value></data>
+  <data name="CommandPrompt_CopyCommand" xml:space="preserve"><value>העתק פקודה</value></data>
+  <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve"><value>החיבור נסגר.</value></data>
+  <data name="CommandPrompt_EnterCommand" xml:space="preserve"><value>הזן פקודה...</value></data>
+  <data name="CommandPrompt_ErrorMessage" xml:space="preserve"><value>שגיאה בשליחת הפקודה: {0}.</value></data>
+  <data name="CommandPrompt_RunCommand" xml:space="preserve"><value>הפעל פקודה</value></data>
+  <data name="CommandPrompt_Send" xml:space="preserve"><value>שלח</value></data>
+  <data name="ControlPanel_Current" xml:space="preserve"><value>נוכחי</value></data>
+  <data name="ControlPanel_Extrude" xml:space="preserve"><value>שחול</value></data>
+  <data name="ControlPanel_FanSpeed" xml:space="preserve"><value>מהירות מאוורר</value></data>
+  <data name="ControlPanel_Heating" xml:space="preserve"><value>חימום</value></data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve"><value>כינוס (כל הצירים)</value></data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve"><value>כינוס ציר נבחר</value></data>
+  <data name="ControlPanel_Length" xml:space="preserve"><value>אורך</value></data>
+  <data name="ControlPanel_MotorsOff" xml:space="preserve"><value>כיבוי מנועים</value></data>
+  <data name="ControlPanel_Position" xml:space="preserve"><value>מיקום</value></data>
+  <data name="ControlPanel_PrintFlow" xml:space="preserve"><value>זרימת הדפסה</value></data>
+  <data name="ControlPanel_PrintSpeed" xml:space="preserve"><value>מהירות הדפסה</value></data>
+  <data name="ControlPanel_Reverse" xml:space="preserve"><value>נסיגה</value></data>
+  <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve"><value>לא קיים</value></data>
+  <data name="ControlPanel_SdCard_Ready" xml:space="preserve"><value>מוכן</value></data>
+  <data name="ControlPanel_Set" xml:space="preserve"><value>קבע</value></data>
+  <data name="ControlPanel_Set_FanSpeed" xml:space="preserve"><value>קביעת מהירות מאוורר</value></data>
+  <data name="ControlPanel_Set_XYSpeed" xml:space="preserve"><value>מהירות X ו-Y (מ"מ/דקה)</value></data>
+  <data name="ControlPanel_Set_ZSpeed" xml:space="preserve"><value>מהירות ציר Z (מ"מ/דקה)</value></data>
+  <data name="ControlPanel_SetBedTemp" xml:space="preserve"><value>קביעת טמפרטורת מיטה</value></data>
+  <data name="ControlPanel_SetHotendTemp" xml:space="preserve"><value>קביעת טמפרטורת ראש הדפסה</value></data>
+  <data name="ControlPanel_Speed" xml:space="preserve"><value>מהירות</value></data>
+  <data name="ControlPanel_Status" xml:space="preserve"><value>סטטוס</value></data>
+  <data name="ControlPanel_Target" xml:space="preserve"><value>יעד</value></data>
+  <data name="Dashboard_ControlPanel" xml:space="preserve"><value>לוח בקרה</value></data>
+  <data name="Dashboard_FileExplorer" xml:space="preserve"><value>קבצים</value></data>
+  <data name="Files_DateModified" xml:space="preserve"><value>תאריך שינוי</value></data>
+  <data name="Files_Name" xml:space="preserve"><value>שם</value></data>
+  <data name="Files_Refresh" xml:space="preserve"><value>רענן</value></data>
+  <data name="Files_Size" xml:space="preserve"><value>גודל</value></data>
+  <data name="NavConnection_BrowserNotSupported" xml:space="preserve"><value>הדפדפן אינו נתמך.</value></data>
+  <data name="NavConnection_Connect" xml:space="preserve"><value>התחבר</value></data>
+  <data name="NavConnection_DemoServiceDescription" xml:space="preserve"><value>שירות המדמה מדפסת תלת-ממד פועלת למטרות הדגמה.</value></data>
+  <data name="NavConnection_Disconnect" xml:space="preserve"><value>נתק</value></data>
+  <data name="NavConnection_RefreshPorts" xml:space="preserve"><value>רענן יציאות</value></data>
+  <data name="NavConnection_SelectPort" xml:space="preserve"><value>בחר יציאה</value></data>
+  <data name="PageTitle_About" xml:space="preserve"><value>אודות</value></data>
+  <data name="PageTitle_BrailleRAP" xml:space="preserve"><value>BrailleRAP</value></data>
+  <data name="PageTitle_Calculators" xml:space="preserve"><value>מחשבונים</value></data>
+  <data name="PageTitle_CommandPrompt" xml:space="preserve"><value>מסוף</value></data>
+  <data name="PageTitle_GCodeList" xml:space="preserve"><value>מדריך G-Code</value></data>
+  <data name="PageTitle_GCodeViewer" xml:space="preserve"><value>מציג G-Code</value></data>
+  <data name="PageTitle_Homepage" xml:space="preserve"><value>לוח מחוונים</value></data>
+  <data name="PrinterComponent_Heatbed" xml:space="preserve"><value>מיטה מחוממת</value></data>
+  <data name="PrinterComponent_Hotend" xml:space="preserve"><value>ראש חם</value></data>
+  <data name="PrinterStatus_Connected" xml:space="preserve"><value>מחובר</value></data>
+  <data name="PrinterStatus_Disconnected" xml:space="preserve"><value>מנותק</value></data>
+  <data name="PrinterStatus_Error" xml:space="preserve"><value>שגיאה</value></data>
+  <data name="PrinterStatus_Paused" xml:space="preserve"><value>מושהה</value></data>
+  <data name="PrinterStatus_Printing" xml:space="preserve"><value>מדפיס</value></data>
+  <data name="Theme_Auto" xml:space="preserve"><value>אוטומטי</value></data>
+  <data name="Theme_Dark" xml:space="preserve"><value>כהה</value></data>
+  <data name="Theme_Light" xml:space="preserve"><value>בהיר</value></data>
+  <data name="BrailleRAP_Clear" xml:space="preserve"><value>נקה</value></data>
+  <data name="BrailleRAP_Columns" xml:space="preserve"><value>עמודות לשורה</value></data>
+  <data name="BrailleRAP_Configuration" xml:space="preserve"><value>תצורה</value></data>
+  <data name="BrailleRAP_CopiedToClipboard" xml:space="preserve"><value>הועתק ללוח</value></data>
+  <data name="BrailleRAP_Copy" xml:space="preserve"><value>העתק</value></data>
+  <data name="BrailleRAP_Description" xml:space="preserve"><value>המרת טקסט לברייל ויצירת G-Code להבלטה ב-BrailleRAP.</value></data>
+  <data name="BrailleRAP_EnterText" xml:space="preserve"><value>הזן טקסט להמרה לברייל</value></data>
+  <data name="BrailleRAP_FeedRate" xml:space="preserve"><value>קצב הזנה</value></data>
+  <data name="BrailleRAP_GCodeGenerated" xml:space="preserve"><value>G-Code נוצר בהצלחה</value></data>
+  <data name="BrailleRAP_GeneratedGCode" xml:space="preserve"><value>G-Code</value></data>
+  <data name="BrailleRAP_GenerateFirst" xml:space="preserve"><value>יש לייצר G-Code תחילה</value></data>
+  <data name="BrailleRAP_GenerateGCode" xml:space="preserve"><value>יצור G-Code</value></data>
+  <data name="BrailleRAP_Language" xml:space="preserve"><value>שפת תרגום</value></data>
+  <data name="BrailleRAP_Lines" xml:space="preserve"><value>שורות</value></data>
+  <data name="BrailleRAP_LineSpacing" xml:space="preserve"><value>רווח בין שורות</value></data>
+  <data name="BrailleRAP_MachineSettings" xml:space="preserve"><value>הגדרות מכונה</value></data>
+  <data name="BrailleRAP_NoPreview" xml:space="preserve"><value>הזן טקסט לצפייה בתצוגה מקדימה של ברייל</value></data>
+  <data name="BrailleRAP_NotConnected" xml:space="preserve"><value>אנא חבר מדפסת תחילה</value></data>
+  <data name="BrailleRAP_OffsetX" xml:space="preserve"><value>היסט X</value></data>
+  <data name="BrailleRAP_OffsetY" xml:space="preserve"><value>היסט Y</value></data>
+  <data name="BrailleRAP_Page" xml:space="preserve"><value>עמוד</value></data>
+  <data name="BrailleRAP_PageNavigation" xml:space="preserve"><value>ניווט בעמודים</value></data>
+  <data name="BrailleRAP_Pages" xml:space="preserve"><value>עמודים</value></data>
+  <data name="BrailleRAP_PageSettings" xml:space="preserve"><value>הגדרות עמוד</value></data>
+  <data name="BrailleRAP_Preview" xml:space="preserve"><value>תצוגה מקדימה של ברייל</value></data>
+  <data name="BrailleRAP_Rows" xml:space="preserve"><value>שורות לעמוד</value></data>
+  <data name="BrailleRAP_SendToPrinter" xml:space="preserve"><value>שלח למדפסת</value></data>
+  <data name="BrailleRAP_SentSuccessfully" xml:space="preserve"><value>G-Code נשלח למדפסת בהצלחה</value></data>
+  <data name="BrailleRAP_TextInput" xml:space="preserve"><value>הזנת טקסט</value></data>
+  <data name="BrailleRAP_TextPlaceholder" xml:space="preserve"><value>הקלד או הדבק כאן טקסט...</value></data>
+  <data name="GCode_Title" xml:space="preserve"><value>G-Code</value></data>
+  <data name="CommandPrompt_ShowTelemetry" xml:space="preserve"><value>הצג פלט טלמטריה</value></data>
+  <data name="PageTitle_Dashboard" xml:space="preserve"><value>לוח מחוונים</value></data>
+  <data name="PageTitle_Settings" xml:space="preserve"><value>הגדרות</value></data>
+  <data name="PageTitle_FilamentInventory" xml:space="preserve"><value>מלאי פילמנט</value></data>
+  <data name="PageTitle_Analytics" xml:space="preserve"><value>ניתוח נתונים</value></data>
+  <data name="PageTitle_Fleet" xml:space="preserve"><value>צי מדפסות</value></data>
+  <data name="Dashboard_Welcome" xml:space="preserve"><value>ברוך הבא ל-MakerPrompt</value></data>
+  <data name="Dashboard_ConnectPrompt" xml:space="preserve"><value>הגדר וחבר מדפסת כדי להתחיל.</value></data>
+  <data name="Settings_FarmMode" xml:space="preserve"><value>מצב חווה</value></data>
+  <data name="Settings_Delete" xml:space="preserve"><value>מחק</value></data>
+  <data name="Settings_EnableFarmMode" xml:space="preserve"><value>הפעל מצב חווה</value></data>
+  <data name="Settings_FarmModeDescription" xml:space="preserve"><value>כאשר פעיל, דף הצי הוא דף הבית הברירת מחדל ופונקציות ניהול החווה זמינות.</value></data>
+  <data name="Settings_FarmConfigurations" xml:space="preserve"><value>תצורות חווה</value></data>
+  <data name="Settings_SelectFarm" xml:space="preserve"><value>— בחר חווה —</value></data>
+  <data name="Settings_NewFarmName" xml:space="preserve"><value>שם חווה חדשה</value></data>
+  <data name="Settings_Create" xml:space="preserve"><value>צור</value></data>
+  <data name="Settings_Export" xml:space="preserve"><value>ייצוא</value></data>
+  <data name="Settings_Import" xml:space="preserve"><value>ייבוא</value></data>
+  <data name="Settings_Features" xml:space="preserve"><value>תכונות</value></data>
+  <data name="Settings_EnableFilamentInventory" xml:space="preserve"><value>הפעל מלאי פילמנט</value></data>
+  <data name="Settings_FilamentInventoryDescription" xml:space="preserve"><value>עקוב אחר סלילי פילמנט ומשקלם הנותר.</value></data>
+  <data name="Settings_EnablePrintAnalytics" xml:space="preserve"><value>הפעל ניתוח הדפסות</value></data>
+  <data name="Settings_PrintAnalyticsDescription" xml:space="preserve"><value>הקלט היסטוריית עבודות הדפסה, משך זמן ושימוש בפילמנט.</value></data>
+  <data name="Settings_TelemetryAnalytics" xml:space="preserve"><value>טלמטריה וניתוח נתונים</value></data>
+  <data name="Settings_EnableAppTelemetry" xml:space="preserve"><value>הפעל טלמטריה של האפליקציה</value></data>
+  <data name="Settings_TelemetryDescription" xml:space="preserve"><value>אפשר ל-MakerPrompt לאסוף נתוני שימוש אנונימיים לשיפור האפליקציה.</value></data>
+  <data name="Settings_AppStorage" xml:space="preserve"><value>אחסון אפליקציה</value></data>
+  <data name="Settings_SaveButton" xml:space="preserve"><value>שמור הגדרות</value></data>
+  <data name="Settings_Toast_Saved" xml:space="preserve"><value>ההגדרות נשמרו</value></data>
+  <data name="Settings_Toast_SavedMessage" xml:space="preserve"><value>ההגדרות שלך נשמרו בהצלחה.</value></data>
+  <data name="Settings_Toast_FarmCreated" xml:space="preserve"><value>חווה נוצרה</value></data>
+  <data name="Settings_Toast_FarmCreatedMessage" xml:space="preserve"><value>חווה '{0}' נוצרה.</value></data>
+  <data name="Settings_Toast_FarmSwitched" xml:space="preserve"><value>עברת לחווה אחרת</value></data>
+  <data name="Settings_Toast_FarmSwitchedMessage" xml:space="preserve"><value>עברת ל-'{0}'.</value></data>
+  <data name="Settings_Toast_FarmDeleted" xml:space="preserve"><value>חווה נמחקה</value></data>
+  <data name="Settings_Toast_FarmDeletedMessage" xml:space="preserve"><value>תצורת החווה נמחקה.</value></data>
+  <data name="Settings_Toast_FarmDeletedDisabled" xml:space="preserve"><value>תצורת החווה נמחקה. מצב החווה הושבת.</value></data>
+  <data name="Settings_Toast_Exported" xml:space="preserve"><value>יוצא</value></data>
+  <data name="Settings_Toast_ExportedMessage" xml:space="preserve"><value>תצורת החווה יוצאה.</value></data>
+  <data name="Settings_Toast_Imported" xml:space="preserve"><value>יובא</value></data>
+  <data name="Settings_Toast_ImportedMessage" xml:space="preserve"><value>חווה '{0}' יובאה.</value></data>
+  <data name="Settings_Toast_Error" xml:space="preserve"><value>שגיאה</value></data>
+  <data name="Settings_Toast_CreateFarmError" xml:space="preserve"><value>לא ניתן ליצור את החווה.</value></data>
+  <data name="Settings_Toast_SwitchFarmError" xml:space="preserve"><value>לא ניתן לעבור לחווה.</value></data>
+  <data name="Settings_Toast_DeleteFarmError" xml:space="preserve"><value>לא ניתן למחוק את החווה.</value></data>
+  <data name="Settings_Toast_ExportError" xml:space="preserve"><value>לא ניתן לייצא את תצורת החווה.</value></data>
+  <data name="Settings_Toast_ImportError" xml:space="preserve"><value>לא ניתן לייבא את תצורת החווה.</value></data>
+  <data name="Fleet_Title" xml:space="preserve"><value>צי מדפסות</value></data>
+  <data name="Fleet_NoPrinters" xml:space="preserve"><value>אין מדפסות מוגדרות. הוסף אחת כדי להתחיל.</value></data>
+  <data name="Fleet_AddPrinter" xml:space="preserve"><value>הוסף מדפסת</value></data>
+  <data name="Fleet_EditPrinter" xml:space="preserve"><value>ערוך מדפסת</value></data>
+  <data name="Fleet_ManagePrinters" xml:space="preserve"><value>נהל מדפסות</value></data>
+  <data name="Fleet_DeletePrinter" xml:space="preserve"><value>מחק מדפסת</value></data>
+  <data name="Fleet_PrinterName" xml:space="preserve"><value>שם מדפסת</value></data>
+  <data name="Fleet_ConnectionType" xml:space="preserve"><value>סוג חיבור</value></data>
+  <data name="Fleet_AutoConnect" xml:space="preserve"><value>התחבר אוטומטית בהפעלה</value></data>
+  <data name="Fleet_Save" xml:space="preserve"><value>שמור</value></data>
+  <data name="Fleet_Cancel" xml:space="preserve"><value>ביטול</value></data>
+  <data name="Fleet_Connecting" xml:space="preserve"><value>מתחבר...</value></data>
+  <data name="Fleet_Disconnecting" xml:space="preserve"><value>מנתק...</value></data>
+  <data name="Fleet_SetActive" xml:space="preserve"><value>הגדר כפעיל</value></data>
+  <data name="Fleet_Active" xml:space="preserve"><value>פעיל</value></data>
+  <data name="Fleet_Printers" xml:space="preserve"><value>מדפסות</value></data>
+  <data name="Fleet_DeleteConfirm" xml:space="preserve"><value>האם אתה בטוח שברצונך למחוק מדפסת זו?</value></data>
+  <data name="Fleet_Progress" xml:space="preserve"><value>התקדמות</value></data>
+  <data name="Fleet_Camera" xml:space="preserve"><value>מצלמה</value></data>
+  <data name="NavPrinters_Back" xml:space="preserve"><value>חזרה</value></data>
+  <data name="NavPrinters_Close" xml:space="preserve"><value>סגור</value></data>
+  <data name="NavPrinters_Port" xml:space="preserve"><value>יציאה</value></data>
+  <data name="NavPrinters_Url" xml:space="preserve"><value>כתובת URL</value></data>
+  <data name="NavPrinters_SerialNumber" xml:space="preserve"><value>מספר סידורי</value></data>
+  <data name="NavPrinters_AccessCode" xml:space="preserve"><value>קוד גישה</value></data>
+  <data name="NavPrinters_ApiKey" xml:space="preserve"><value>מפתח API</value></data>
+  <data name="NavPrinters_Username" xml:space="preserve"><value>שם משתמש</value></data>
+  <data name="NavPrinters_PasswordOrApiKey" xml:space="preserve"><value>סיסמה / מפתח API</value></data>
+  <data name="NavPrinters_PrinterNameRequired" xml:space="preserve"><value>שם המדפסת הוא שדה חובה</value></data>
+  <data name="NavPrinters_PrinterUpdated" xml:space="preserve"><value>המדפסת עודכנה</value></data>
+  <data name="NavPrinters_PrinterAdded" xml:space="preserve"><value>המדפסת נוספה</value></data>
+  <data name="NavPrinters_SaveFailed" xml:space="preserve"><value>שמירת המדפסת נכשלה</value></data>
+  <data name="NavPrinters_ConnectFailed" xml:space="preserve"><value>החיבור נכשל</value></data>
+  <data name="NavPrinters_DisconnectFailed" xml:space="preserve"><value>הניתוק נכשל</value></data>
+  <data name="NavPrinters_PrinterRemoved" xml:space="preserve"><value>המדפסת הוסרה</value></data>
+  <data name="NavPrinters_DeleteFailed" xml:space="preserve"><value>המחיקה נכשלה</value></data>
+  <data name="PrintQueue_Title" xml:space="preserve"><value>תור הדפסה</value></data>
+  <data name="PrintQueue_NoFiles" xml:space="preserve"><value>אין קבצים זמינים. חבר מדפסת כדי לראות קבצים.</value></data>
+  <data name="PrintQueue_SelectPrinter" xml:space="preserve"><value>שלח למדפסת</value></data>
+  <data name="PrintQueue_StartPrint" xml:space="preserve"><value>התחל הדפסה</value></data>
+  <data name="PrintQueue_NoPrintersAvailable" xml:space="preserve"><value>אין מדפסות זמינות</value></data>
+  <data name="PrintQueue_PrintStarted" xml:space="preserve"><value>ההדפסה התחילה</value></data>
+  <data name="PrintQueue_Refresh" xml:space="preserve"><value>רענן</value></data>
+  <data name="PrintQueue_NoProjects" xml:space="preserve"><value>אין עדיין פרויקטים. צור אחד לארגון ההדפסות שלך.</value></data>
+  <data name="PrintQueue_NewProject" xml:space="preserve"><value>פרויקט חדש</value></data>
+  <data name="PrintQueue_ProjectName" xml:space="preserve"><value>שם פרויקט</value></data>
+  <data name="PrintQueue_UploadFiles" xml:space="preserve"><value>העלה G-Code</value></data>
+  <data name="PrintQueue_DeleteProject" xml:space="preserve"><value>מחק פרויקט</value></data>
+  <data name="PrintQueue_RemoveJob" xml:space="preserve"><value>הסר</value></data>
+  <data name="PrintQueue_SendToPrinter" xml:space="preserve"><value>שלח למדפסת</value></data>
+  <data name="PrintQueue_Queued" xml:space="preserve"><value>בתור</value></data>
+  <data name="PrintQueue_Printing" xml:space="preserve"><value>מדפיס</value></data>
+  <data name="PrintQueue_Completed" xml:space="preserve"><value>הושלם</value></data>
+  <data name="PrintQueue_Failed" xml:space="preserve"><value>נכשל</value></data>
+  <data name="StorageExplorer_Upload" xml:space="preserve"><value>העלה</value></data>
+  <data name="StorageExplorer_Loading" xml:space="preserve"><value>טוען...</value></data>
+</root>

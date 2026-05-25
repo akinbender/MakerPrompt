@@ -1,0 +1,796 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GCodeCategory_Calibration" xml:space="preserve">
+    <value>Kalibrasyon</value>
+  </data>
+  <data name="GCodeCategory_Fan" xml:space="preserve">
+    <value>Fan</value>
+  </data>
+  <data name="GCodeCategory_Reporting" xml:space="preserve">
+    <value>Raporlama</value>
+  </data>
+  <data name="GCodeCategory_Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="GCodeCategory_Temperature" xml:space="preserve">
+    <value>Sıcaklık</value>
+  </data>
+  <data name="GCodeDescription_G0" xml:space="preserve">
+    <value>Hızlı doğrusal hareket (baskı dışı)</value>
+  </data>
+  <data name="GCodeDescription_G1" xml:space="preserve">
+    <value>Kontrollü doğrusal hareket (baskı)</value>
+  </data>
+  <data name="GCodeDescription_G28" xml:space="preserve">
+    <value>Tüm veya belirli eksenleri sıfırla</value>
+  </data>
+  <data name="GCodeDescription_G29" xml:space="preserve">
+    <value>Otomatik yatak kalibrasyonu</value>
+  </data>
+  <data name="GCodeDescription_G90" xml:space="preserve">
+    <value>Mutlak konum modunu aktif et</value>
+  </data>
+  <data name="GCodeDescription_G91" xml:space="preserve">
+    <value>Göreceli konum modunu aktif et</value>
+  </data>
+  <data name="GCodeDescription_G92" xml:space="preserve">
+    <value>Mevcut konumu ayarla (koordinatları sıfırla)</value>
+  </data>
+  <data name="GCodeDescription_M104" xml:space="preserve">
+    <value>Nozul sıcaklığını ayarla (bekleme yok)</value>
+  </data>
+  <data name="GCodeDescription_M105" xml:space="preserve">
+    <value>Mevcut sıcaklıkları raporla</value>
+  </data>
+  <data name="GCodeDescription_M106" xml:space="preserve">
+    <value>Fan hızını ayarla (S: 0-255)</value>
+  </data>
+  <data name="GCodeDescription_M107" xml:space="preserve">
+    <value>Fanı kapat</value>
+  </data>
+  <data name="GCodeDescription_M109" xml:space="preserve">
+    <value>Nozul sıcaklığını ayarla ve bekle (beklemeli)</value>
+  </data>
+  <data name="GCodeDescription_M112" xml:space="preserve">
+    <value>Acil durdurma</value>
+  </data>
+  <data name="GCodeDescription_M3" xml:space="preserve">
+    <value>Mil / lazer açık (saat yönünde)</value>
+  </data>
+  <data name="GCodeDescription_M4" xml:space="preserve">
+    <value>Mil / lazer açık (saat yönünün tersine)</value>
+  </data>
+  <data name="GCodeDescription_M5" xml:space="preserve">
+    <value>Mil / lazer kapalı</value>
+  </data>
+  <data name="GCodeDescription_M114" xml:space="preserve">
+    <value>Mevcut konumu al</value>
+  </data>
+  <data name="GCodeDescription_M115" xml:space="preserve">
+    <value>Firmware bilgilerini al</value>
+  </data>
+  <data name="GCodeDescription_M140" xml:space="preserve">
+    <value>Yatak sıcaklığını ayarla (bekleme yok)</value>
+  </data>
+  <data name="GCodeDescription_M190" xml:space="preserve">
+    <value>Yatak sıcaklığını ayarla ve bekle (beklemeli)</value>
+  </data>
+  <data name="PageTitle_GCodeList" xml:space="preserve">
+    <value>G-Code Kılavuzu</value>
+  </data>
+  <data name="PageTitle_Homepage" xml:space="preserve">
+    <value>Kontrol Paneli</value>
+  </data>
+  <data name="GCodeCategory_Movement" xml:space="preserve">
+    <value>Hareket</value>
+  </data>
+  <data name="GCodeDescription_M303" xml:space="preserve">
+    <value>PID otomatik ayarı</value>
+  </data>
+  <data name="GCodeDescription_M306" xml:space="preserve">
+    <value>Termal model kalibrasyonu</value>
+  </data>
+  <data name="GCodeCategory_SdCard" xml:space="preserve">
+    <value>SD Kart</value>
+  </data>
+  <data name="Theme_Auto" xml:space="preserve">
+    <value>Otomatik</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Koyu</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="GCodeDescription_M20" xml:space="preserve">
+    <value>SD kart içeriğini listele</value>
+  </data>
+  <data name="GCodeDescription_M21" xml:space="preserve">
+    <value>SD kartı başlat</value>
+  </data>
+  <data name="GCodeDescription_M22" xml:space="preserve">
+    <value>SD kartı serbest bırak</value>
+  </data>
+  <data name="GCodeDescription_M23" xml:space="preserve">
+    <value>SD dosyasını seç</value>
+  </data>
+  <data name="GCodeDescription_M24" xml:space="preserve">
+    <value>SD baskısını başlat/devam ettir</value>
+  </data>
+  <data name="GCodeDescription_M25" xml:space="preserve">
+    <value>SD baskısını duraklat</value>
+  </data>
+  <data name="GCodeDescription_M26" xml:space="preserve">
+    <value>SD okuma pozisyonunu ayarla</value>
+  </data>
+  <data name="GCodeDescription_M27" xml:space="preserve">
+    <value>SD baskı durumunu raporla</value>
+  </data>
+  <data name="GCodeDescription_M28" xml:space="preserve">
+    <value>SD karta yazmaya başla</value>
+  </data>
+  <data name="GCodeDescription_M29" xml:space="preserve">
+    <value>SD karta yazmayı durdur</value>
+  </data>
+  <data name="GCodeDescription_M30" xml:space="preserve">
+    <value>SD dosyasını sil</value>
+  </data>
+  <data name="GCodeDescription_M32" xml:space="preserve">
+    <value>Dosya seç ve baskıyı başlat</value>
+  </data>
+  <data name="GCodeCommand_Command" xml:space="preserve">
+    <value>Komut</value>
+  </data>
+  <data name="GCodeCommand_Description" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="GCodeCommand_Category" xml:space="preserve">
+    <value>Kategoriler</value>
+  </data>
+  <data name="GCodeCommand_Parameter" xml:space="preserve">
+    <value>Parametreler</value>
+  </data>
+  <data name="CheatSheetPage_SearchCommands" xml:space="preserve">
+    <value>Komut ara...</value>
+  </data>
+  <data name="GCodeDescription_S_TargetTemp" xml:space="preserve">
+    <value>Hedef sıcaklık</value>
+  </data>
+  <data name="GCodeDescription_I_InlineMode" xml:space="preserve">
+    <value>Satır içi mod (açık / kapalı)</value>
+  </data>
+  <data name="GCodeDescription_O_SpindlePower" xml:space="preserve">
+    <value>Mil / lazer gücü (PWM 0-255)</value>
+  </data>
+  <data name="GCodeDescription_S_SpindleSpeed" xml:space="preserve">
+    <value>Mil / lazer hızı</value>
+  </data>
+  <data name="GCodeDescription_C_Cycle" xml:space="preserve">
+    <value>Döngüler (3-20)</value>
+  </data>
+  <data name="GCodeDescription_X_Position" xml:space="preserve">
+    <value>X Pozisyonu</value>
+  </data>
+  <data name="GCodeDescription_Y_Position" xml:space="preserve">
+    <value>Y Pozisyonu</value>
+  </data>
+  <data name="GCodeDescription_Z_Position" xml:space="preserve">
+    <value>Z Pozisyonu</value>
+  </data>
+  <data name="GCodeDescription_F_Feedrate" xml:space="preserve">
+    <value>Besleme hızı</value>
+  </data>
+  <data name="GCodeDescription_F_File" xml:space="preserve">
+    <value>Dosya yolu</value>
+  </data>
+  <data name="GCodeDescription_E_Amount" xml:space="preserve">
+    <value>Eksstrüzyon miktarı</value>
+  </data>
+  <data name="GCodeDescription_M17" xml:space="preserve">
+    <value>Stepper'ları etkinleştir</value>
+  </data>
+  <data name="GCodeDescription_M18" xml:space="preserve">
+    <value>Stepper'ları devre dışı bırak</value>
+  </data>
+  <data name="GCodeDescription_M117" xml:space="preserve">
+    <value>LCD Mesajını Ayarla</value>
+  </data>
+  <data name="NavConnection_Connect" xml:space="preserve">
+    <value>Bağlan</value>
+  </data>
+  <data name="NavConnection_Disconnect" xml:space="preserve">
+    <value>Bağlantıyı Kes</value>
+  </data>
+  <data name="GCodeDescription_E_Position" xml:space="preserve">
+    <value>E Pozisyonu</value>
+  </data>
+  <data name="NavConnection_RefreshPorts" xml:space="preserve">
+    <value>Portları Yenile</value>
+  </data>
+  <data name="CheatSheetPage_None" xml:space="preserve">
+    <value>Yok</value>
+  </data>
+  <data name="NavConnection_SelectPort" xml:space="preserve">
+    <value>Port Seç</value>
+  </data>
+  <data name="CalibrationPage_PidTuning" xml:space="preserve">
+    <value>PID Ayarlama</value>
+  </data>
+  <data name="CalibrationPage_ThermalModel" xml:space="preserve">
+    <value>Termal Model</value>
+  </data>
+  <data name="GCodeDescription_M500" xml:space="preserve">
+    <value>Ayarları EEPROM'a kaydet</value>
+  </data>
+  <data name="GCodeDescription_M501" xml:space="preserve">
+    <value>EEPROM'dan ayarları oku</value>
+  </data>
+  <data name="GCodeDescription_M502" xml:space="preserve">
+    <value>Tüm ayarları fabrika varsayılanlarına sıfırla</value>
+  </data>
+  <data name="GCodeDescription_M503" xml:space="preserve">
+    <value>EEPROM'dan mevcut ayarları raporla</value>
+  </data>
+  <data name="GCodeDescription_M504" xml:space="preserve">
+    <value>EEPROM içeriğini doğrula</value>
+  </data>
+  <data name="GCodeDescription_P_Proportional" xml:space="preserve">
+    <value>Oransal Değer</value>
+  </data>
+  <data name="GCodeDescription_I_Integral" xml:space="preserve">
+    <value>İntegral Değeri</value>
+  </data>
+  <data name="GCodeDescription_D_Derivative" xml:space="preserve">
+    <value>Türev Değeri</value>
+  </data>
+  <data name="GCodeDescription_M304" xml:space="preserve">
+    <value>Yatak PID ayarı</value>
+  </data>
+  <data name="GCodeDescription_M301" xml:space="preserve">
+    <value>Nozul PID ayarı</value>
+  </data>
+  <data name="CommandPrompt_ConnectedMessage" xml:space="preserve">
+    <value>Bağlantı kuruldu.</value>
+  </data>
+  <data name="CommandPrompt_ErrorMessage" xml:space="preserve">
+    <value>Komut gönderilirken hata: {0}.</value>
+  </data>
+  <data name="CommandPrompt_DisconnectedMessage" xml:space="preserve">
+    <value>Bağlantı kesildi.</value>
+  </data>
+  <data name="CommandPrompt_Send" xml:space="preserve">
+    <value>Gönder</value>
+  </data>
+  <data name="CommandPrompt_EnterCommand" xml:space="preserve">
+    <value>Komut girin...</value>
+  </data>
+  <data name="CalibrationPage_Start" xml:space="preserve">
+    <value>Başlat</value>
+  </data>
+  <data name="PrinterComponent_Hotend" xml:space="preserve">
+    <value>Sıcak uç</value>
+  </data>
+  <data name="PrinterComponent_Heatbed" xml:space="preserve">
+    <value>Isı Yatağı</value>
+  </data>
+  <data name="Dashboard_ControlPanel" xml:space="preserve">
+    <value>Kontrol Paneli</value>
+  </data>
+  <data name="CalibrationPage_HeaterIndex" xml:space="preserve">
+    <value>Isıtıcı İndeksi</value>
+  </data>
+  <data name="CalibrationPage_Result" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+  <data name="ControlPanel_Position" xml:space="preserve">
+    <value>Pozisyon</value>
+  </data>
+  <data name="ControlPanel_Length" xml:space="preserve">
+    <value>Uzunluk</value>
+  </data>
+  <data name="ControlPanel_Set" xml:space="preserve">
+    <value>Ayarla</value>
+  </data>
+  <data name="ControlPanel_Extrude" xml:space="preserve">
+    <value>Eksstrüde Et</value>
+  </data>
+  <data name="ControlPanel_Reverse" xml:space="preserve">
+    <value>Geri Sar</value>
+  </data>
+  <data name="ControlPanel_PrintFlow" xml:space="preserve">
+    <value>Akış Hızı</value>
+  </data>
+  <data name="ControlPanel_Heating" xml:space="preserve">
+    <value>Isınma</value>
+  </data>
+  <data name="ControlPanel_Status" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="ControlPanel_SetHotendTemp" xml:space="preserve">
+    <value>Nozul Sıcaklığını Ayarla</value>
+  </data>
+  <data name="ControlPanel_SetBedTemp" xml:space="preserve">
+    <value>Yatak Sıcaklığını Ayarla</value>
+  </data>
+  <data name="ControlPanel_MotorsOff" xml:space="preserve">
+    <value>Motorları Kapat</value>
+  </data>
+  <data name="ControlPanel_SdCard_Ready" xml:space="preserve">
+    <value>Hazır</value>
+  </data>
+  <data name="ControlPanel_SdCard_NotPresent" xml:space="preserve">
+    <value>Bulunamadı</value>
+  </data>
+  <data name="ControlPanel_Speed" xml:space="preserve">
+    <value>Hız</value>
+  </data>
+  <data name="ControlPanel_Current" xml:space="preserve">
+    <value>Mevcut</value>
+  </data>
+  <data name="ControlPanel_Target" xml:space="preserve">
+    <value>Hedef</value>
+  </data>
+  <data name="ControlPanel_Set_XYSpeed" xml:space="preserve">
+    <value>X/Y Eksen Hızı (mm/dak)</value>
+  </data>
+  <data name="ControlPanel_Set_ZSpeed" xml:space="preserve">
+    <value>Z Eksen Hızı (mm/dak)</value>
+  </data>
+  <data name="ControlPanel_PrintSpeed" xml:space="preserve">
+    <value>Baskı Hızı</value>
+  </data>
+  <data name="GCodeDescription_M220" xml:space="preserve">
+    <value>Tüm G-code hareketleri için besleme hızı yüzdesini ayarla/raporla</value>
+  </data>
+  <data name="GCodeDescription_M221" xml:space="preserve">
+    <value>Eksstrüzyon hareketleri için akış hızı yüzdesini ayarla/raporla</value>
+  </data>
+  <data name="PrinterStatus_Disconnected" xml:space="preserve">
+    <value>Bağlantı Kesildi</value>
+  </data>
+  <data name="PrinterStatus_Connected" xml:space="preserve">
+    <value>Bağlı</value>
+  </data>
+  <data name="PrinterStatus_Printing" xml:space="preserve">
+    <value>Baskıda</value>
+  </data>
+  <data name="PrinterStatus_Paused" xml:space="preserve">
+    <value>Duraklatıldı</value>
+  </data>
+  <data name="PrinterStatus_Error" xml:space="preserve">
+    <value>Hata</value>
+  </data>
+  <data name="ControlPanel_Set_FanSpeed" xml:space="preserve">
+    <value>Fan Hızını Ayarla</value>
+  </data>
+  <data name="ControlPanel_FanSpeed" xml:space="preserve">
+    <value>Fan Hızı</value>
+  </data>
+  <data name="ControlPanel_HomeAll" xml:space="preserve">
+    <value>Tüm eksenleri referansa gönder</value>
+  </data>
+  <data name="ControlPanel_HomeSelected" xml:space="preserve">
+    <value>Seçili ekseni referansa gönder</value>
+  </data>
+  <data name="Calculators_LeadScrewSteps" xml:space="preserve">
+    <value>Mil Başına Adım Hesaplayıcı (Vida)</value>
+  </data>
+  <data name="Calculators_ExtruderSteps" xml:space="preserve">
+    <value>E-Adım Hesaplayıcı</value>
+  </data>
+  <data name="PageTitle_Calculators" xml:space="preserve">
+    <value>Hesaplayıcılar</value>
+  </data>
+  <data name="Calculators_MotorAngle" xml:space="preserve">
+    <value>Motor Adım Açısı</value>
+  </data>
+  <data name="Calculators_Microstepping" xml:space="preserve">
+    <value>Mikro Adımlama</value>
+  </data>
+  <data name="Calculators_BeltSteps" xml:space="preserve">
+    <value>Mil Başına Adım Hesaplayıcı (Kayış)</value>
+  </data>
+  <data name="Calculators_PrintPrice" xml:space="preserve">
+    <value>Baskı Maliyeti Hesaplayıcı</value>
+  </data>
+  <data name="Calculators_BeltPitch" xml:space="preserve">
+    <value>Kayış Diş Aralığı (mm)</value>
+  </data>
+  <data name="Calculators_PulleyToothCount" xml:space="preserve">
+    <value>Kasnak Diş Sayısı</value>
+  </data>
+  <data name="Calculators_LeadscrewPitch" xml:space="preserve">
+    <value>Vida Adımı (mm/devir)</value>
+  </data>
+  <data name="Calculators_GearRatio" xml:space="preserve">
+    <value>Dişli Oranı</value>
+  </data>
+  <data name="Calculators_Steps" xml:space="preserve">
+    <value>Mil Başına Adım</value>
+  </data>
+  <data name="Calculators_Resolution" xml:space="preserve">
+    <value>Çözünürlük</value>
+  </data>
+  <data name="Calculators_GCodeExample" xml:space="preserve">
+    <value>G-code örneği</value>
+  </data>
+  <data name="Calculators_RequestedExtrusionLength" xml:space="preserve">
+    <value>Talep Edilen Ekstrüzyon Uzunluğu (mm)</value>
+  </data>
+  <data name="Calculators_CurrentEsteps" xml:space="preserve">
+    <value>Mevcut E-adımları (adım/mm)</value>
+  </data>
+  <data name="Calculators_ActualExtrusionLength" xml:space="preserve">
+    <value>Gerçek Ekstrüzyon Uzunluğu (mm)</value>
+  </data>
+  <data name="Calculators_MeasureCaliper" xml:space="preserve">
+    <value>Bir kumpas ile ölçün</value>
+  </data>
+  <data name="Calculators_Esteps_HowTo" xml:space="preserve">
+    <value>&lt;h5&gt;Nasıl Kullanılır:&lt;/h5&gt;&lt;ol&gt;    &lt;li&gt;Ekstruder girişinden 120 mm işaretleyin&lt;/li&gt;    &lt;li&gt;Hotend'i çalışma sıcaklığına ısıtın&lt;/li&gt;    &lt;li&gt;100 mm ekstrüde edin (&lt;code&gt;G1 E100 F100&lt;/code&gt; komutunu kullanın)&lt;/li&gt;    &lt;li&gt;Ekstrudere kalan filament uzunluğunu ölçün&lt;/li&gt;    &lt;li&gt;Yukarıdaki değerleri girin (gerçek uzunluk = 120 - kalan uzunluk)&lt;/li&gt;&lt;/ol&gt;</value>
+  </data>
+  <data name="GCodeDescription_M92" xml:space="preserve">
+    <value>Bir veya daha fazla eksen için birim başına adımları sorma veya ayarlama</value>
+  </data>
+  <data name="NavConnection_BrowserNotSupported" xml:space="preserve">
+    <value>Tarayıcı desteklenmiyor.</value>
+  </data>
+  <data name="Calculators_RememberSave" xml:space="preserve">
+    <value>Test ettikten sonra kaydetmeyi unutmayın</value>
+  </data>
+  <data name="Dashboard_FileExplorer" xml:space="preserve">
+    <value>Dosyalar</value>
+  </data>
+  <data name="Files_Name" xml:space="preserve">
+    <value>İsim</value>
+  </data>
+  <data name="Files_DateModified" xml:space="preserve">
+    <value>Değiştirildiği Tarih</value>
+  </data>
+  <data name="Files_Size" xml:space="preserve">
+    <value>Boyut</value>
+  </data>
+  <data name="Files_Refresh" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
+  <data name="PageTitle_About" xml:space="preserve">
+    <value>Hakkımızda</value>
+  </data>
+  <data name="AboutPage_Content" xml:space="preserve">
+    <value>Blazor Hybrid ile geliştirilen, açık kaynaklı ve çapraz platform bir 3D yazıcı yönetim yazılımı. &lt;strong&gt;Hala geliştirme aşamasındadır—kullanım riski size aittir.&lt;/strong&gt;&lt;/br&gt;Dijital logo için &lt;a href="https://mrhide.de"&gt;MrHide&lt;/a&gt;'a ve değerli desteği için Paleva'ya (@x-hain) özel teşekkürler.  Kaynak koduna &lt;a href="https://github.com/akinbender/MakerPrompt"&gt;buradan&lt;/a&gt; ulaşabilirsiniz.</value>
+  </data>
+  <data name="CommandPrompt_RunCommand" xml:space="preserve">
+    <value>Komutu gönder</value>
+  </data>
+  <data name="CommandPrompt_CopyCommand" xml:space="preserve">
+    <value>Komutu kopyala</value>
+  </data>
+  <data name="NavConnection_DemoServiceDescription" xml:space="preserve">
+    <value>Demonstrasyon amaçlı çalışan bir 3B yazıcıyı simüle eden bir hizmet.
+</value>
+  </data>
+  <data name="PageTitle_CommandPrompt" xml:space="preserve">
+    <value>Konsol</value>
+  </data>
+  <data name="PageTitle_GCodeViewer" xml:space="preserve">
+    <value>G-Code Görüntüleyici</value>
+  </data>
+  <data name="PageTitle_BrailleRAP" xml:space="preserve">
+    <value>BrailleRAP</value>
+  </data>
+  <data name="BrailleRAP_Description" xml:space="preserve">
+    <value>Metni Braille'e dönüştürün ve BrailleRAP kabartma için G-kodu oluşturun.</value>
+  </data>
+  <data name="BrailleRAP_TextInput" xml:space="preserve">
+    <value>Metin Girişi</value>
+  </data>
+  <data name="BrailleRAP_EnterText" xml:space="preserve">
+    <value>Braille'e dönüştürülecek metni girin</value>
+  </data>
+  <data name="BrailleRAP_TextPlaceholder" xml:space="preserve">
+    <value>Metninizi buraya yazın veya yapıştırın...</value>
+  </data>
+  <data name="BrailleRAP_Pages" xml:space="preserve">
+    <value>Sayfalar</value>
+  </data>
+  <data name="BrailleRAP_Lines" xml:space="preserve">
+    <value>Satırlar</value>
+  </data>
+  <data name="BrailleRAP_Clear" xml:space="preserve">
+    <value>Temizle</value>
+  </data>
+  <data name="BrailleRAP_Configuration" xml:space="preserve">
+    <value>Yapılandırma</value>
+  </data>
+  <data name="BrailleRAP_PageSettings" xml:space="preserve">
+    <value>Sayfa Ayarları</value>
+  </data>
+  <data name="BrailleRAP_Language" xml:space="preserve">
+    <value>Çeviri Dili</value>
+  </data>
+  <data name="BrailleRAP_Columns" xml:space="preserve">
+    <value>Satır başına sütun</value>
+  </data>
+  <data name="BrailleRAP_Rows" xml:space="preserve">
+    <value>Sayfa başına satır</value>
+  </data>
+  <data name="BrailleRAP_LineSpacing" xml:space="preserve">
+    <value>Satır aralığı</value>
+  </data>
+  <data name="BrailleRAP_MachineSettings" xml:space="preserve">
+    <value>Makine Ayarları</value>
+  </data>
+  <data name="BrailleRAP_FeedRate" xml:space="preserve">
+    <value>İlerleme hızı</value>
+  </data>
+  <data name="BrailleRAP_OffsetX" xml:space="preserve">
+    <value>X kayması</value>
+  </data>
+  <data name="BrailleRAP_OffsetY" xml:space="preserve">
+    <value>Y kayması</value>
+  </data>
+  <data name="BrailleRAP_Preview" xml:space="preserve">
+    <value>Braille Önizlemesi</value>
+  </data>
+  <data name="BrailleRAP_PageNavigation" xml:space="preserve">
+    <value>Sayfa gezinme</value>
+  </data>
+  <data name="BrailleRAP_Page" xml:space="preserve">
+    <value>Sayfa</value>
+  </data>
+  <data name="BrailleRAP_NoPreview" xml:space="preserve">
+    <value>Braille önizlemesini görmek için metin girin</value>
+  </data>
+  <data name="BrailleRAP_GenerateGCode" xml:space="preserve">
+    <value>G-kodu oluştur</value>
+  </data>
+  <data name="BrailleRAP_SendToPrinter" xml:space="preserve">
+    <value>Yazıcıya gönder</value>
+  </data>
+  <data name="BrailleRAP_GeneratedGCode" xml:space="preserve">
+    <value>G-kodu</value>
+  </data>
+  <data name="BrailleRAP_Copy" xml:space="preserve">
+    <value>Kopyala</value>
+  </data>
+  <data name="BrailleRAP_GCodeGenerated" xml:space="preserve">
+    <value>G-kodu başarıyla oluşturuldu</value>
+  </data>
+  <data name="BrailleRAP_NotConnected" xml:space="preserve">
+    <value>Lütfen önce bir yazıcıya bağlanın</value>
+  </data>
+  <data name="BrailleRAP_GenerateFirst" xml:space="preserve">
+    <value>Lütfen önce G-kodunu oluşturun</value>
+  </data>
+  <data name="BrailleRAP_SentSuccessfully" xml:space="preserve">
+    <value>G-kodu yazıcıya başarıyla gönderildi</value>
+  </data>
+  <data name="BrailleRAP_CopiedToClipboard" xml:space="preserve">
+    <value>Panoya kopyalandı</value>
+  </data>
+  <data name="GCode_Title" xml:space="preserve">
+    <value>G-kodu</value>
+  </data>
+  <data name="CommandPrompt_ShowTelemetry" xml:space="preserve">
+    <value>Telemetri çıktısını göster</value>
+  </data>
+  <data name="PageTitle_Dashboard" xml:space="preserve"><value>Gösterge Paneli</value></data>
+  <data name="PageTitle_Settings" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="PageTitle_FilamentInventory" xml:space="preserve"><value>Filament Envanteri</value></data>
+  <data name="PageTitle_Analytics" xml:space="preserve"><value>Analitik</value></data>
+  <data name="PageTitle_Fleet" xml:space="preserve"><value>Filo</value></data>
+  <data name="Dashboard_Welcome" xml:space="preserve"><value>MakerPrompt'a Hoş Geldiniz</value></data>
+  <data name="Dashboard_ConnectPrompt" xml:space="preserve"><value>Başlamak için bir yazıcı yapılandırın ve bağlayın.</value></data>
+  <data name="Settings_FarmMode" xml:space="preserve"><value>Çiftlik Modu</value></data>
+  <data name="Settings_Delete" xml:space="preserve"><value>Sil</value></data>
+  <data name="Settings_EnableFarmMode" xml:space="preserve"><value>Çiftlik Modunu Etkinleştir</value></data>
+  <data name="Settings_FarmModeDescription" xml:space="preserve"><value>Etkin olduğunda, Filo sayfası varsayılan ana sayfa olur ve çiftlik yönetimi özellikleri kullanılabilir. Devre dışı olduğunda, tek yazıcı panosu varsayılan sayfa olur.</value></data>
+  <data name="Settings_FarmConfigurations" xml:space="preserve"><value>Çiftlik Yapılandırmaları</value></data>
+  <data name="Settings_SelectFarm" xml:space="preserve"><value>— çiftlik seç —</value></data>
+  <data name="Settings_NewFarmName" xml:space="preserve"><value>Yeni çiftlik adı</value></data>
+  <data name="Settings_Create" xml:space="preserve"><value>Oluştur</value></data>
+  <data name="Settings_Export" xml:space="preserve"><value>Dışa Aktar</value></data>
+  <data name="Settings_Import" xml:space="preserve"><value>İçe Aktar</value></data>
+  <data name="Settings_Features" xml:space="preserve"><value>Özellikler</value></data>
+  <data name="Settings_EnableFilamentInventory" xml:space="preserve"><value>Filament Envanterini Etkinleştir</value></data>
+  <data name="Settings_FilamentInventoryDescription" xml:space="preserve"><value>Filament makaralarını ve kalan ağırlıklarını takip edin.</value></data>
+  <data name="Settings_EnablePrintAnalytics" xml:space="preserve"><value>Baskı Analitiğini Etkinleştir</value></data>
+  <data name="Settings_PrintAnalyticsDescription" xml:space="preserve"><value>Baskı işi geçmişini, süresini ve filament kullanımını kaydedin.</value></data>
+  <data name="Settings_TelemetryAnalytics" xml:space="preserve"><value>Telemetri ve Analitik</value></data>
+  <data name="Settings_EnableAppTelemetry" xml:space="preserve"><value>Uygulama Telemetrisini Etkinleştir</value></data>
+  <data name="Settings_TelemetryDescription" xml:space="preserve"><value>MakerPrompt'ın uygulamayı geliştirmek için anonim kullanım verileri toplamasına izin verin.</value></data>
+  <data name="Settings_AppStorage" xml:space="preserve"><value>Uygulama Depolama</value></data>
+  <data name="Settings_SaveButton" xml:space="preserve"><value>Ayarları Kaydet</value></data>
+  <data name="Settings_Toast_Saved" xml:space="preserve"><value>Ayarlar Kaydedildi</value></data>
+  <data name="Settings_Toast_SavedMessage" xml:space="preserve"><value>Ayarlarınız başarıyla kaydedildi.</value></data>
+  <data name="Settings_Toast_FarmCreated" xml:space="preserve"><value>Çiftlik Oluşturuldu</value></data>
+  <data name="Settings_Toast_FarmCreatedMessage" xml:space="preserve"><value>'{0}' çiftliği oluşturuldu.</value></data>
+  <data name="Settings_Toast_FarmSwitched" xml:space="preserve"><value>Çiftlik Değiştirildi</value></data>
+  <data name="Settings_Toast_FarmSwitchedMessage" xml:space="preserve"><value>'{0}' çiftliğine geçildi.</value></data>
+  <data name="Settings_Toast_FarmDeleted" xml:space="preserve"><value>Çiftlik Silindi</value></data>
+  <data name="Settings_Toast_FarmDeletedMessage" xml:space="preserve"><value>Çiftlik yapılandırması silindi.</value></data>
+  <data name="Settings_Toast_FarmDeletedDisabled" xml:space="preserve"><value>Çiftlik yapılandırması silindi. Çiftlik modu devre dışı bırakıldı.</value></data>
+  <data name="Settings_Toast_Exported" xml:space="preserve"><value>Dışa Aktarıldı</value></data>
+  <data name="Settings_Toast_ExportedMessage" xml:space="preserve"><value>Çiftlik yapılandırması dışa aktarıldı.</value></data>
+  <data name="Settings_Toast_Imported" xml:space="preserve"><value>İçe Aktarıldı</value></data>
+  <data name="Settings_Toast_ImportedMessage" xml:space="preserve"><value>'{0}' çiftliği içe aktarıldı.</value></data>
+  <data name="Settings_Toast_Error" xml:space="preserve"><value>Hata</value></data>
+  <data name="Settings_Toast_CreateFarmError" xml:space="preserve"><value>Çiftlik oluşturulamadı.</value></data>
+  <data name="Settings_Toast_SwitchFarmError" xml:space="preserve"><value>Çiftlik değiştirilemedi.</value></data>
+  <data name="Settings_Toast_DeleteFarmError" xml:space="preserve"><value>Çiftlik silinemedi.</value></data>
+  <data name="Settings_Toast_ExportError" xml:space="preserve"><value>Çiftlik yapılandırması dışa aktarılamadı.</value></data>
+  <data name="Settings_Toast_ImportError" xml:space="preserve"><value>Çiftlik yapılandırması içe aktarılamadı.</value></data>
+  <data name="Fleet_Title" xml:space="preserve"><value>Filo</value></data>
+  <data name="Fleet_NoPrinters" xml:space="preserve"><value>Yapılandırılmış yazıcı yok. Başlamak için bir tane ekleyin.</value></data>
+  <data name="Fleet_AddPrinter" xml:space="preserve"><value>Yazıcı Ekle</value></data>
+  <data name="Fleet_EditPrinter" xml:space="preserve"><value>Yazıcıyı Düzenle</value></data>
+  <data name="Fleet_ManagePrinters" xml:space="preserve"><value>Yazıcıları Yönet</value></data>
+  <data name="Fleet_DeletePrinter" xml:space="preserve"><value>Yazıcıyı Sil</value></data>
+  <data name="Fleet_PrinterName" xml:space="preserve"><value>Yazıcı Adı</value></data>
+  <data name="Fleet_ConnectionType" xml:space="preserve"><value>Bağlantı Türü</value></data>
+  <data name="Fleet_AutoConnect" xml:space="preserve"><value>Başlangıçta otomatik bağlan</value></data>
+  <data name="Fleet_Save" xml:space="preserve"><value>Kaydet</value></data>
+  <data name="Fleet_Cancel" xml:space="preserve"><value>İptal</value></data>
+  <data name="Fleet_Connecting" xml:space="preserve"><value>Bağlanıyor...</value></data>
+  <data name="Fleet_Disconnecting" xml:space="preserve"><value>Bağlantı kesiliyor...</value></data>
+  <data name="Fleet_SetActive" xml:space="preserve"><value>Aktif olarak ayarla</value></data>
+  <data name="Fleet_Active" xml:space="preserve"><value>Aktif</value></data>
+  <data name="Fleet_Printers" xml:space="preserve"><value>Yazıcılar</value></data>
+  <data name="Fleet_DeleteConfirm" xml:space="preserve"><value>Bu yazıcıyı silmek istediğinizden emin misiniz?</value></data>
+  <data name="Fleet_Progress" xml:space="preserve"><value>İlerleme</value></data>
+  <data name="Fleet_Camera" xml:space="preserve"><value>Kamera</value></data>
+  <data name="NavPrinters_Back" xml:space="preserve"><value>Geri</value></data>
+  <data name="NavPrinters_Close" xml:space="preserve"><value>Kapat</value></data>
+  <data name="NavPrinters_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="NavPrinters_Url" xml:space="preserve"><value>URL</value></data>
+  <data name="NavPrinters_SerialNumber" xml:space="preserve"><value>Seri Numarası</value></data>
+  <data name="NavPrinters_AccessCode" xml:space="preserve"><value>Erişim Kodu</value></data>
+  <data name="NavPrinters_ApiKey" xml:space="preserve"><value>API Anahtarı</value></data>
+  <data name="NavPrinters_Username" xml:space="preserve"><value>Kullanıcı Adı</value></data>
+  <data name="NavPrinters_PasswordOrApiKey" xml:space="preserve"><value>Şifre / API Anahtarı</value></data>
+  <data name="NavPrinters_PrinterNameRequired" xml:space="preserve"><value>Yazıcı adı zorunludur</value></data>
+  <data name="NavPrinters_PrinterUpdated" xml:space="preserve"><value>Yazıcı güncellendi</value></data>
+  <data name="NavPrinters_PrinterAdded" xml:space="preserve"><value>Yazıcı eklendi</value></data>
+  <data name="NavPrinters_SaveFailed" xml:space="preserve"><value>Yazıcı kaydedilemedi</value></data>
+  <data name="NavPrinters_ConnectFailed" xml:space="preserve"><value>Bağlantı başarısız</value></data>
+  <data name="NavPrinters_DisconnectFailed" xml:space="preserve"><value>Bağlantı kesme başarısız</value></data>
+  <data name="NavPrinters_PrinterRemoved" xml:space="preserve"><value>Yazıcı kaldırıldı</value></data>
+  <data name="NavPrinters_DeleteFailed" xml:space="preserve"><value>Silme başarısız</value></data>
+  <data name="PrintQueue_Title" xml:space="preserve"><value>Baskı Kuyruğu</value></data>
+  <data name="PrintQueue_NoFiles" xml:space="preserve"><value>Dosya yok. Dosyaları görmek için bir yazıcı bağlayın.</value></data>
+  <data name="PrintQueue_SelectPrinter" xml:space="preserve"><value>Yazıcıya Gönder</value></data>
+  <data name="PrintQueue_StartPrint" xml:space="preserve"><value>Baskıyı Başlat</value></data>
+  <data name="PrintQueue_NoPrintersAvailable" xml:space="preserve"><value>Kullanılabilir yazıcı yok</value></data>
+  <data name="PrintQueue_PrintStarted" xml:space="preserve"><value>Baskı başlatıldı</value></data>
+  <data name="PrintQueue_Refresh" xml:space="preserve"><value>Yenile</value></data>
+  <data name="PrintQueue_NoProjects" xml:space="preserve"><value>Henüz proje yok. Baskılarınızı düzenlemek için bir tane oluşturun.</value></data>
+  <data name="PrintQueue_NewProject" xml:space="preserve"><value>Yeni Proje</value></data>
+  <data name="PrintQueue_ProjectName" xml:space="preserve"><value>Proje Adı</value></data>
+  <data name="PrintQueue_UploadFiles" xml:space="preserve"><value>G-Code Yükle</value></data>
+  <data name="PrintQueue_DeleteProject" xml:space="preserve"><value>Projeyi Sil</value></data>
+  <data name="PrintQueue_RemoveJob" xml:space="preserve"><value>Kaldır</value></data>
+  <data name="PrintQueue_SendToPrinter" xml:space="preserve"><value>Yazıcıya Gönder</value></data>
+  <data name="PrintQueue_Queued" xml:space="preserve"><value>Kuyrukta</value></data>
+  <data name="PrintQueue_Printing" xml:space="preserve"><value>Basıyor</value></data>
+  <data name="PrintQueue_Completed" xml:space="preserve"><value>Tamamlandı</value></data>
+  <data name="PrintQueue_Failed" xml:space="preserve"><value>Başarısız</value></data>
+  <data name="StorageExplorer_Upload" xml:space="preserve"><value>Yükle</value></data>
+  <data name="StorageExplorer_Loading" xml:space="preserve"><value>Yükleniyor...</value></data>
+</root>

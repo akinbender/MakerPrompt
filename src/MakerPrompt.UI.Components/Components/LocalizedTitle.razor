@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@inject LocalizedTitleService TitleService
+
+<PageTitle>@TitleService.CurrentTitle</PageTitle>
+
+@code {
+    [Parameter]
+    public string TitleKey { get; set; } = string.Empty;
+
+    [Parameter]
+    public object[] TitleArguments { get; set; } = Array.Empty<object>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        TitleService.OnTitleChanged += HandleTitleChanged;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(TitleKey))
+        {
+            TitleService.SetTitle(TitleKey, TitleArguments);
+        }
+    }
+
+    private void HandleTitleChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        TitleService.OnTitleChanged -= HandleTitleChanged;
+    }
+}

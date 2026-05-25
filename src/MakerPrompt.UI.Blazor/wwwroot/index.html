@@ -5,27 +5,83 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MakerPrompt</title>
+    <meta name="title" content="MakerPrompt - Open Source 3D Printer Management">
+    <meta name="description" content="Cross-platform interface for 3D printer management. Supports Prusalink, Moonraker, and direct serial control. Developed at x-hain hackspace using Blazor Hybrid.">
+    <meta name="keywords" content="3D printer management, 3D printer maintenance, Blazor Hybrid, open source 3D printing, Pronterface alternative, Prusalink, Moonraker, Web Serial control" />
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Akın Bender" />
     <base href="/" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="css/app.css" />
+    <script>
+        (function () {
+            try {
+                var configJson = window.localStorage.getItem('AppConfig');
+                var themeKey = 'auto';
+                if (configJson) {
+                    var config = JSON.parse(configJson);
+                    if (config && config.Theme !== undefined && config.Theme !== null) {
+                        var raw = config.Theme;
+                        if (typeof raw === 'string') {
+                            themeKey = raw.toLowerCase();
+                        } else if (typeof raw === 'number') {
+                            switch (raw) {
+                                case 1: themeKey = 'light'; break;   // Theme.Light
+                                case 2: themeKey = 'dark'; break;    // Theme.Dark
+                                case 3: themeKey = 'mpdark'; break;  // Theme.MpDark
+                                default: themeKey = 'auto'; break;   // Theme.Auto or unknown
+                            }
+                        }
+                    }
+                }
+
+                var resolvedTheme = themeKey;
+                if (!resolvedTheme || resolvedTheme === 'auto') {
+                    resolvedTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                        ? 'dark'
+                        : 'light';
+                }
+
+                document.documentElement.setAttribute('data-bs-theme', resolvedTheme);
+                document.documentElement.style.colorScheme = resolvedTheme;
+            } catch { }
+        })();
+    </script>
+    <link rel="stylesheet" href="MakerPrompt.UI.Blazor.styles.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.UI.Components/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.UI.Components/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="_content/Blazor.Bootstrap/blazor.bootstrap.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.UI.Components/css/app.css" />
+    <link rel="icon" type="image/png" href="_content/MakerPrompt.UI.Components/favicon.png" />
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="favicon.png" />
 </head>
 
 <body>
     <div id="app">
-        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-            <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
-                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-            </symbol>
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
         </svg>
-        <div class="d-flex justify-content-center align-items-center" style="min-height:100vh;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading…</span>
-            </div>
-        </div>
+        <div class="loading-progress-text"></div>
     </div>
 
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_content/MakerPrompt.UI.Components/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="_content/MakerPrompt.UI.Components/lib/gcode-preview/gcode-preview.bundle.js"></script>
+    <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+        window.blazorCulture = {
+            get: () => window.localStorage['BlazorCulture'],
+            set: (value) => window.localStorage['BlazorCulture'] = value
+        };
+    </script>
 </body>
 
 </html>
+

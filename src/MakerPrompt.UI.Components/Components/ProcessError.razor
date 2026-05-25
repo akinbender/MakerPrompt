@@ -1,0 +1,34 @@
+@using Microsoft.Extensions.Logging
+@inject ILogger<ProcessError> Logger
+@inject ToastService ToastService
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    /// <summary>Child content wrapped by this cascading error reporter.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Call from any component's catch block to log and surface a toast for a
+    /// handled exception.
+    /// <example>
+    /// <code>
+    /// [CascadingParameter] ProcessError? ProcessError { get; set; }
+    ///
+    /// try { ... }
+    /// catch (Exception ex) { ProcessError?.Handle(ex); }
+    /// </code>
+    /// </example>
+    /// </summary>
+    public void Handle(Exception ex)
+    {
+        Logger.LogError(ex, "Handled UI exception");
+        ToastService.Notify(new ToastMessage(
+            ToastType.Danger,
+            "An unexpected error occurred",
+            ex.Message));
+    }
+}
