@@ -19,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gh-pages", "gh-pages", "{02
 		.github\workflows\gh-pages\index.html = .github\workflows\gh-pages\index.html
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.E2E.Wasm", "MakerPrompt.E2E.Wasm\MakerPrompt.E2E.Wasm.csproj", "{73B2A329-BE69-4E67-912B-0CB2E65088E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.E2E.Wasm", "src\MakerPrompt.E2E.Wasm\MakerPrompt.E2E.Wasm.csproj", "{73B2A329-BE69-4E67-912B-0CB2E65088E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.E2E.Maui", "MakerPrompt.E2E.Maui\MakerPrompt.E2E.Maui.csproj", "{A03CF971-E571-4E00-849E-48675DAB24D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakerPrompt.E2E.Maui", "src\MakerPrompt.E2E.Maui\MakerPrompt.E2E.Maui.csproj", "{A03CF971-E571-4E00-849E-48675DAB24D7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B4F2D4E1-0000-0000-0000-000000000001}"
 EndProject
