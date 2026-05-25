@@ -15,61 +15,72 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col">
-            <p>@aboutContent</p>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="card mb-4">
                 <div class="card-header">
                     <strong>@localizer[Resources.Settings_FarmMode]</strong>
                 </div>
                 <div class="card-body">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="farmModeEnabled" @bind="_config.FarmModeEnabled" @bind:after="OnFarmModeChangedAsync" />
-                        <label class="form-check-label" for="farmModeEnabled">@localizer[Resources.Settings_EnableFarmMode]</label>
-                        <div class="form-text">@localizer[Resources.Settings_FarmModeDescription]</div>
-                    </div>
-
-                    @if (_config.FarmModeEnabled)
+                    @if (ConfigService.Configuration.DeploymentMode == AppDeploymentMode.CloudMakerspace)
                     {
-                        <hr />
-                        <h6>@localizer[Resources.Settings_FarmConfigurations]</h6>
-                        <div class="mb-3">
-                            <div class="input-group input-group-sm">
-                                <select class="form-select" @bind="_selectedFarmId">
-                                    <option value="">@localizer[Resources.Settings_SelectFarm]</option>
-                                    @foreach (var farm in FarmService.Farms)
-                                    {
-                                        <option value="@farm.Id">@farm.Name</option>
-                                    }
-                                </select>
-                                <button class="btn btn-outline-primary" type="button" @onclick="SwitchFarmAsync" disabled="@(_selectedFarmId == null)" title="@localizer[Resources.Settings_FarmMode]" data-testid="farm-switch-btn">
-                                    <i class="bi bi-arrow-repeat"></i>
-                                </button>
-                                <button class="btn btn-outline-danger" type="button" @onclick="DeleteFarmAsync" disabled="@(_selectedFarmId == null)" title="@localizer[Resources.Settings_Delete]">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                        <div class="alert alert-info d-flex align-items-center mb-0" role="alert">
+                            <i class="bi bi-cloud-check me-2"></i>
+                            <div>
+                                <strong>Cloud/Makerspace mode</strong> — farm configuration is managed by the server.
+                                @if (!string.IsNullOrWhiteSpace(ConfigService.Configuration.FarmName))
+                                {
+                                    <span> Active farm: <strong>@ConfigService.Configuration.FarmName</strong></span>
+                                }
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" id="farmNewName" placeholder="@localizer[Resources.Settings_NewFarmName]" @bind="_newFarmName" />
-                                <button class="btn btn-outline-success" type="button" @onclick="CreateFarmAsync" disabled="@(string.IsNullOrWhiteSpace(_newFarmName))" data-testid="farm-create-btn">
-                                    <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Settings_Create]
-                                </button>
+                    }
+                    else
+                    {
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="farmModeEnabled" @bind="_config.FarmModeEnabled" />
+                            <label class="form-check-label" for="farmModeEnabled">@localizer[Resources.Settings_EnableFarmMode]</label>
+                            <div class="form-text">@localizer[Resources.Settings_FarmModeDescription]</div>
+                        </div>
+
+                        @if (_config.FarmModeEnabled)
+                        {
+                            <hr />
+                            <h6>@localizer[Resources.Settings_FarmConfigurations]</h6>
+                            <div class="mb-3">
+                                <div class="input-group input-group-sm">
+                                    <select class="form-select" @bind="_selectedFarmId">
+                                        <option value="">@localizer[Resources.Settings_SelectFarm]</option>
+                                        @foreach (var farm in FarmService.Farms)
+                                        {
+                                            <option value="@farm.Id">@farm.Name</option>
+                                        }
+                                    </select>
+                                    <button class="btn btn-outline-primary" type="button" @onclick="SwitchFarmAsync" disabled="@(_selectedFarmId == null)" title="@localizer[Resources.Settings_FarmMode]" data-testid="farm-switch-btn">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" type="button" @onclick="DeleteFarmAsync" disabled="@(_selectedFarmId == null)" title="@localizer[Resources.Settings_Delete]">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-secondary" @onclick="ExportFarmAsync" disabled="@(_selectedFarmId == null)" data-testid="farm-export-btn">
-                                <i class="bi bi-download me-1"></i>@localizer[Resources.Settings_Export]
-                            </button>
-                            <label class="btn btn-sm btn-outline-secondary mb-0" data-testid="farm-import-label">
-                                <i class="bi bi-upload me-1"></i>@localizer[Resources.Settings_Import]
-                                <InputFile OnChange="ImportFarmAsync" style="display:none" accept=".json" />
-                            </label>
-                        </div>
+                            <div class="mb-3">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" id="farmNewName" placeholder="@localizer[Resources.Settings_NewFarmName]" @bind="_newFarmName" />
+                                    <button class="btn btn-outline-success" type="button" @onclick="CreateFarmAsync" disabled="@(string.IsNullOrWhiteSpace(_newFarmName))" data-testid="farm-create-btn">
+                                        <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Settings_Create]
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="ExportFarmAsync" disabled="@(_selectedFarmId == null)" data-testid="farm-export-btn">
+                                    <i class="bi bi-download me-1"></i>@localizer[Resources.Settings_Export]
+                                </button>
+                                <label class="btn btn-sm btn-outline-secondary mb-0" data-testid="farm-import-label">
+                                    <i class="bi bi-upload me-1"></i>@localizer[Resources.Settings_Import]
+                                    <InputFile OnChange="ImportFarmAsync" style="display:none" accept=".json" />
+                                </label>
+                            </div>
+                        }
                     }
                 </div>
             </div>
@@ -80,36 +91,52 @@
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="enableFilamentInventory" @bind="_config.EnableFilamentInventory" @bind:after="SaveFeaturesAsync" />
+                        <input class="form-check-input" type="checkbox" id="enableFilamentInventory" @bind="_config.EnableFilamentInventory" />
                         <label class="form-check-label" for="enableFilamentInventory">@localizer[Resources.Settings_EnableFilamentInventory]</label>
                         <div class="form-text">@localizer[Resources.Settings_FilamentInventoryDescription]</div>
                     </div>
 
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="enablePrintAnalytics" @bind="_config.EnablePrintAnalytics" @bind:after="SaveFeaturesAsync" />
+                        <input class="form-check-input" type="checkbox" id="enablePrintAnalytics" @bind="_config.EnablePrintAnalytics" />
                         <label class="form-check-label" for="enablePrintAnalytics">@localizer[Resources.Settings_EnablePrintAnalytics]</label>
                         <div class="form-text">@localizer[Resources.Settings_PrintAnalyticsDescription]</div>
                     </div>
                 </div>
             </div>
 
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong>@localizer[Resources.Settings_TelemetryAnalytics]</strong>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="analyticsEnabled" @bind="_config.AnalyticsEnabled" />
+                        <label class="form-check-label" for="analyticsEnabled">@localizer[Resources.Settings_EnableAppTelemetry]</label>
+                        <div class="form-text">@localizer[Resources.Settings_TelemetryDescription]</div>
+                    </div>
+                </div>
             </div>
+
+        </div>
         <div class="col-md-6 col-sm-12">
             <StorageExplorer Title="@localizer[Resources.Settings_AppStorage]" Provider="AppStorage" EnableUpload="true" EnableDelete="true" EnableOpen="true" EnableCopy="false" HiddenPrefixes="_hiddenPrefixes" />
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" @onclick="SaveSettingsAsync" data-testid="save-settings-btn">@localizer[Resources.Settings_SaveButton]</button>
+        </div>
     </div>
+</div>
 
 @code {
     private AppConfiguration _config = new();
     private static readonly string[] _hiddenPrefixes = ["MakerPrompt.PrinterConnections", "MakerPrompt.PrintProjects"];
     private Guid? _selectedFarmId;
     private string _newFarmName = string.Empty;
-    private MarkupString aboutContent;
 
     protected override async Task OnInitializedAsync()
     {
-        aboutContent = new MarkupString(localizer[Resources.AboutPage_Content]);
         _config = new AppConfiguration
         {
             Theme = ConfigService.Configuration.Theme,
@@ -126,15 +153,21 @@
         await FarmService.InitializeAsync();
     }
 
-    private async Task OnFarmModeChangedAsync()
+    private async Task SaveSettingsAsync()
     {
-        var wasEnabled = ConfigService.Configuration.FarmModeEnabled;
-        var enabling = _config.FarmModeEnabled;
+        var wasInFarmMode = ConfigService.Configuration.FarmModeEnabled;
 
-        ConfigService.Configuration.FarmModeEnabled = enabling;
+        ConfigService.Configuration.Theme = _config.Theme;
+        ConfigService.Configuration.Language = _config.Language;
+        ConfigService.Configuration.FarmModeEnabled = _config.FarmModeEnabled;
+        ConfigService.Configuration.ActiveFarmId = _config.ActiveFarmId;
+        ConfigService.Configuration.AnalyticsEnabled = _config.AnalyticsEnabled;
+        ConfigService.Configuration.EnableFilamentInventory = _config.EnableFilamentInventory;
+        ConfigService.Configuration.EnablePrintAnalytics = _config.EnablePrintAnalytics;
         ConfigService.Configuration.LastUpdated = DateTime.UtcNow;
 
-        if (wasEnabled && !enabling)
+        // When disabling farm mode, clear the farm-loaded printers and reset the farm name
+        if (wasInFarmMode && !_config.FarmModeEnabled)
         {
             ConfigService.Configuration.FarmName = string.Empty;
             ConfigService.Configuration.ActiveFarmId = null;
@@ -142,19 +175,12 @@
         }
 
         await ConfigService.SaveConfigurationAsync();
+        ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.Settings_Toast_Saved], localizer[Resources.Settings_Toast_SavedMessage]));
 
-        if (!wasEnabled && enabling)
+        if (!wasInFarmMode && _config.FarmModeEnabled)
             Navigation.NavigateTo("/fleet", replace: true);
-        else if (wasEnabled && !enabling)
+        else if (wasInFarmMode && !_config.FarmModeEnabled)
             Navigation.NavigateTo("/dashboard", replace: true);
-    }
-
-    private async Task SaveFeaturesAsync()
-    {
-        ConfigService.Configuration.EnableFilamentInventory = _config.EnableFilamentInventory;
-        ConfigService.Configuration.EnablePrintAnalytics = _config.EnablePrintAnalytics;
-        ConfigService.Configuration.LastUpdated = DateTime.UtcNow;
-        await ConfigService.SaveConfigurationAsync();
     }
 
     private async Task CreateFarmAsync()

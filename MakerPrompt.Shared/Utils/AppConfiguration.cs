@@ -12,5 +12,20 @@
         public bool EnableFilamentInventory { get; set; } = false;
         public bool EnablePrintAnalytics { get; set; } = false;
         public DateTime? LastUpdated { get; set; }
+
+        // ── Deployment mode ─────────────────────────────────────────────────
+        // Sourced from appsettings.json (MakerPrompt:DeploymentMode) at startup.
+        // NOT persisted to localStorage — this is a deployment-time decision.
+        // Default: Standalone (no auth, direct printer connections).
+        [System.Text.Json.Serialization.JsonIgnore]
+        public AppDeploymentMode DeploymentMode { get; set; } = AppDeploymentMode.Standalone;
+
+        /// <summary>
+        /// Base URL of the MakerPrompt Cloud API.
+        /// Required when DeploymentMode == CloudMakerspace.
+        /// Sourced from appsettings.json (MakerPrompt:CloudApiBaseUrl).
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string CloudApiBaseUrl { get; set; } = string.Empty;
     }
 }

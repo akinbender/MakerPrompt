@@ -45,16 +45,14 @@ else
 {
     <div class="container-fluid">
         @* ── Toolbar ── *@
-        <div class="d-flex justify-content-end gap-2 mb-3">
-            <button class="btn btn-outline-secondary" @onclick="() => _importModal!.ShowAsync()" data-testid="fleet-prusaconnect-import-btn">
-                <i class="bi bi-cloud-download me-1"></i>Import from PrusaConnect
-            </button>
-            <button class="btn btn-outline-primary" @onclick="() => ConnectionModal!.ShowAddAsync()" data-testid="fleet-add-btn">
-                <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
-            </button>
+        <div class="d-flex justify-content-end mb-3">
+            @if (ConfigService.Configuration.DeploymentMode != AppDeploymentMode.CloudMakerspace)
+            {
+                <button class="btn btn-outline-primary" @onclick="() => ConnectionModal!.ShowAddAsync()" data-testid="fleet-add-btn">
+                    <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
+                </button>
+            }
         </div>
-
-        <PrusaConnectImportModal @ref="_importModal" />
 
         @if (!ConnectionManager.Printers.Any())
         {
@@ -101,12 +99,15 @@ else
                                                 <i class="bi bi-x-circle"></i>
                                             </button>
                                         }
-                                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => ConnectionModal!.ShowEditAsync(printer.Definition)" title="@localizer[Resources.Fleet_EditPrinter]">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePrinter(printer.Definition.Id)" title="@localizer[Resources.Fleet_DeletePrinter]">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        @if (ConfigService.Configuration.DeploymentMode != AppDeploymentMode.CloudMakerspace)
+                                        {
+                                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => ConnectionModal!.ShowEditAsync(printer.Definition)" title="@localizer[Resources.Fleet_EditPrinter]">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePrinter(printer.Definition.Id)" title="@localizer[Resources.Fleet_DeletePrinter]">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
                                     </div>
                                 }
                             </div>
@@ -208,8 +209,6 @@ else
 
 @code {
     [CascadingParameter] private PrinterConnectionModal? ConnectionModal { get; set; }
-
-    private PrusaConnectImportModal? _importModal;
 
     private readonly Dictionary<Guid, PrinterCamera?> _cameras = new();
 
