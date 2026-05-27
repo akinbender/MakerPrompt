@@ -1,4 +1,4 @@
-﻿namespace MakerPrompt.UI.Components.Infrastructure
+﻿namespace MakerPrompt.Infrastructure.Printers
 {
     public interface ISerialService : IPrinterCommunicationService
     {

@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Exclude VS Code temp backup files -->
+    <Compile Remove="**/.!*!*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MakerPrompt.Core\MakerPrompt.Core.csproj" />
   </ItemGroup>
 

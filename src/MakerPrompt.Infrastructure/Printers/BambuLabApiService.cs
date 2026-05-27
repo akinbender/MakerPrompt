@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
 
-namespace MakerPrompt.UI.Components.Services;
+namespace MakerPrompt.Infrastructure.Printers;
 
 /// <summary>
 /// BambuLab printer backend using WebSocket MQTT + HTTP REST API.

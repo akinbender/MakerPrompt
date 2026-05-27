@@ -1,4 +1,4 @@
-namespace MakerPrompt.UI.Components.Services
+namespace MakerPrompt.Infrastructure.Printers
 {
     public class DemoPrinterService : BasePrinterConnectionService, IPrinterCommunicationService
     {
@@ -82,7 +82,7 @@ namespace MakerPrompt.UI.Components.Services
         {
             _hotendTarget = Math.Clamp(targetTemp, 0, 300);
             LastTelemetry.HotendTarget = _hotendTarget;
-            LastTelemetry.LastResponse = $"Set hotend target to {_hotendTarget}°C";
+            LastTelemetry.LastResponse = $"Set hotend target to {_hotendTarget}ï¿½C";
             RaiseTelemetryUpdated();
             await Task.Delay(50);
         }
@@ -91,7 +91,7 @@ namespace MakerPrompt.UI.Components.Services
         {
             _bedTarget = Math.Clamp(targetTemp, 0, 120);
             LastTelemetry.BedTarget = _bedTarget;
-            LastTelemetry.LastResponse = $"Set bed target to {_bedTarget}°C";
+            LastTelemetry.LastResponse = $"Set bed target to {_bedTarget}ï¿½C";
             RaiseTelemetryUpdated();
             await Task.Delay(50);
         }

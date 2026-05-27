@@ -1,4 +1,4 @@
-using MakerPrompt.UI.Components.Models;
+using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
 using Microsoft.JSInterop;
 using System.Text.Json;

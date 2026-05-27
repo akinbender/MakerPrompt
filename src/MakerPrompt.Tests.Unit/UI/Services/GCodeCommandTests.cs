@@ -1,3 +1,4 @@
+using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Models;
 using MakerPrompt.UI.Components.Services;
 using static MakerPrompt.UI.Components.Utils.Enums;

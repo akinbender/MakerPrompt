@@ -1,4 +1,4 @@
-namespace MakerPrompt.UI.Components.Services;
+namespace MakerPrompt.Infrastructure.Printers;
 
 /// <summary>
 /// PrusaConnect printer backend using the mobile API.

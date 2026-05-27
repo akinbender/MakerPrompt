@@ -3,6 +3,7 @@ using MakerPrompt.UI.Blazor.Services;
 using MakerPrompt.UI.Blazor.Storage;
 using MakerPrompt.UI.Components.Infrastructure;
 using MakerPrompt.UI.Components.Services;
+using MakerPrompt.Infrastructure.Printers;
 using MakerPrompt.UI.Components.Utils;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

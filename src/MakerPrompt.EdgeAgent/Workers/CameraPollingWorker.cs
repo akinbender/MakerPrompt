@@ -47,20 +47,16 @@ public sealed class CameraPollingWorker : BackgroundService
         var intervalSeconds = configuration.GetValue("EdgeAgent:CameraIntervalSeconds", 10);
         _captureInterval = TimeSpan.FromSeconds(Math.Max(1, intervalSeconds));
 
-        // Build providers from configuration.
-        var camerasSection = configuration.GetSection("EdgeAgent:Cameras");
-        foreach (var cam in camerasSection.GetChildren())
+        // Build providers from EdgeAgent:Printers entries that have a CameraUrl.
+        var printersSection = configuration.GetSection("EdgeAgent:Printers");
+        foreach (var printer in printersSection.GetChildren())
         {
-            var cameraId = cam["CameraId"] ?? string.Empty;
-            var label = cam["Label"] ?? cameraId;
-            var url = cam["MjpegUrl"] ?? string.Empty;
+            var cameraId = printer["PrinterId"] ?? string.Empty;
+            var label = printer["Label"] ?? cameraId;
+            var url = printer["CameraUrl"] ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(cameraId) || string.IsNullOrWhiteSpace(url))
-            {
-                _logger.LogWarning(
-                    "Camera entry is missing CameraId or MjpegUrl — skipping");
                 continue;
-            }
 
             _cameras.Add(new MjpegCameraProvider(
                 cameraId, label, url,

@@ -1,10 +1,14 @@
+using System.Security.Cryptography;
+using System.Text;
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
 using MakerPrompt.Infrastructure.Camera;
 using MakerPrompt.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -108,6 +112,9 @@ builder.Services.AddSingleton<ITelemetryStore, InMemoryTelemetryStore>();
 // In-memory camera snapshot store (swap for SqliteCameraSnapshotStore in production).
 builder.Services.AddSingleton<ICameraSnapshotStore, InMemoryCameraSnapshotStore>();
 
+// Health checks — available at /health (no auth required).
+builder.Services.AddHealthChecks();
+
 // API Explorer for potential future Swagger integration.
 builder.Services.AddEndpointsApiExplorer();
 
@@ -116,25 +123,67 @@ var app = builder.Build();
 // ── Middleware ────────────────────────────────────────────────────────────────
 
 app.UseHttpsRedirection();
+
+// ── Blazor WASM static files ──────────────────────────────────────────────────
+// Serve the Blazor WASM app from wwwroot/ (published by UI.Blazor project reference).
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 // ── Endpoints ─────────────────────────────────────────────────────────────────
 
 // Health check — public, no auth required.
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", utc = DateTimeOffset.UtcNow }))
-   .WithName("HealthCheck")
-   .WithTags("System")
-   .AllowAnonymous();
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (ctx, report) =>
+    {
+        ctx.Response.ContentType = "application/json";
+        await ctx.Response.WriteAsJsonAsync(new
+        {
+            status = report.Status.ToString().ToLowerInvariant(),
+            utc = DateTimeOffset.UtcNow,
+        });
+    }
+}).AllowAnonymous();
 
 // Ingest telemetry from an EdgeAgent.
-// Requires the "makerprompt:ingest" scope (machine-to-machine token from EdgeAgent).
+// Accepts either a JWT with the "makerprompt:ingest" scope OR a pre-shared
+// SHA-256 API key configured in CloudApi:AgentApiKeyHash.
 app.MapPost("/api/telemetry/{printerId}", async (
     string printerId,
     [FromBody] PrinterTelemetry telemetry,
+    HttpContext httpContext,
     ITelemetryStore store,
+    IConfiguration config,
     CancellationToken ct) =>
 {
+    // ── SHA-256 API key auth (alternative to JWT) ─────────────────────────
+    var keyHash = config["CloudApi:AgentApiKeyHash"];
+    if (!string.IsNullOrWhiteSpace(keyHash))
+    {
+        var authHeader = httpContext.Request.Headers.Authorization.FirstOrDefault();
+        var token = authHeader?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) is true
+            ? authHeader[7..]
+            : null;
+
+        if (token is null)
+            return Results.Unauthorized();
+
+        var actualHash = Convert.ToHexString(
+            SHA256.HashData(Encoding.UTF8.GetBytes(token))).ToLowerInvariant();
+
+        if (!actualHash.Equals(keyHash.ToLowerInvariant(), StringComparison.Ordinal))
+            return Results.Unauthorized();
+    }
+
+    // ── Staleness guard ────────────────────────────────────────────────────
+    // If the snapshot is older than 30 s, treat the printer as disconnected.
+    const int StaleThresholdSeconds = 30;
+    if ((DateTime.UtcNow - telemetry.CapturedAt).TotalSeconds > StaleThresholdSeconds)
+        telemetry.Status = PrinterStatus.Disconnected;
+
     await store.SaveAsync(printerId, telemetry, ct);
     return Results.Accepted();
 })
@@ -221,6 +270,9 @@ app.MapGet("/api/camera/{cameraId}/history", async (
 .RequireAuthorization("MemberRead");
 
 // ── Run ───────────────────────────────────────────────────────────────────────
+
+// Fallback — serve Blazor WASM for any non-API route (client-side routing).
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

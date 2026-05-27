@@ -2,11 +2,12 @@ using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using MakerPrompt.UI.Components.Utils;
+using MakerPrompt.Infrastructure.Printers;
 using MakerPrompt.UI.Components.Services;
 using MakerPrompt.UI.MAUI.Services;
 using MakerPrompt.UI.MAUI.Storage;
 using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Models;
+using MakerPrompt.Core.Models;
 
 namespace MakerPrompt.UI.MAUI;
 

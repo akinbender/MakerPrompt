@@ -1,10 +1,24 @@
+using System.Numerics;
+
 namespace MakerPrompt.Core.Models;
 
 /// <summary>
 /// Snapshot of live telemetry data received from a connected printer.
 /// </summary>
-public sealed class PrinterTelemetry
+public class PrinterTelemetry
 {
+    /// <summary>Last raw response line received from the printer (G-code terminal output).</summary>
+    public string LastResponse { get; set; } = string.Empty;
+
+    /// <summary>Timestamp when the connection to this printer was established.</summary>
+    public DateTime? ConnectionTime { get; set; }
+
+    /// <summary>Current print-head position reported by the printer.</summary>
+    public Vector3 Position { get; set; }
+
+    /// <summary>SD card status reported by the printer.</summary>
+    public SDCardStatus SDCard { get; } = new();
+
     /// <summary>Display name of the printer (populated by the backend).</summary>
     public string PrinterName { get; set; } = string.Empty;
 
@@ -52,4 +66,17 @@ public sealed class PrinterTelemetry
 
     /// <summary>UTC timestamp when this snapshot was captured.</summary>
     public DateTimeOffset CapturedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>SD card status reported by firmware.</summary>
+public class SDCardStatus
+{
+    /// <summary>Whether the SD card is present and mounted.</summary>
+    public bool Present { get; set; }
+
+    /// <summary>Whether a print from SD is currently active.</summary>
+    public bool Printing { get; set; }
+
+    /// <summary>SD print progress (0–100 %).</summary>
+    public double Progress { get; set; }
 }

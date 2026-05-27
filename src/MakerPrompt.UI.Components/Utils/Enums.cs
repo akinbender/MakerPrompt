@@ -37,20 +37,6 @@ namespace MakerPrompt.UI.Components.Utils
             Step15 = 150
         }
 
-        public enum PrinterStatus
-        {
-            [Display(Name = nameof(Resources.PrinterStatus_Disconnected), ResourceType = typeof(Resources))]
-            Disconnected,
-            [Display(Name = nameof(Resources.PrinterStatus_Connected), ResourceType = typeof(Resources))]
-            Connected,
-            [Display(Name = nameof(Resources.PrinterStatus_Printing), ResourceType = typeof(Resources))]
-            Printing,
-            [Display(Name = nameof(Resources.PrinterStatus_Paused), ResourceType = typeof(Resources))]
-            Paused,
-            [Display(Name = nameof(Resources.PrinterStatus_Error), ResourceType = typeof(Resources))]
-            Error
-        }
-
         public enum Theme
         {
             [Display(Name = nameof(Resources.Theme_Auto), ResourceType = typeof(Resources))]

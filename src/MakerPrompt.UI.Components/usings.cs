@@ -7,6 +7,7 @@ global using System.Reflection;
 global using System.Numerics;
 global using System.Net;
 global using System.Net.Http.Headers;
+global using MakerPrompt.Infrastructure.Printers;
 global using MakerPrompt.UI.Components.Infrastructure;
 global using MakerPrompt.UI.Components.Properties;
 global using MakerPrompt.UI.Components.Services;
@@ -26,3 +27,9 @@ global using PrintJobUsageRecord = MakerPrompt.Core.Models.PrintJobUsageRecord;
 global using PrintProject = MakerPrompt.Core.Models.PrintProject;
 global using PrintJob = MakerPrompt.Core.Models.PrintJob;
 global using PrintJobStatus = MakerPrompt.Core.Models.PrintJobStatus;
+// PrinterStatus alias: Core type is used for telemetry; UI Enums version accessible via Enums.PrinterStatus for localized display
+global using PrinterStatus = MakerPrompt.Core.Models.PrinterStatus;
+global using PrinterTelemetry = MakerPrompt.Core.Models.PrinterTelemetry;
+global using FileEntry = MakerPrompt.Core.Models.FileEntry;
+global using GCodeDoc = MakerPrompt.Core.Models.GCodeDoc;
+global using PrinterCamera = MakerPrompt.Core.Models.PrinterCamera;

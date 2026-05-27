@@ -1,6 +1,6 @@
 ﻿using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Services;
+using MakerPrompt.Infrastructure.Printers;
 using Microsoft.JSInterop;
 
 namespace MakerPrompt.UI.Blazor.Services

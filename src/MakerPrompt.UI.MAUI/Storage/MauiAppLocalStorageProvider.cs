@@ -1,5 +1,5 @@
+using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Models;
 
 namespace MakerPrompt.UI.MAUI.Storage
 {

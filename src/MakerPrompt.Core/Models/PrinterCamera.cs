@@ -1,4 +1,4 @@
-namespace MakerPrompt.UI.Components.Models
+namespace MakerPrompt.Core.Models
 {
     /// <summary>
     /// Neutral printer camera description consumed by UI components.

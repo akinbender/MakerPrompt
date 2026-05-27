@@ -2,8 +2,8 @@ using System.Net;
 using System.Text;
 using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Models;
-using MakerPrompt.UI.Components.Services;
-using PrinterStatus = MakerPrompt.UI.Components.Utils.Enums.PrinterStatus;
+using MakerPrompt.Infrastructure.Printers;
+using PrinterStatus = MakerPrompt.Core.Models.PrinterStatus;
 
 namespace MakerPrompt.Tests.Unit.UI;
 

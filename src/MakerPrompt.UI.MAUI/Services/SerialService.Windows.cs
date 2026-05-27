@@ -4,7 +4,7 @@ using System.Threading.Tasks.Dataflow;
 using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
 using MakerPrompt.UI.Components.Utils;
-using MakerPrompt.UI.Components.Services;
+using MakerPrompt.Infrastructure.Printers;
 
 namespace MakerPrompt.UI.MAUI.Services
 {

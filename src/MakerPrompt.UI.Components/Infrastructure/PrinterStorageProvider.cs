@@ -1,6 +1,5 @@
 namespace MakerPrompt.UI.Components.Infrastructure
 {
-    using MakerPrompt.UI.Components.Models;
 
     public sealed class PrinterStorageProvider : IStorageProvider
     {
@@ -24,9 +23,9 @@ namespace MakerPrompt.UI.Components.Infrastructure
         {
             switch (factory.Current)
             {
-                case Services.DemoPrinterService demo:
+                case MakerPrompt.Infrastructure.Printers.DemoPrinterService demo:
                     return await demo.OpenReadAsync(fullPath);
-                case Services.MoonrakerApiService moonraker:
+                case MakerPrompt.Infrastructure.Printers.MoonrakerApiService moonraker:
                     return await moonraker.OpenReadAsync(fullPath, cancellationToken);
                 default:
                     return null;
@@ -35,7 +34,7 @@ namespace MakerPrompt.UI.Components.Infrastructure
 
         public async Task SaveFileAsync(string fullPath, Stream content, CancellationToken cancellationToken = default)
         {
-            if (factory.Current is Services.DemoPrinterService svc)
+            if (factory.Current is MakerPrompt.Infrastructure.Printers.DemoPrinterService svc)
             {
                 await svc.SaveFileAsync(fullPath, content);
             }
@@ -43,7 +42,7 @@ namespace MakerPrompt.UI.Components.Infrastructure
 
         public async Task DeleteFileAsync(string fullPath, CancellationToken cancellationToken = default)
         {
-            if (factory.Current is Services.DemoPrinterService svc)
+            if (factory.Current is MakerPrompt.Infrastructure.Printers.DemoPrinterService svc)
             {
                 await svc.DeleteFileAsync(fullPath);
             }

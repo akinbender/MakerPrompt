@@ -1,6 +1,6 @@
 ﻿using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Services;
+using MakerPrompt.Infrastructure.Printers;
 using MakerPrompt.UI.Components.Utils;
 using System.Text;
 using System.Threading.Tasks.Dataflow;

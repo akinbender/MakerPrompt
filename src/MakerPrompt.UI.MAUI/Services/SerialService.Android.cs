@@ -1,6 +1,6 @@
 using MakerPrompt.Core.Models;
 using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.UI.Components.Services;
+using MakerPrompt.Infrastructure.Printers;
 using UsbSerialForAndroid.Net;
 using UsbSerialForAndroid.Net.Drivers;
 using UsbSerialForAndroid.Net.Helper;
