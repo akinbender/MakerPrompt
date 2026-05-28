@@ -39,6 +39,13 @@ public interface IPrinterCommunicationService : IAsyncDisposable
     /// <summary><c>true</c> when a print job is actively running on this printer.</summary>
     bool IsPrinting { get; }
 
+    /// <summary>
+    /// <c>true</c> when this backend supports sending arbitrary G-code commands
+    /// via <see cref="WriteDataAsync"/> and displaying the response in the command prompt.
+    /// Backends that communicate over read-only APIs (e.g. PrusaLink) should return <c>false</c>.
+    /// </summary>
+    bool SupportsCommandPrompt => true;
+
     // ── Lifecycle ───────────────────────────────────────────────────────────
 
     /// <summary>Establishes the connection using the supplied settings.</summary>

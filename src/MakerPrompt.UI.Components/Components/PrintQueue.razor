@@ -181,8 +181,9 @@
     private readonly Dictionary<Guid, Guid> _jobTargetPrinter = new();
     private readonly HashSet<Guid> _sendingJobs = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await ProjectService.InitializeAsync();
         ProjectService.ProjectsChanged += HandleProjectsChanged;
         ConnectionManager.PrintersChanged += HandlePrintersChanged;
         RefreshIdlePrinters();

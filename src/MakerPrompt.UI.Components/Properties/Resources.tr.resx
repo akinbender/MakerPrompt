@@ -592,6 +592,9 @@
   <data name="PageTitle_GCodeViewer" xml:space="preserve">
     <value>G-Code Görüntüleyici</value>
   </data>
+  <data name="PageTitle_Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
   <data name="PageTitle_BrailleRAP" xml:space="preserve">
     <value>BrailleRAP</value>
   </data>

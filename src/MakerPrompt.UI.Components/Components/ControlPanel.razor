@@ -333,6 +333,18 @@
         <StorageExplorer Title="Printer storage" Provider="PrinterStorage" TargetProvider="AppStorage"
                          EnableUpload="false" EnableDelete="true" EnableOpen="true" EnableCopy="true" />
     </div>
+
+    @* ── Command Prompt (when supported) or Project Hub ── *@
+    <div class="col-12">
+        @if (IsConnected && (PrinterServiceFactory.Current?.SupportsCommandPrompt ?? false))
+        {
+            <CommandPrompt />
+        }
+        else
+        {
+            <PrintQueue />
+        }
+    </div>
 </div>
 
 @code {

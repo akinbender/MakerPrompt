@@ -8,7 +8,6 @@ WORKDIR /src
 # Restore layer — only copy project files first to cache packages.
 COPY MakerPrompt.sln .
 COPY src/MakerPrompt.Core/MakerPrompt.Core.csproj                           src/MakerPrompt.Core/
-COPY src/MakerPrompt.Application/MakerPrompt.Application.csproj             src/MakerPrompt.Application/
 COPY src/MakerPrompt.Infrastructure/MakerPrompt.Infrastructure.csproj       src/MakerPrompt.Infrastructure/
 COPY src/MakerPrompt.UI.Components/MakerPrompt.UI.Components.csproj         src/MakerPrompt.UI.Components/
 COPY src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj                 src/MakerPrompt.UI.Blazor/

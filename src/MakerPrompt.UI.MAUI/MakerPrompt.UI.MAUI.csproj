@@ -18,7 +18,7 @@
     <ApplicationTitle>MakerPrompt</ApplicationTitle>
     <ApplicationId>com.makerprompt.maui.v2</ApplicationId>
     <ApplicationDisplayVersion>0.5.0</ApplicationDisplayVersion>
-    <ApplicationVersion>0.5.0</ApplicationVersion>
+    <ApplicationVersion>0</ApplicationVersion>
 
     <WindowsPackageType>None</WindowsPackageType>
 
