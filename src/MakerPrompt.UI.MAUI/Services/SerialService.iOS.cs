@@ -1,31 +1,27 @@
-﻿using System.IO.Ports;
-using System.Threading.Tasks.Dataflow;
-using MakerPrompt.UI.Components.Infrastructure;
-using System.Text;
-using MakerPrompt.Infrastructure.Printers;
+using MakerPrompt.Core.Models;
 
-namespace MakerPrompt.UI.MAUI.Services
+namespace MakerPrompt.UI.MAUI.Services;
+
+/// <summary>
+/// iOS serial service stub.
+/// Direct USB/serial connections are not supported on iOS (sandboxing restrictions).
+/// The class satisfies the partial class requirement but throws on any attempt to connect.
+/// </summary>
+public partial class SerialService
 {
-    public class SerialService : BaseSerialService, ISerialService
-    {
-        public bool IsSupported => false;
+    protected override Task OpenTransportAsync(PrinterConnectionSettings settings,
+        CancellationToken cancellationToken)
+        => throw new PlatformNotSupportedException(
+            "Direct USB/serial connections are not supported on iOS. " +
+            "Use a network-based backend (Moonraker, PrusaLink) instead.");
 
-        public SerialService()
-        {
+    protected override Task CloseTransportAsync(CancellationToken cancellationToken)
+        => Task.CompletedTask;
 
-        }
+    protected override Task WriteTransportAsync(string data, CancellationToken cancellationToken)
+        => throw new PlatformNotSupportedException(
+            "Direct USB/serial connections are not supported on iOS.");
 
-        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings) => throw new NotSupportedException();
-        public async Task DisconnectAsync() => throw new NotSupportedException();
-        public override async Task WriteDataAsync(string data) => throw new NotSupportedException();
-        public async Task<IEnumerable<string>> GetAvailablePortsAsync() => throw new NotSupportedException();
-
-        public override async ValueTask DisposeAsync()
-        {
-        }
-
-        public Task<bool> CheckSupportedAsync() => Task.FromResult(false);
-
-        public Task RequestPortAsync()  => throw new NotSupportedException();
-    }
+    public static partial Task<IReadOnlyList<string>> GetAvailablePortsAsync()
+        => Task.FromResult<IReadOnlyList<string>>([]);
 }

@@ -29,7 +29,7 @@ public class MoonrakerApiServiceTests
         var service = new MoonrakerApiService(handler);
         await service.ConnectAsync(BuildSettings());
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(215, telemetry.HotendTarget);
         Assert.Equal(60, telemetry.BedTarget);
@@ -44,7 +44,7 @@ public class MoonrakerApiServiceTests
         var service = new MoonrakerApiService(handler);
         await service.ConnectAsync(BuildSettings());
 
-        await service.SetHotendTemp(200);
+        await service.SetHotendTempAsync(200);
 
         Assert.Contains(handler.RequestPaths, p => p.Contains("/printer/gcode/script", StringComparison.Ordinal));
         Assert.Contains("M104+S200", handler.RequestPaths.Last());
@@ -57,7 +57,7 @@ public class MoonrakerApiServiceTests
         var service = new MoonrakerApiService(handler);
         await service.ConnectAsync(BuildSettings());
 
-        await service.StartPrint(new FileEntry { FullPath = "gcodes/test.gcode" });
+        await service.StartPrintAsync("gcodes/test.gcode");
 
         Assert.Contains(handler.RequestPaths, p => p.Contains("/printer/print/start", StringComparison.Ordinal));
     }

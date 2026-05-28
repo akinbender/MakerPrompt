@@ -48,7 +48,7 @@
 
         private bool _telemetryTimerInitialized;
 
-        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
         {
             if (IsConnected) return IsConnected;
 
@@ -93,7 +93,7 @@
             return IsConnected;
         }
 
-        public async Task DisconnectAsync()
+        public async Task DisconnectAsync(CancellationToken cancellationToken = default)
         {
             updateTimer.Stop();
             _cts.Cancel();
@@ -103,7 +103,7 @@
             await Task.CompletedTask;
         }
 
-        public async Task WriteDataAsync(string command)
+        public async Task WriteDataAsync(string command, CancellationToken cancellationToken = default)
         {
             if (!IsConnected) return;
 
@@ -116,7 +116,7 @@
             LastTelemetry.LastResponse = content;
             RaiseTelemetryUpdated();
         }
-        public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+        public async Task<PrinterTelemetry> GetTelemetryAsync(CancellationToken cancellationToken = default)
         {
             if (!IsConnected) return LastTelemetry;
 
@@ -273,7 +273,7 @@
             }
         }
 
-        public async Task<List<FileEntry>> GetFilesAsync()
+        public async Task<IReadOnlyList<string>> GetFilesAsync(CancellationToken cancellationToken = default)
         {
             if (!IsConnected) return [];
 
@@ -282,13 +282,7 @@
             response.EnsureSuccessStatusCode();
             var content = JsonSerializer.Deserialize<FileListResponse>(await response.Content.ReadAsStringAsync());
             var files = content?.Files ?? [];
-            return files.Select(f => new FileEntry
-                {
-                    FullPath = f.Path,
-                    Size = f.Size,
-                    ModifiedDate = f.ModifiedDate,
-                    IsAvailable = f.Permissions.Contains("rw"),
-                }).ToList();
+            return files.Select(f => f.Path).ToList();
         }
 
         public async Task<Stream?> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
@@ -395,7 +389,7 @@
         {
             try
             {
-                await GetPrinterTelemetryAsync();
+                await GetTelemetryAsync();
             }
             catch
             {
@@ -405,13 +399,13 @@
 
         private Task SendGcodeAsync(string gcode) => WriteDataAsync(gcode);
 
-        public Task SetHotendTemp(int targetTemp = 0) =>
+        public Task SetHotendTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
             SendGcodeAsync($"M104 S{targetTemp}");
 
-        public Task SetBedTemp(int targetTemp = 0) =>
+        public Task SetBedTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
             SendGcodeAsync($"M140 S{targetTemp}");
 
-        public Task Home(bool x = true, bool y = true, bool z = true)
+        public Task HomeAsync(bool x = true, bool y = true, bool z = true, CancellationToken cancellationToken = default)
         {
             var axes = new StringBuilder();
             if (x) axes.Append(" X");
@@ -421,7 +415,7 @@
             return SendGcodeAsync(command);
         }
 
-        public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        public Task RelativeMoveAsync(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f, CancellationToken cancellationToken = default)
         {
             var sb = new StringBuilder();
             sb.Append("G91\nG1");
@@ -433,20 +427,20 @@
             return SendGcodeAsync(sb.ToString());
         }
 
-        public Task SetFanSpeed(int speed)
+        public Task SetFanSpeedAsync(int speed, CancellationToken cancellationToken = default)
         {
             var clamped = Math.Clamp(speed, 0, 100);
             var duty = (int)Math.Round(clamped * 255.0 / 100.0, MidpointRounding.AwayFromZero);
             return SendGcodeAsync($"M106 S{duty}");
         }
 
-        public Task SetPrintSpeed(int speed)
+        public Task SetPrintSpeedAsync(int speed, CancellationToken cancellationToken = default)
         {
             var clamped = Math.Clamp(speed, 1, 200);
             return SendGcodeAsync($"M220 S{clamped}");
         }
 
-        public Task SetPrintFlow(int flow)
+        public Task SetPrintFlowAsync(int flow, CancellationToken cancellationToken = default)
         {
             var clamped = Math.Clamp(flow, 1, 200);
             return SendGcodeAsync($"M221 S{clamped}");
@@ -474,13 +468,13 @@
             return SendGcodeAsync($"PID_CALIBRATE HEATER=heater_bed TARGET={targetTemp}");
         }
 
-        public async Task StartPrint(FileEntry file)
+        public async Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default)
         {
-            var filename = WebUtility.UrlEncode(file.FullPath);
-            await Client.PostAsync($"/printer/print/start?filename={filename}", null, _cts.Token);
+            var encoded = WebUtility.UrlEncode(fileName);
+            await Client.PostAsync($"/printer/print/start?filename={encoded}", null, _cts.Token);
         }
 
-        public Task StartPrint(GCodeDoc gcodeDoc)
+        public Task StartPrintAsync(GCodeDoc gcodeDoc, CancellationToken cancellationToken = default)
         {
             if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
             {

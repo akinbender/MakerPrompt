@@ -59,7 +59,7 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
         }
     }
 
-    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
     {
         if (IsConnected) return true;
         if (connectionSettings.ConnectionType != ConnectionType)
@@ -393,14 +393,14 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
     {
         try
         {
-            await GetPrinterTelemetryAsync().ConfigureAwait(false);
+            await GetTelemetryAsync().ConfigureAwait(false);
         }
         catch
         {
         }
     }
 
-    public async Task DisconnectAsync()
+    public async Task DisconnectAsync(CancellationToken cancellationToken = default)
     {
         updateTimer.Stop();
         _cts.Cancel();
@@ -428,12 +428,12 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
         RaiseConnectionChanged();
     }
 
-    public Task WriteDataAsync(string command)
+    public Task WriteDataAsync(string command, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
 
-    public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+    public async Task<PrinterTelemetry> GetTelemetryAsync(CancellationToken cancellationToken = default)
     {
         if (!IsConnected || _httpBaseUri is null)
         {
@@ -458,9 +458,9 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
         return LastTelemetry;
     }
 
-    public Task<List<FileEntry>> GetFilesAsync()
+    public Task<IReadOnlyList<string>> GetFilesAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(new List<FileEntry>());
+        return Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>());
     }
 
     private Task SendCommandAsync(string name, object payload)
@@ -474,25 +474,25 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
         return SendRawAsync(envelope, _cts.Token);
     }
 
-    public Task SetHotendTemp(int targetTemp = 0) =>
+    public Task SetHotendTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         SendCommandAsync("set_nozzle_temp", new { target = targetTemp });
 
-    public Task SetBedTemp(int targetTemp = 0) =>
+    public Task SetBedTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         SendCommandAsync("set_bed_temp", new { target = targetTemp });
 
-    public Task Home(bool x = true, bool y = true, bool z = true) =>
+    public Task HomeAsync(bool x = true, bool y = true, bool z = true, CancellationToken cancellationToken = default) =>
         SendCommandAsync("home", new { x, y, z });
 
-    public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f) =>
+    public Task RelativeMoveAsync(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f, CancellationToken cancellationToken = default) =>
         SendCommandAsync("move_relative", new { feedRate, x, y, z, e });
 
-    public Task SetFanSpeed(int fanSpeedPercentage = 0) =>
+    public Task SetFanSpeedAsync(int fanSpeedPercentage = 0, CancellationToken cancellationToken = default) =>
         SendCommandAsync("set_fan_speed", new { speed = fanSpeedPercentage });
 
-    public Task SetPrintSpeed(int speed) =>
+    public Task SetPrintSpeedAsync(int speed, CancellationToken cancellationToken = default) =>
         SendCommandAsync("set_print_speed", new { speed });
 
-    public Task SetPrintFlow(int flow) =>
+    public Task SetPrintFlowAsync(int flow, CancellationToken cancellationToken = default) =>
         SendCommandAsync("set_print_flow", new { flow });
 
     public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f) =>
@@ -504,10 +504,10 @@ public sealed class BambuLabApiService : BasePrinterConnectionService, IPrinterC
     public Task RunThermalModelCalibration(int cycles, int targetTemp) =>
         SendCommandAsync("run_thermal_model_calibration", new { cycles, targetTemp });
 
-    public Task StartPrint(FileEntry file) =>
-        SendCommandAsync("start_print_file", new { path = file.FullPath });
+    public Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default) =>
+        SendCommandAsync("start_print_file", new { path = fileName });
 
-    public Task StartPrint(GCodeDoc gcodeDoc)
+    public Task StartPrintAsync(GCodeDoc gcodeDoc, CancellationToken cancellationToken = default)
     {
         if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
         {

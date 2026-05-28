@@ -1,6 +1,6 @@
 using MakerPrompt.Application.Services;
 using MakerPrompt.Core.Models;
-using MakerPrompt.Infrastructure.Farm;
+using MakerPrompt.Infrastructure;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MakerPrompt.Tests.Unit.Application;

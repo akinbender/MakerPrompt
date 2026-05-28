@@ -30,7 +30,7 @@ public class OctoPrintApiServiceTests
         await service.ConnectAsync(BuildSettings());
         service.updateTimer.Stop();
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(200.0, telemetry.HotendTemp, 1);
         Assert.Equal(210.0, telemetry.HotendTarget, 1);
@@ -50,8 +50,8 @@ public class OctoPrintApiServiceTests
         var files = await service.GetFilesAsync();
 
         Assert.Equal(2, files.Count);
-        Assert.Contains(files, f => f.FullPath == "root.gcode");
-        Assert.Contains(files, f => f.FullPath == "folder/nested.gcode");
+        Assert.Contains("root.gcode", files);
+        Assert.Contains("folder/nested.gcode", files);
     }
 
     [Fact]

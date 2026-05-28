@@ -29,7 +29,7 @@ public class PrusaLinkApiServiceTests
         var service = new PrusaLinkApiService(handler);
         await service.ConnectAsync(BuildSettings());
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(215, telemetry.HotendTarget);
         Assert.Equal(60, telemetry.BedTarget);
@@ -47,8 +47,7 @@ public class PrusaLinkApiServiceTests
         var files = await service.GetFilesAsync();
 
         Assert.Single(files);
-        Assert.Equal("/local/file.gcode", files[0].FullPath);
-        Assert.Equal(424242, files[0].Size);
+        Assert.Equal("/local/file.gcode", files[0]);
     }
 
     private static Func<HttpRequestMessage, HttpResponseMessage> BuildDefaultResponses()

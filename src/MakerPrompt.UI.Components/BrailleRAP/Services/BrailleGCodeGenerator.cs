@@ -23,7 +23,7 @@ namespace MakerPrompt.UI.Components.BrailleRAP.Services
             var gcode = new StringBuilder();
 
             // Initialize
-            gcode.Append(Home());
+            gcode.Append(HomeAsync());
             gcode.Append(SetSpeed(_config.FeedRate));
             gcode.Append(MoveTo(0, 0));
 
@@ -61,7 +61,7 @@ namespace MakerPrompt.UI.Components.BrailleRAP.Services
             return "M84;\r\n";
         }
 
-        private string Home()
+        private string HomeAsync()
         {
             var sb = new StringBuilder();
             sb.Append("G28 X;\r\n");

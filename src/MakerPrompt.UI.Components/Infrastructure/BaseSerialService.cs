@@ -10,7 +10,7 @@
 
         // Core write entry point used by higher-level services. Implementations should
         // enqueue commands with appropriate metadata where available.
-        public abstract Task WriteDataAsync(string command);
+        public abstract Task WriteDataAsync(string command, CancellationToken cancellationToken = default);
 
         // Convenience helpers for tagging commands with their intent. Implementations
         // that support a queued sender can use this classification to prioritise work.
@@ -18,7 +18,7 @@
         public virtual Task WriteTelemetryCommandAsync(string command) => WriteDataAsync(command);
         public virtual Task WritePrintCommandAsync(string command) => WriteDataAsync(command);
 
-        public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+        public async Task<PrinterTelemetry> GetTelemetryAsync(CancellationToken cancellationToken = default)
         {
             // Treat telemetry polling distinctly so queueing code can prioritise
             // active print commands when necessary.
@@ -32,7 +32,7 @@
             return LastTelemetry;
         }
 
-        public async Task<List<FileEntry>> GetFilesAsync()
+        public async Task<IReadOnlyList<string>> GetFilesAsync(CancellationToken cancellationToken = default)
         {
             // await WriteDataAsync("M20 L T");
             // await Task.Delay(500); // Wait for response
@@ -40,7 +40,7 @@
             return [];
         }
 
-        public async Task SetHotendTemp(int targetTemp = 0)
+        public async Task SetHotendTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default)
         {
             if (!IsConnected || (targetTemp < 0 || targetTemp > 300)) return;
             var command = GCodeCommands.SetTemp
@@ -49,7 +49,7 @@
             await WriteUserCommandAsync(command);
         }
 
-        public async Task SetBedTemp(int targetTemp = 0)
+        public async Task SetBedTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default)
         {
             if (!IsConnected || (targetTemp < 0 || targetTemp > 120)) return;
             var command = GCodeCommands.SetBedTemp
@@ -58,7 +58,7 @@
             await WriteUserCommandAsync(command);
         }
 
-        public async Task Home(bool x = true, bool y = true, bool z = true)
+        public async Task HomeAsync(bool x = true, bool y = true, bool z = true, CancellationToken cancellationToken = default)
         {
             if (!IsConnected) return;
             var command = GCodeCommands.Home;
@@ -72,7 +72,7 @@
             await WriteUserCommandAsync(command.ToString());
         }
 
-        public async Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        public async Task RelativeMoveAsync(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f, CancellationToken cancellationToken = default)
         {
             if (!IsConnected) return;
             var command = GCodeCommands.MoveLinear;
@@ -88,7 +88,7 @@
             await WriteUserCommandAsync(GCodeCommands.AbsolutePositioning.ToString());
         }
 
-        public async Task SetFanSpeed(int fanSpeedPercentage = 0)
+        public async Task SetFanSpeedAsync(int fanSpeedPercentage = 0, CancellationToken cancellationToken = default)
         {
             if (!IsConnected || (fanSpeedPercentage < 0 || fanSpeedPercentage > 100)) return;
             var command = fanSpeedPercentage == 0 ? GCodeCommands.FanOff
@@ -96,14 +96,14 @@
             await WriteUserCommandAsync(command.ToString());
         }
 
-        public async Task SetPrintSpeed(int speed)
+        public async Task SetPrintSpeedAsync(int speed, CancellationToken cancellationToken = default)
         {
             if (!IsConnected || (speed < 1 || speed > 200)) return;
             var command = GCodeCommands.SetFeedratePercentage.SetParameterValue(GCodeParameters.RatePercentage.Label, speed.ToString());
             await WriteUserCommandAsync(command.ToString());
         }
 
-        public async Task SetPrintFlow(int flow)
+        public async Task SetPrintFlowAsync(int flow, CancellationToken cancellationToken = default)
         {
             if (!IsConnected || (flow < 1 || flow > 200)) return;
             var command = GCodeCommands.SetFlowratePercentage.SetParameterValue(GCodeParameters.RatePercentage.Label, flow.ToString());
@@ -143,9 +143,19 @@
             await WriteUserCommandAsync(command);
         }
 
-        public Task StartPrint(FileEntry file)
+        public Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (!IsConnected) return Task.CompletedTask;
+            IsPrinting = true;
+            return WriteDataAsync($"M23 {fileName}", cancellationToken);
+        }
+
+        public async Task StartPrintAsync(GCodeDoc gcode, CancellationToken cancellationToken = default)
+        {
+            if (!IsConnected || string.IsNullOrWhiteSpace(gcode.Content)) return;
+            IsPrinting = true;
+            await foreach (var command in gcode.EnumerateCommandsAsync(cancellationToken))
+                await WriteDataAsync(command, cancellationToken);
         }
 
         public async Task SaveEEPROM()

@@ -44,7 +44,7 @@ public class PrusaConnectPrinterServiceTests
         await service.ConnectAsync(BuildSettings());
         service.updateTimer.Stop();
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(210.0, telemetry.HotendTarget, precision: 1);
         Assert.Equal(195.0, telemetry.HotendTemp,   precision: 1);
@@ -60,7 +60,7 @@ public class PrusaConnectPrinterServiceTests
         await service.ConnectAsync(BuildSettings());
         service.updateTimer.Stop();
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(PrinterStatus.Printing, telemetry.Status);
         Assert.Equal(75.0, telemetry.SDCard.Progress);
@@ -82,7 +82,7 @@ public class PrusaConnectPrinterServiceTests
         await service.ConnectAsync(BuildSettings());
         service.updateTimer.Stop();
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(PrinterStatus.Connected, telemetry.Status);
     }

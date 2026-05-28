@@ -1,7 +1,7 @@
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
 
-namespace MakerPrompt.Infrastructure.Camera;
+namespace MakerPrompt.Infrastructure;
 
 /// <summary>
 /// In-memory implementation of <see cref="ICameraSnapshotStore"/>.

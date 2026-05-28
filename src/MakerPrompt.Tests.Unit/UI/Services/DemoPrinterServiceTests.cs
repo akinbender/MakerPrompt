@@ -55,7 +55,7 @@ public class DemoPrinterServiceTests
     public async Task SetHotendTemp_ValidValue_UpdatesTelemetry()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetHotendTemp(200);
+        await svc.SetHotendTempAsync(200);
         Assert.Equal(200.0, svc.LastTelemetry.HotendTarget);
     }
 
@@ -63,7 +63,7 @@ public class DemoPrinterServiceTests
     public async Task SetHotendTemp_TooHigh_ClampsTo300()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetHotendTemp(500);
+        await svc.SetHotendTempAsync(500);
         Assert.Equal(300.0, svc.LastTelemetry.HotendTarget);
     }
 
@@ -71,7 +71,7 @@ public class DemoPrinterServiceTests
     public async Task SetHotendTemp_Negative_ClampsToZero()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetHotendTemp(-50);
+        await svc.SetHotendTempAsync(-50);
         Assert.Equal(0.0, svc.LastTelemetry.HotendTarget);
     }
 
@@ -79,7 +79,7 @@ public class DemoPrinterServiceTests
     public async Task SetBedTemp_ValidValue_UpdatesTelemetry()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetBedTemp(60);
+        await svc.SetBedTempAsync(60);
         Assert.Equal(60.0, svc.LastTelemetry.BedTarget);
     }
 
@@ -87,7 +87,7 @@ public class DemoPrinterServiceTests
     public async Task SetBedTemp_TooHigh_ClampsTo120()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetBedTemp(200);
+        await svc.SetBedTempAsync(200);
         Assert.Equal(120.0, svc.LastTelemetry.BedTarget);
     }
 
@@ -98,8 +98,8 @@ public class DemoPrinterServiceTests
     {
         await using var svc = new DemoPrinterService();
         // Move first so position is non-zero
-        await svc.RelativeMove(3000, 10f, 20f, 5f);
-        await svc.Home(true, true, true);
+        await svc.RelativeMoveAsync(3000, 10f, 20f, 5f);
+        await svc.HomeAsync(true, true, true);
         Assert.Equal(0f, svc.LastTelemetry.Position.X, 2);
         Assert.Equal(0f, svc.LastTelemetry.Position.Y, 2);
         Assert.Equal(0f, svc.LastTelemetry.Position.Z, 2);
@@ -109,8 +109,8 @@ public class DemoPrinterServiceTests
     public async Task Home_OnlyX_ResetsOnlyXAxis()
     {
         await using var svc = new DemoPrinterService();
-        await svc.RelativeMove(3000, 10f, 20f, 5f);
-        await svc.Home(x: true, y: false, z: false);
+        await svc.RelativeMoveAsync(3000, 10f, 20f, 5f);
+        await svc.HomeAsync(x: true, y: false, z: false);
         Assert.Equal(0f, svc.LastTelemetry.Position.X, 2);
         Assert.NotEqual(0f, svc.LastTelemetry.Position.Y);  // Y unchanged
     }
@@ -119,7 +119,7 @@ public class DemoPrinterServiceTests
     public async Task RelativeMove_UpdatesPosition()
     {
         await using var svc = new DemoPrinterService();
-        await svc.RelativeMove(3000, x: 5f, y: 10f, z: 2f);
+        await svc.RelativeMoveAsync(3000, x: 5f, y: 10f, z: 2f);
         Assert.Equal(5f, svc.LastTelemetry.Position.X, 2);
         Assert.Equal(10f, svc.LastTelemetry.Position.Y, 2);
         Assert.Equal(2f, svc.LastTelemetry.Position.Z, 2);
@@ -129,8 +129,8 @@ public class DemoPrinterServiceTests
     public async Task RelativeMove_MultipleMoves_AccumulatesPosition()
     {
         await using var svc = new DemoPrinterService();
-        await svc.RelativeMove(3000, x: 5f);
-        await svc.RelativeMove(3000, x: 3f);
+        await svc.RelativeMoveAsync(3000, x: 5f);
+        await svc.RelativeMoveAsync(3000, x: 3f);
         Assert.Equal(8f, svc.LastTelemetry.Position.X, 2);
     }
 
@@ -140,7 +140,7 @@ public class DemoPrinterServiceTests
     public async Task SetFanSpeed_ValidValue_ClampsAndUpdatesTelemetry()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetFanSpeed(75);
+        await svc.SetFanSpeedAsync(75);
         Assert.Equal(75, svc.LastTelemetry.FanSpeed);
     }
 
@@ -148,7 +148,7 @@ public class DemoPrinterServiceTests
     public async Task SetFanSpeed_TooHigh_ClampsTo100()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetFanSpeed(200);
+        await svc.SetFanSpeedAsync(200);
         Assert.Equal(100, svc.LastTelemetry.FanSpeed);
     }
 
@@ -156,7 +156,7 @@ public class DemoPrinterServiceTests
     public async Task SetPrintSpeed_ValidValue_UpdatesFeedRate()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetPrintSpeed(150);
+        await svc.SetPrintSpeedAsync(150);
         Assert.Equal(150, svc.LastTelemetry.FeedRate);
     }
 
@@ -164,7 +164,7 @@ public class DemoPrinterServiceTests
     public async Task SetPrintFlow_ValidValue_UpdatesFlowRate()
     {
         await using var svc = new DemoPrinterService();
-        await svc.SetPrintFlow(90);
+        await svc.SetPrintFlowAsync(90);
         Assert.Equal(90, svc.LastTelemetry.FlowRate);
     }
 
@@ -176,8 +176,8 @@ public class DemoPrinterServiceTests
         await using var svc = new DemoPrinterService();
         var files = await svc.GetFilesAsync();
         Assert.Equal(2, files.Count);
-        Assert.Contains(files, f => f.FullPath.Contains("DemoCube"));
-        Assert.Contains(files, f => f.FullPath.Contains("Benchy"));
+        Assert.Contains(files, f => f.Contains("DemoCube"));
+        Assert.Contains(files, f => f.Contains("Benchy"));
     }
 
     [Fact]

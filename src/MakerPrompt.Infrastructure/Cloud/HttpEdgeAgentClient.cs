@@ -3,7 +3,7 @@ using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace MakerPrompt.Infrastructure.Cloud;
+namespace MakerPrompt.Infrastructure;
 
 /// <summary>
 /// Pushes telemetry snapshots to the MakerPrompt Cloud backend over HTTP/JSON.

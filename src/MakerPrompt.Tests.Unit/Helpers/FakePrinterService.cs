@@ -76,5 +76,8 @@ public sealed class FakePrinterService : IPrinterCommunicationService
     public Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 
+    public Task StartPrintAsync(GCodeDoc gcode, CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
+
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

@@ -4,7 +4,7 @@ namespace MakerPrompt.UI.MAUI.Services;
 /// Platform-conditional ISerialService members.
 /// iOS does not support direct USB/serial — all other platforms do.
 /// </summary>
-public partial class SerialCommunicationService
+public partial class SerialService
 {
 #if IOS
     public bool IsSupported => false;

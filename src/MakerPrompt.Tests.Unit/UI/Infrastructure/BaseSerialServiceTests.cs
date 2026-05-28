@@ -9,7 +9,7 @@ public class BaseSerialServiceTests
     {
         public List<string> WrittenCommands { get; } = [];
 
-        public override Task WriteDataAsync(string command)
+        public override Task WriteDataAsync(string command, CancellationToken cancellationToken = default)
         {
             WrittenCommands.Add(command);
             return Task.CompletedTask;
@@ -115,7 +115,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         svc.IsConnected = true;
-        await svc.SetHotendTemp(200);
+        await svc.SetHotendTempAsync(200);
         Assert.Contains(svc.WrittenCommands, c => c == "M104 S200");
     }
 
@@ -124,7 +124,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         svc.IsConnected = true;
-        await svc.SetHotendTemp(350);  // max is 300
+        await svc.SetHotendTempAsync(350);  // max is 300
         Assert.Empty(svc.WrittenCommands);
     }
 
@@ -133,7 +133,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         // IsConnected defaults to false
-        await svc.SetHotendTemp(200);
+        await svc.SetHotendTempAsync(200);
         Assert.Empty(svc.WrittenCommands);
     }
 
@@ -142,7 +142,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         svc.IsConnected = true;
-        await svc.SetBedTemp(60);
+        await svc.SetBedTempAsync(60);
         Assert.Contains(svc.WrittenCommands, c => c == "M140 S60");
     }
 
@@ -151,7 +151,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         svc.IsConnected = true;
-        await svc.SetBedTemp(150);  // max is 120
+        await svc.SetBedTempAsync(150);  // max is 120
         Assert.Empty(svc.WrittenCommands);
     }
 
@@ -160,7 +160,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         svc.IsConnected = true;
-        await svc.SetPrintSpeed(150);
+        await svc.SetPrintSpeedAsync(150);
         Assert.Contains(svc.WrittenCommands, c => c.StartsWith("M220"));
         Assert.Contains(svc.WrittenCommands, c => c.Contains("S150"));
     }
@@ -170,7 +170,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         svc.IsConnected = true;
-        await svc.SetFanSpeed(0);
+        await svc.SetFanSpeedAsync(0);
         Assert.Contains(svc.WrittenCommands, c => c == "M107");
     }
 
@@ -179,7 +179,7 @@ public class BaseSerialServiceTests
     {
         var svc = Create();
         svc.IsConnected = true;
-        await svc.SetFanSpeed(100);
+        await svc.SetFanSpeedAsync(100);
         // 100% → (int)(100 * 2.55) = 254 due to float truncation
         Assert.Contains(svc.WrittenCommands, c => c.StartsWith("M106") && c.Contains("S254"));
     }

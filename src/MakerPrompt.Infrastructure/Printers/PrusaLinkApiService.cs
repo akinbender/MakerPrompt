@@ -30,7 +30,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         }
     }
 
-    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(connectionSettings.ApiUrl))
         {
@@ -72,7 +72,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
     {
         try
         {
-            await GetPrinterTelemetryAsync();
+            await GetTelemetryAsync();
         }
         catch
         {
@@ -80,7 +80,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         }
     }
 
-    public async Task DisconnectAsync()
+    public async Task DisconnectAsync(CancellationToken cancellationToken = default)
     {
         updateTimer.Stop();
         _cts.Cancel();
@@ -90,12 +90,12 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         await Task.CompletedTask;
     }
 
-    public Task WriteDataAsync(string command)
+    public Task WriteDataAsync(string command, CancellationToken cancellationToken = default)
     {
         throw new NotSupportedException("Direct G-code injection is not supported by the PrusaLink API.");
     }
 
-    public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+    public async Task<PrinterTelemetry> GetTelemetryAsync(CancellationToken cancellationToken = default)
     {
         var status = await GetStatusAsync(_cts.Token);
         if (status?.Printer is null)
@@ -135,7 +135,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         return LastTelemetry;
     }
 
-    public async Task<List<FileEntry>> GetFilesAsync()
+    public async Task<IReadOnlyList<string>> GetFilesAsync(CancellationToken cancellationToken = default)
     {
         var storages = await GetStorageAsync(_cts.Token);
         var firstStorage = storages?.StorageList?.FirstOrDefault();
@@ -154,7 +154,7 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         var storagePath = firstStorage.Path.TrimEnd('/');
         var result = new List<FileEntry>();
         CollectFiles(folder.Children, storagePath, result);
-        return result;
+        return result.Select(fe => fe.FullPath).ToList();
     }
 
     private static void CollectFiles(List<PrusaFileSystemEntry> entries, string parentPath, List<FileEntry> result)
@@ -183,25 +183,25 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
         }
     }
 
-    public Task SetHotendTemp(int targetTemp = 0) =>
+    public Task SetHotendTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose hotend temperature control."));
 
-    public Task SetBedTemp(int targetTemp = 0) =>
+    public Task SetBedTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose bed temperature control."));
 
-    public Task Home(bool x = true, bool y = true, bool z = true) =>
+    public Task HomeAsync(bool x = true, bool y = true, bool z = true, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose homing commands."));
 
-    public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f) =>
+    public Task RelativeMoveAsync(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose move commands."));
 
-    public Task SetFanSpeed(int fanSpeedPercentage = 0) =>
+    public Task SetFanSpeedAsync(int fanSpeedPercentage = 0, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose fan control."));
 
-    public Task SetPrintSpeed(int speed) =>
+    public Task SetPrintSpeedAsync(int speed, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose print speed control."));
 
-    public Task SetPrintFlow(int flow) =>
+    public Task SetPrintFlowAsync(int flow, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose flow control."));
 
     public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f) =>
@@ -213,10 +213,10 @@ public class PrusaLinkApiService : BasePrinterConnectionService, IPrinterCommuni
     public Task RunThermalModelCalibration(int cycles, int targetTemp) =>
         Task.FromException(new NotSupportedException("PrusaLink API does not expose thermal model calibration."));
 
-    public Task StartPrint(FileEntry file) =>
+    public Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("Starting prints requires uploading with Print-After-Upload per PrusaLink spec."));
 
-    public Task StartPrint(GCodeDoc gcodeDoc) =>
+    public Task StartPrintAsync(GCodeDoc gcodeDoc, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("Direct G-code printing is not supported by the PrusaLink API."));
 
     public Task SaveEEPROM() =>

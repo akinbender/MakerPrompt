@@ -1,8 +1,5 @@
 using MakerPrompt.Core.Models;
-using MakerPrompt.Infrastructure.Inventory;
-using MakerPrompt.Infrastructure.Analytics;
-using MakerPrompt.Infrastructure.Farm;
-using MakerPrompt.Infrastructure.Projects;
+using MakerPrompt.Infrastructure;
 
 namespace MakerPrompt.Tests.Unit.Infrastructure;
 

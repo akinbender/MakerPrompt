@@ -85,4 +85,7 @@ public interface IPrinterCommunicationService : IAsyncDisposable
 
     /// <summary>Starts printing the specified file from printer storage.</summary>
     Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default);
+
+    /// <summary>Sends a G-code document to the printer for immediate streaming and printing.</summary>
+    Task StartPrintAsync(GCodeDoc gcode, CancellationToken cancellationToken = default);
 }

@@ -1,117 +1,111 @@
+using System.Text;
 using MakerPrompt.Core.Models;
-using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.Infrastructure.Printers;
 using UsbSerialForAndroid.Net;
 using UsbSerialForAndroid.Net.Drivers;
 using UsbSerialForAndroid.Net.Helper;
-using System.Text;
 
-namespace MakerPrompt.UI.MAUI.Services
+namespace MakerPrompt.UI.MAUI.Services;
+
+public partial class SerialService
 {
-    public class SerialService : BaseSerialService, ISerialService
+    // ── Android state ────────────────────────────────────────────────────────
+    private UsbDriverBase? _usbDriver;
+    private CancellationTokenSource? _androidCts;
+    private Task? _androidReceiveTask;
+
+    // ── Transport hooks ──────────────────────────────────────────────────────
+
+    protected override Task OpenTransportAsync(PrinterConnectionSettings settings,
+        CancellationToken cancellationToken)
     {
-        private UsbDriverBase? _usbDriver;
-        public bool IsSupported => true;
+        var deviceName = settings.PortName
+            ?? throw new ArgumentException("PortName (device name) is required for Android serial connections");
+        var baudRate = settings.BaudRate == 0 ? DefaultBaudRate : settings.BaudRate;
 
-        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        // Locate the USB device by name.
+        var usbDevice = UsbManagerHelper.GetAllUsbDevices()
+            .FirstOrDefault(d => d.DeviceName == deviceName)
+            ?? throw new InvalidOperationException($"USB device '{deviceName}' not found.");
+
+        // Request permission if not yet granted.
+        if (!UsbManagerHelper.HasPermission(usbDevice))
+            UsbManagerHelper.RequestPermission(usbDevice);
+
+        _usbDriver = UsbDriverFactory.CreateUsbDriver(usbDevice.DeviceId);
+        _usbDriver.Open(baudRate,
+            dataBits: 8,
+            stopBits: UsbSerialForAndroid.Net.Enums.StopBits.One,
+            parity: UsbSerialForAndroid.Net.Enums.Parity.None);
+
+        _androidCts?.Dispose();
+        _androidCts = new CancellationTokenSource();
+        _androidReceiveTask = Task.Run(() => ReceiveLoopAsync(_androidCts.Token));
+
+        return Task.CompletedTask;
+    }
+
+    protected override async Task CloseTransportAsync(CancellationToken cancellationToken)
+    {
+        _androidCts?.Cancel();
+
+        if (_androidReceiveTask is not null)
+            await _androidReceiveTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
+
+        try { _usbDriver?.Close(); }
+        catch { /* Ignore close errors */ }
+
+        _usbDriver = null;
+        _androidCts?.Dispose();
+        _androidCts = null;
+    }
+
+    protected override Task WriteTransportAsync(string data, CancellationToken cancellationToken)
+    {
+        if (_usbDriver is null) return Task.CompletedTask;
+
+        // Android USB driver uses synchronous write — run on thread pool.
+        return Task.Run(() =>
         {
-            if (connectionSettings.ConnectionType != ConnectionType || connectionSettings.Serial == null)
-                throw new ArgumentException("Invalid connection settings");
+            var bytes = Encoding.ASCII.GetBytes(data + "\n");
+            _usbDriver.Write(bytes);
+        }, cancellationToken);
+    }
 
+    // ── Receive loop (Android) ───────────────────────────────────────────────
+
+    private async Task ReceiveLoopAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested && IsConnected)
+        {
             try
             {
-                var deviceName = connectionSettings.PortName; // fix to id
-                var baudRate = connectionSettings.BaudRate == 0
-                    ? 250000
-                    : connectionSettings.BaudRate;
-                var dataBits = (byte)8;
-                var stopBits = UsbSerialForAndroid.Net.Enums.StopBits.One;
-                var parity = UsbSerialForAndroid.Net.Enums.Parity.None;
+                if (_usbDriver is null) break;
 
-                // Get the USB device
-                var usbDevice = UsbManagerHelper.GetAllUsbDevices().FirstOrDefault(d => d.DeviceName == deviceName);
-                if (usbDevice == null)
-                    throw new InvalidOperationException("USB device not found");
+                // Android driver read is synchronous; offload to thread pool.
+                var bytes = await Task.Run(() => _usbDriver.Read(4096), ct);
+                if (bytes.Length > 0)
+                    ProcessReceivedData(Encoding.ASCII.GetString(bytes));
 
-                // Request permission if needed
-                if (!UsbManagerHelper.HasPermission(usbDevice))
-                    UsbManagerHelper.RequestPermission(usbDevice);
-
-                // Create and open the USB driver
-                _usbDriver = UsbDriverFactory.CreateUsbDriver(usbDevice.DeviceId);
-                _usbDriver.Open(baudRate, dataBits, stopBits, parity);
-
-                IsConnected = true;
-                RaiseConnectionChanged();
+                await Task.Delay(10, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
             }
             catch (Exception ex)
             {
-                IsConnected = false;
-                Console.WriteLine($"Error connecting to device: {ex.Message}");
-            }
-
-            return IsConnected;
-        }
-
-        public async Task DisconnectAsync()
-        {
-            if (IsConnected && _usbDriver != null)
-            {
-                _usbDriver.Close();
-                _usbDriver = null;
-                IsConnected = false;
-                RaiseConnectionChanged();
+                Console.WriteLine($"[SerialService.Android] Receive error: {ex.Message}");
+                await DisconnectAsync();
+                break;
             }
         }
-
-        public override async Task WriteDataAsync(string data)
-        {
-            if (!IsConnected || _usbDriver == null)
-                throw new InvalidOperationException("Device is not connected");
-
-            var buffer = Encoding.ASCII.GetBytes(data);
-            _usbDriver.Write(buffer);
-        }
-
-        public Task StartPrint(GCodeDoc gcodeDoc)
-        {
-            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
-            {
-                return Task.CompletedTask;
-            }
-
-            // Android path does not currently expose a CancellationToken; use a simple IsConnected check.
-            return Task.Run(async () =>
-            {
-                await foreach (var command in gcodeDoc.EnumerateCommandsAsync())
-                {
-                    if (!IsConnected)
-                    {
-                        break;
-                    }
-
-                    await WriteDataAsync(command);
-                }
-            });
-        }
-
-        public override async ValueTask DisposeAsync()
-        {
-            await DisconnectAsync();
-        }
-
-        public async Task<IEnumerable<string>> GetAvailablePortsAsync()
-        {
-            var devices = UsbManagerHelper.GetAllUsbDevices();
-            return devices.Select(d => d.DeviceId.ToString()).ToList();
-        }
-
-        public async Task<bool> CheckSupportedAsync()
-        {
-            // Assuming USB support is always available on Android
-            return true;
-        }
-
-        public Task RequestPortAsync() => Task.CompletedTask;
     }
+
+    // ── Available ports (Android — USB device names) ─────────────────────────
+
+    public static partial Task<IReadOnlyList<string>> GetAvailablePortsAsync()
+        => Task.FromResult<IReadOnlyList<string>>(
+            UsbManagerHelper.GetAllUsbDevices()
+                .Select(d => d.DeviceName)
+                .ToArray());
 }

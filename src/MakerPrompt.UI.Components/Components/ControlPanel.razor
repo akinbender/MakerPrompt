@@ -373,7 +373,7 @@
     private Task HomeAllAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.Home() ?? Task.CompletedTask;
+        return printer?.HomeAsync() ?? Task.CompletedTask;
     }
 
     private async Task HomeSelectedAxis()
@@ -384,13 +384,13 @@
         switch (ActiveTab)
         {
             case AxisTab.X:
-                await printer.Home(true, false, false);
+                await printer.HomeAsync(true, false, false);
                 break;
             case AxisTab.Y:
-                await printer.Home(false, true, false);
+                await printer.HomeAsync(false, true, false);
                 break;
             case AxisTab.Z:
-                await printer.Home(false, false, true);
+                await printer.HomeAsync(false, false, true);
                 break;
         }
     }
@@ -403,13 +403,13 @@
         switch (ActiveTab)
         {
             case AxisTab.X:
-                await printer.RelativeMove(xySpeed, length, 0, 0);
+                await printer.RelativeMoveAsync(xySpeed, length, 0, 0);
                 break;
             case AxisTab.Y:
-                await printer.RelativeMove(xySpeed, 0, length, 0);
+                await printer.RelativeMoveAsync(xySpeed, 0, length, 0);
                 break;
             case AxisTab.Z:
-                await printer.RelativeMove(zSpeed, 0, 0, length);
+                await printer.RelativeMoveAsync(zSpeed, 0, 0, length);
                 break;
         }
     }
@@ -417,19 +417,19 @@
     private Task SetHotendTempAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.SetHotendTemp(hotendTarget) ?? Task.CompletedTask;
+        return printer?.SetHotendTempAsync(hotendTarget) ?? Task.CompletedTask;
     }
 
     private Task SetBedTempAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.SetBedTemp(bedTarget) ?? Task.CompletedTask;
+        return printer?.SetBedTempAsync(bedTarget) ?? Task.CompletedTask;
     }
 
     private Task SetFanSpeedAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.SetFanSpeed(fanTarget) ?? Task.CompletedTask;
+        return printer?.SetFanSpeedAsync(fanTarget) ?? Task.CompletedTask;
     }
 
     private async Task PreheatAsync(int hotend, int bed)
@@ -438,26 +438,26 @@
         if (printer == null) return;
         hotendTarget = hotend;
         bedTarget = bed;
-        await printer.SetHotendTemp(hotend);
-        await printer.SetBedTemp(bed);
+        await printer.SetHotendTempAsync(hotend);
+        await printer.SetBedTempAsync(bed);
     }
 
     private Task ExtrudeAsync(int amount)
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.RelativeMove(extrudeSpeed, 0, 0, 0, amount) ?? Task.CompletedTask;
+        return printer?.RelativeMoveAsync(extrudeSpeed, 0, 0, 0, amount) ?? Task.CompletedTask;
     }
 
     private Task UpdatePrintSpeedAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.SetPrintSpeed(printSpeed) ?? Task.CompletedTask;
+        return printer?.SetPrintSpeedAsync(printSpeed) ?? Task.CompletedTask;
     }
 
     private Task UpdatePrintFlowAsync()
     {
         var printer = PrinterServiceFactory.Current;
-        return printer?.SetPrintFlow(printFlow) ?? Task.CompletedTask;
+        return printer?.SetPrintFlowAsync(printFlow) ?? Task.CompletedTask;
     }
 
     private readonly PrinterTelemetry fallbackTelemetry = new();

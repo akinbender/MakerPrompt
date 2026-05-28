@@ -1,190 +1,126 @@
-﻿using MakerPrompt.Core.Models;
-using MakerPrompt.UI.Components.Infrastructure;
-using MakerPrompt.Infrastructure.Printers;
-using MakerPrompt.UI.Components.Utils;
 using System.Text;
 using System.Threading.Tasks.Dataflow;
+using MakerPrompt.Core.Models;
 using UsbSerialForMacOS;
-namespace MakerPrompt.UI.MAUI.Services
+
+namespace MakerPrompt.UI.MAUI.Services;
+
+public partial class SerialService
 {
-    public class SerialService : BaseSerialService, ISerialService
+    // ── macOS state ──────────────────────────────────────────────────────────
+    private UsbSerialManager? _manager;
+    private readonly BufferBlock<string> _macCommandQueue = new();
+    private CancellationTokenSource? _macCts;
+    private Task? _macSendTask;
+    private Task? _macReceiveTask;
+
+    // ── Transport hooks ──────────────────────────────────────────────────────
+
+    protected override Task OpenTransportAsync(PrinterConnectionSettings settings,
+        CancellationToken cancellationToken)
     {
-        private UsbSerialManager? _manager = new();
-        private readonly BufferBlock<string> _commandQueue = new();
-        private CancellationTokenSource? _cts;
-        private Task? _sendTask;
-        private Task? _receiveTask;
-        private bool _disposed = false;
-        public bool IsSupported => true;
+        var portName = settings.PortName
+            ?? throw new ArgumentException("PortName is required for macOS serial connections");
+        var baudRate = settings.BaudRate == 0 ? DefaultBaudRate : settings.BaudRate;
 
-        public SerialService() { }
+        _manager?.Close();
+        _manager = new UsbSerialManager();
 
-        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
-        {
-            if (IsConnected) return IsConnected;
-            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrEmpty(connectionSettings.PortName))
-                throw new ArgumentException("Invalid connection settings");
+        var opened = _manager.Open(portName, baudRate);
+        if (!opened)
+            throw new InvalidOperationException($"Failed to open serial port '{portName}'");
 
-            var portName = connectionSettings.PortName;
-            var baudRate = connectionSettings.BaudRate == 0
-                ? 250000
-                : connectionSettings.BaudRate;
+        _macCts?.Dispose();
+        _macCts = new CancellationTokenSource();
 
-            try
-            {
-                _manager ??= new UsbSerialManager();
-                _cts?.Dispose();
-                _cts = new CancellationTokenSource();
+        _macSendTask = Task.Run(() => SendLoopAsync(_macCts.Token));
+        _macReceiveTask = Task.Run(() => ReceiveLoopAsync(_macCts.Token));
 
-                IsConnected = _manager.Open(portName, baudRate);
-                ConnectionName = portName;
+        return Task.CompletedTask;
+    }
 
-                _sendTask = Task.Run(() => SendLoopAsync(_cts.Token));
-                _receiveTask = Task.Run(() => ReceiveLoopAsync(_cts.Token));
-                RaiseConnectionChanged();
-            }
-            catch (Exception ex)
-            {
-                IsConnected = false;
-                throw new SerialException("Connection failed", ex);
-            }
+    protected override async Task CloseTransportAsync(CancellationToken cancellationToken)
+    {
+        _macCts?.Cancel();
 
-            return IsConnected;
-        }
+        if (_macSendTask is not null)
+            await _macSendTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
+        if (_macReceiveTask is not null)
+            await _macReceiveTask.ContinueWith(_ => { }, TaskContinuationOptions.None);
 
-        public async Task DisconnectAsync()
-        {
-            if (!IsConnected) return;
-            _cts?.Cancel();
+        try { _manager?.Close(); }
+        catch { /* Swallow close errors */ }
 
-            try
-            {
-                if (_sendTask != null)
-                    await _sendTask.ConfigureAwait(false);
-                if (_receiveTask != null)
-                    await _receiveTask.ConfigureAwait(false);
-            }
-            finally
-            {
-                try
-                {
-                    _manager?.Close();
-                }
-                catch
-                {
-                    // swallow close exceptions on shutdown
-                }
+        _manager = null;
+        _macCts?.Dispose();
+        _macCts = null;
+    }
 
-                _manager = null;
-                IsConnected = false;
-                RaiseConnectionChanged();
-            }
-        }
+    protected override Task WriteTransportAsync(string data, CancellationToken cancellationToken)
+    {
+        if (_manager is null) return Task.CompletedTask;
+        return _macCommandQueue.SendAsync(data, cancellationToken);
+    }
 
-        public override async Task WriteDataAsync(string data)
-        {
-            if (!IsConnected) return;
-            await _commandQueue.SendAsync(data);
-        }
+    // ── Send loop (macOS) ────────────────────────────────────────────────────
 
-        public async Task<IEnumerable<string>> GetAvailablePortsAsync()
-        {
-            return _manager?.AvailablePorts().OrderBy(p => p).ToList() ?? [];
-        }
-
-        private async Task SendLoopAsync(CancellationToken ct)
-        {
-            try
-            {
-                while (IsConnected && !ct.IsCancellationRequested)
-                {
-                    var command = await _commandQueue.ReceiveAsync(ct);
-                    var manager = _manager;
-                    if (manager == null || ct.IsCancellationRequested)
-                    {
-                        break;
-                    }
-                    manager.Write(command);
-                    await Task.Delay(10, ct);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                // Normal shutdown
-            }
-        }
-
-        private async Task ReceiveLoopAsync(CancellationToken ct)
+    private async Task SendLoopAsync(CancellationToken ct)
+    {
+        try
         {
             while (!ct.IsCancellationRequested && IsConnected)
             {
-                try
-                {
-                    var manager = _manager;
-                    if (manager == null || ct.IsCancellationRequested)
-                    {
-                        break;
-                    }
-                    var bytesRead = manager.Read(4096);
-                    if (bytesRead.Length > 0)
-                    {
-                        var received = Encoding.UTF8.GetString(bytesRead.ToArray());
-                        ProcessReceivedData(received);
-                    }
-                    await Task.Delay(10, ct);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Receive error: {ex.Message}");
-                    IsConnected = false;
-                    await DisposeAsync();
-                }
+                var command = await _macCommandQueue.ReceiveAsync(ct);
+                var mgr = _manager;
+                if (mgr is null || ct.IsCancellationRequested) break;
+
+                mgr.Write(command + "\n");
+                await Task.Delay(10, ct);
             }
         }
-
-        public override async ValueTask DisposeAsync()
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
         {
-            if (_disposed) return;
-            _disposed = true;
+            Console.WriteLine($"[SerialService.MacOS] Send loop error: {ex.Message}");
+        }
+    }
 
+    // ── Receive loop (macOS) ─────────────────────────────────────────────────
+
+    private async Task ReceiveLoopAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested && IsConnected)
+        {
             try
             {
+                var mgr = _manager;
+                if (mgr is null) break;
+
+                var bytes = mgr.Read(4096);
+                if (bytes.Length > 0)
+                    ProcessReceivedData(Encoding.UTF8.GetString(bytes.ToArray()));
+
+                await Task.Delay(10, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SerialService.MacOS] Receive error: {ex.Message}");
                 await DisconnectAsync();
-                _cts?.Dispose();
-            }
-            catch (ObjectDisposedException)
-            {
-                // Ignore if already disposed to ensure idempotent disposal
+                break;
             }
         }
+    }
 
-        public Task<bool> CheckSupportedAsync() => Task.FromResult(true);
+    // ── Available ports (macOS) ──────────────────────────────────────────────
 
-        public Task RequestPortAsync() => Task.CompletedTask;
-
-        public Task StartPrint(GCodeDoc gcodeDoc)
-        {
-            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
-            {
-                return Task.CompletedTask;
-            }
-
-            return Task.Run(async () =>
-            {
-                await foreach (var command in gcodeDoc.EnumerateCommandsAsync(_cts?.Token ?? CancellationToken.None))
-                {
-                    if (!IsConnected)
-                    {
-                        break;
-                    }
-
-                    await WriteDataAsync(command);
-                }
-            });
-        }
+    public static partial Task<IReadOnlyList<string>> GetAvailablePortsAsync()
+    {
+        var mgr = new UsbSerialManager();
+        return Task.FromResult<IReadOnlyList<string>>(
+            mgr.AvailablePorts().OrderBy(p => p).ToArray());
     }
 }

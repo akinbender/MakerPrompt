@@ -119,7 +119,8 @@
         {
             await RunAsync(async () =>
             {
-                _files = await printerService.GetFilesAsync() ?? new List<FileEntry>();
+                var paths = await printerService.GetFilesAsync();
+                _files = paths.Select(p => new FileEntry { FullPath = p }).ToList();
             }, "Failed to load files");
         }
         else
@@ -164,7 +165,7 @@
             return Task.CompletedTask;
         var file = selectedFile;
         var printer = PrinterServiceFactory.Current;
-        return RunAsync(() => printer.StartPrint(file), "Failed to start print");
+        return RunAsync(() => printer.StartPrintAsync(file.FullPath), "Failed to start print");
     }
 
     private async Task CopySelectedToApp()

@@ -1,7 +1,7 @@
 using MakerPrompt.Core.Abstractions;
 using Microsoft.Extensions.Logging;
 
-namespace MakerPrompt.Infrastructure.Camera;
+namespace MakerPrompt.Infrastructure;
 
 /// <summary>
 /// Camera provider that reads a single JPEG frame from an MJPEG HTTP stream.

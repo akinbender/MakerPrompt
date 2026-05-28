@@ -1,5 +1,5 @@
 using MakerPrompt.Core.Models;
-using MakerPrompt.Infrastructure.Telemetry;
+using MakerPrompt.Infrastructure;
 
 namespace MakerPrompt.Tests.Unit.Core;
 

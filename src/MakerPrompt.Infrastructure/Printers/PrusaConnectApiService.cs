@@ -43,7 +43,7 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
 
     private HttpClient Client => _httpClient ??= new HttpClient { BaseAddress = new Uri(BaseUrl) };
 
-    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(connectionSettings.UserName))
             throw new ArgumentException("PrusaConnect connection requires API settings.", nameof(connectionSettings));
@@ -83,7 +83,7 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
         return IsConnected;
     }
 
-    public async Task DisconnectAsync()
+    public async Task DisconnectAsync(CancellationToken cancellationToken = default)
     {
         updateTimer.Stop();
         _cts.Cancel();
@@ -93,10 +93,10 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
         await Task.CompletedTask;
     }
 
-    public Task WriteDataAsync(string command) =>
+    public Task WriteDataAsync(string command, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support direct G-code commands."));
 
-    public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+    public async Task<PrinterTelemetry> GetTelemetryAsync(CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(_printerUuid)) return LastTelemetry;
 
@@ -132,8 +132,8 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
         return LastTelemetry;
     }
 
-    public Task<List<FileEntry>> GetFilesAsync() =>
-        Task.FromResult(new List<FileEntry>());
+    public Task<IReadOnlyList<string>> GetFilesAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>());
 
     /// <summary>
     /// Retrieves cameras registered for this printer in Prusa Connect.
@@ -196,25 +196,25 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
 
     // ── Unsupported operations (cloud API — no direct printer control) ────
 
-    public Task SetHotendTemp(int targetTemp = 0) =>
+    public Task SetHotendTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support temperature control."));
 
-    public Task SetBedTemp(int targetTemp = 0) =>
+    public Task SetBedTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support temperature control."));
 
-    public Task Home(bool x = true, bool y = true, bool z = true) =>
+    public Task HomeAsync(bool x = true, bool y = true, bool z = true, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support homing commands."));
 
-    public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f) =>
+    public Task RelativeMoveAsync(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support move commands."));
 
-    public Task SetFanSpeed(int fanSpeedPercentage = 0) =>
+    public Task SetFanSpeedAsync(int fanSpeedPercentage = 0, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support fan control."));
 
-    public Task SetPrintSpeed(int speed) =>
+    public Task SetPrintSpeedAsync(int speed, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support print speed control."));
 
-    public Task SetPrintFlow(int flow) =>
+    public Task SetPrintFlowAsync(int flow, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support flow control."));
 
     public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f) =>
@@ -226,10 +226,10 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
     public Task RunThermalModelCalibration(int cycles, int targetTemp) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support thermal model calibration."));
 
-    public Task StartPrint(FileEntry file) =>
+    public Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support starting prints remotely."));
 
-    public Task StartPrint(GCodeDoc gcodeDoc) =>
+    public Task StartPrintAsync(GCodeDoc gcodeDoc, CancellationToken cancellationToken = default) =>
         Task.FromException(new NotSupportedException("PrusaConnect cloud API does not support direct G-code printing."));
 
     public Task SaveEEPROM() =>
@@ -278,7 +278,7 @@ public sealed class PrusaConnectApiService : BasePrinterConnectionService, IPrin
     {
         try
         {
-            await GetPrinterTelemetryAsync();
+            await GetTelemetryAsync();
         }
         catch
         {

@@ -1,7 +1,7 @@
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
 
-namespace MakerPrompt.Infrastructure.Inventory;
+namespace MakerPrompt.Infrastructure;
 
 /// <summary>
 /// Thread-safe, in-memory implementation of <see cref="IFilamentInventoryStore"/>.

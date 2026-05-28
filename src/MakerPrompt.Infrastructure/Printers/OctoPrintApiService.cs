@@ -48,7 +48,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         }
     }
 
-    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+    public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
     {
         if (IsConnected) return true;
 
@@ -135,7 +135,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         }
     }
 
-    public async Task DisconnectAsync()
+    public async Task DisconnectAsync(CancellationToken cancellationToken = default)
     {
         updateTimer.Stop();
         _cts.Cancel();
@@ -145,7 +145,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         await Task.CompletedTask;
     }
 
-    public async Task WriteDataAsync(string command)
+    public async Task WriteDataAsync(string command, CancellationToken cancellationToken = default)
     {
         if (!IsConnected) return;
 
@@ -169,7 +169,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         await Client.PostAsync("/api/printer/command", content, _cts.Token).ConfigureAwait(false);
     }
 
-    public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+    public async Task<PrinterTelemetry> GetTelemetryAsync(CancellationToken cancellationToken = default)
     {
         if (!IsConnected) return LastTelemetry;
 
@@ -283,7 +283,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         }
     }
 
-    public async Task<List<FileEntry>> GetFilesAsync()
+    public async Task<IReadOnlyList<string>> GetFilesAsync(CancellationToken cancellationToken = default)
     {
         if (!IsConnected) return [];
 
@@ -300,7 +300,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
 
             var files = new List<FileEntry>();
             ParseFilesRecursive(filesArray, files);
-            return files;
+            return files.Select(fe => fe.FullPath).ToList();
         }
         catch
         {
@@ -388,13 +388,13 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
 
     // ── Printer control commands via G-code ────────────────────────────
 
-    public Task SetHotendTemp(int targetTemp = 0) =>
+    public Task SetHotendTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         SendGcodeAsync($"M104 S{targetTemp}");
 
-    public Task SetBedTemp(int targetTemp = 0) =>
+    public Task SetBedTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default) =>
         SendGcodeAsync($"M140 S{targetTemp}");
 
-    public Task Home(bool x = true, bool y = true, bool z = true)
+    public Task HomeAsync(bool x = true, bool y = true, bool z = true, CancellationToken cancellationToken = default)
     {
         var axes = new StringBuilder("G28");
         if (x) axes.Append(" X");
@@ -403,7 +403,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         return SendGcodeAsync(axes.ToString());
     }
 
-    public Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+    public Task RelativeMoveAsync(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
         sb.Append("G91\nG1");
@@ -415,16 +415,16 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
         return SendGcodeAsync(sb.ToString().Split('\n'));
     }
 
-    public Task SetFanSpeed(int fanSpeedPercentage = 0)
+    public Task SetFanSpeedAsync(int fanSpeedPercentage = 0, CancellationToken cancellationToken = default)
     {
         var duty = (int)Math.Round(Math.Clamp(fanSpeedPercentage, 0, 100) * 255.0 / 100.0);
         return SendGcodeAsync($"M106 S{duty}");
     }
 
-    public Task SetPrintSpeed(int speed) =>
+    public Task SetPrintSpeedAsync(int speed, CancellationToken cancellationToken = default) =>
         SendGcodeAsync($"M220 S{Math.Clamp(speed, 1, 200)}");
 
-    public Task SetPrintFlow(int flow) =>
+    public Task SetPrintFlowAsync(int flow, CancellationToken cancellationToken = default) =>
         SendGcodeAsync($"M221 S{Math.Clamp(flow, 1, 200)}");
 
     public Task SetAxisPerUnit(float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
@@ -443,9 +443,9 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
     public Task RunThermalModelCalibration(int cycles, int targetTemp) =>
         SendGcodeAsync($"M303 E-1 S{targetTemp} C{cycles}");
 
-    public async Task StartPrint(FileEntry file)
+    public async Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default)
     {
-        if (!IsConnected || string.IsNullOrWhiteSpace(file.FullPath)) return;
+        if (!IsConnected || string.IsNullOrWhiteSpace(fileName)) return;
 
         var payload = JsonSerializer.Serialize(new
         {
@@ -456,11 +456,11 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
 
         // OctoPrint expects POST to /api/files/{location}/{filename}
         var location = "local";
-        var filePath = file.FullPath.TrimStart('/');
+        var filePath = fileName.TrimStart('/');
         await Client.PostAsync($"/api/files/{location}/{filePath}", content, _cts.Token).ConfigureAwait(false);
     }
 
-    public Task StartPrint(GCodeDoc gcodeDoc)
+    public Task StartPrintAsync(GCodeDoc gcodeDoc, CancellationToken cancellationToken = default)
     {
         if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
             return Task.CompletedTask;
@@ -483,7 +483,7 @@ public sealed class OctoPrintApiService : BasePrinterConnectionService, IPrinter
     {
         try
         {
-            await GetPrinterTelemetryAsync().ConfigureAwait(false);
+            await GetTelemetryAsync().ConfigureAwait(false);
         }
         catch
         {

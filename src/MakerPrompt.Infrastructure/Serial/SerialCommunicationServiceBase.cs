@@ -4,7 +4,7 @@ using System.Timers;
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
 
-namespace MakerPrompt.Infrastructure.Serial;
+namespace MakerPrompt.Infrastructure;
 
 /// <summary>
 /// Base class for serial/USB printer communication services (Marlin / RepRap firmware).
@@ -221,6 +221,14 @@ public abstract class SerialCommunicationServiceBase : IPrinterCommunicationServ
         if (!IsConnected) return Task.CompletedTask;
         IsPrinting = true;
         return WriteTransportAsync($"M23 {fileName}", cancellationToken);
+    }
+
+    public async Task StartPrintAsync(GCodeDoc gcode, CancellationToken cancellationToken = default)
+    {
+        if (!IsConnected || string.IsNullOrWhiteSpace(gcode.Content)) return;
+        IsPrinting = true;
+        await foreach (var command in gcode.EnumerateCommandsAsync(cancellationToken))
+            await WriteTransportAsync(command, cancellationToken);
     }
 
     // ── Response parsing (called by platform subclasses) ─────────────────────

@@ -41,7 +41,7 @@ namespace MakerPrompt.UI.Blazor.Services
             return ports.Select(p => $"{p.Name} ({p.Manufacturer})");
         }
 
-        public async Task DisconnectAsync()
+        public async Task DisconnectAsync(CancellationToken cancellationToken = default)
         {
             // Stop telemetry timer and detach handler first
             updateTimer.Stop();
@@ -58,7 +58,7 @@ namespace MakerPrompt.UI.Blazor.Services
             RaiseConnectionChanged();
         }
 
-        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
         {
             if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrEmpty(connectionSettings.PortName)) throw new ArgumentException();
             await OpenPortAsync(connectionSettings.PortName, connectionSettings.BaudRate); 
@@ -93,7 +93,7 @@ namespace MakerPrompt.UI.Blazor.Services
 
             try
             {
-                await GetPrinterTelemetryAsync();
+                await GetTelemetryAsync();
             }
             catch
             {
@@ -101,7 +101,7 @@ namespace MakerPrompt.UI.Blazor.Services
             }
         }
 
-        public override async Task WriteDataAsync(string data)
+        public override async Task WriteDataAsync(string data, CancellationToken cancellationToken = default)
         {
             if (_portReference == null) throw new InvalidOperationException("Port not open");
             var module = await _moduleTask.Value;

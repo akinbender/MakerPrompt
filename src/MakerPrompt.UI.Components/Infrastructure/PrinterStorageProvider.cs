@@ -16,7 +16,8 @@ namespace MakerPrompt.UI.Components.Infrastructure
         {
             var svc = factory.Current;
             if (svc == null) return [];
-            return await svc.GetFilesAsync() ?? [];
+            var paths = await svc.GetFilesAsync(cancellationToken);
+            return paths.Select(p => new FileEntry { FullPath = p }).ToList();
         }
 
         public async Task<Stream?> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)

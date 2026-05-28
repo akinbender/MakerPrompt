@@ -40,7 +40,7 @@ public class PrusaConnectApiServiceTests
         var service = new PrusaConnectApiService(new FakeHandler(DefaultResponder()));
         await service.ConnectAsync(BuildSettings());
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(215.0, telemetry.HotendTarget);
         Assert.Equal(200.0, telemetry.HotendTemp, precision: 1);
@@ -62,7 +62,7 @@ public class PrusaConnectApiServiceTests
         }));
         await service.ConnectAsync(BuildSettings());
 
-        var telemetry = await service.GetPrinterTelemetryAsync();
+        var telemetry = await service.GetTelemetryAsync();
 
         Assert.Equal(PrinterStatus.Connected, telemetry.Status);
     }

@@ -8,6 +8,7 @@ global using System.Numerics;
 global using System.Net;
 global using System.Net.Http.Headers;
 global using MakerPrompt.Infrastructure.Printers;
+global using MakerPrompt.Core.Abstractions;
 global using MakerPrompt.UI.Components.Infrastructure;
 global using MakerPrompt.UI.Components.Properties;
 global using MakerPrompt.UI.Components.Services;

@@ -21,7 +21,7 @@ namespace MakerPrompt.Infrastructure.Printers
             updateTimer.Elapsed += (s, e) => SimulateTelemetry();
         }
 
-        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings)
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
         {
             IsConnected = true;
             LastTelemetry = new PrinterTelemetry
@@ -45,7 +45,7 @@ namespace MakerPrompt.Infrastructure.Printers
             return true;
         }
 
-        public async Task DisconnectAsync()
+        public async Task DisconnectAsync(CancellationToken cancellationToken = default)
         {
             updateTimer.Stop();
             IsConnected = false;
@@ -55,30 +55,30 @@ namespace MakerPrompt.Infrastructure.Printers
             RaiseTelemetryUpdated();
         }
 
-        public async Task WriteDataAsync(string command)
+        public async Task WriteDataAsync(string command, CancellationToken cancellationToken = default)
         {
             LastTelemetry.LastResponse = $"Received command: {command}";
             RaiseTelemetryUpdated();
             await Task.Delay(50);
         }
 
-        public async Task<PrinterTelemetry> GetPrinterTelemetryAsync()
+        public async Task<PrinterTelemetry> GetTelemetryAsync(CancellationToken cancellationToken = default)
         {
             await Task.Delay(50);
             return LastTelemetry;
         }
 
-        public async Task<List<FileEntry>> GetFilesAsync()
+        public async Task<IReadOnlyList<string>> GetFilesAsync(CancellationToken cancellationToken = default)
         {
             await Task.Delay(100);
             return
             [
-                new() { FullPath = "/gcodes/DemoCube.gcode", Size = 123456, ModifiedDate = DateTime.Now.AddDays(-1), IsAvailable = true },
-                new() { FullPath = "/gcodes/Benchy.gcode", Size = 654321, ModifiedDate = DateTime.Now.AddDays(-2), IsAvailable = true }
+                "/gcodes/DemoCube.gcode",
+                "/gcodes/Benchy.gcode"
             ];
         }
 
-        public async Task SetHotendTemp(int targetTemp = 0)
+        public async Task SetHotendTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default)
         {
             _hotendTarget = Math.Clamp(targetTemp, 0, 300);
             LastTelemetry.HotendTarget = _hotendTarget;
@@ -87,7 +87,7 @@ namespace MakerPrompt.Infrastructure.Printers
             await Task.Delay(50);
         }
 
-        public async Task SetBedTemp(int targetTemp = 0)
+        public async Task SetBedTempAsync(int targetTemp = 0, CancellationToken cancellationToken = default)
         {
             _bedTarget = Math.Clamp(targetTemp, 0, 120);
             LastTelemetry.BedTarget = _bedTarget;
@@ -96,7 +96,7 @@ namespace MakerPrompt.Infrastructure.Printers
             await Task.Delay(50);
         }
 
-        public async Task Home(bool x = true, bool y = true, bool z = true)
+        public async Task HomeAsync(bool x = true, bool y = true, bool z = true, CancellationToken cancellationToken = default)
         {
             if (x) _position.X = 0;
             if (y) _position.Y = 0;
@@ -107,7 +107,7 @@ namespace MakerPrompt.Infrastructure.Printers
             await Task.Delay(100);
         }
 
-        public async Task RelativeMove(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f)
+        public async Task RelativeMoveAsync(int feedRate, float x = 0.0f, float y = 0.0f, float z = 0.0f, float e = 0.0f, CancellationToken cancellationToken = default)
         {
             _position += new Vector3(x, y, z);
             LastTelemetry.Position = _position;
@@ -116,7 +116,7 @@ namespace MakerPrompt.Infrastructure.Printers
             await Task.Delay(100);
         }
 
-        public async Task SetFanSpeed(int fanSpeedPercentage = 0)
+        public async Task SetFanSpeedAsync(int fanSpeedPercentage = 0, CancellationToken cancellationToken = default)
         {
             _fanSpeed = Math.Clamp(fanSpeedPercentage, 0, 100);
             LastTelemetry.FanSpeed = _fanSpeed;
@@ -125,7 +125,7 @@ namespace MakerPrompt.Infrastructure.Printers
             await Task.Delay(50);
         }
 
-        public async Task SetPrintSpeed(int speed)
+        public async Task SetPrintSpeedAsync(int speed, CancellationToken cancellationToken = default)
         {
             _feedRate = Math.Clamp(speed, 1, 200);
             LastTelemetry.FeedRate = _feedRate;
@@ -134,7 +134,7 @@ namespace MakerPrompt.Infrastructure.Printers
             await Task.Delay(50);
         }
 
-        public async Task SetPrintFlow(int flow)
+        public async Task SetPrintFlowAsync(int flow, CancellationToken cancellationToken = default)
         {
             _flowRate = Math.Clamp(flow, 1, 200);
             LastTelemetry.FlowRate = _flowRate;
@@ -175,29 +175,29 @@ namespace MakerPrompt.Infrastructure.Printers
             await Task.Delay(100);
         }
 
-        public async Task StartPrint(FileEntry file)
+        public async Task StartPrintAsync(string fileName, CancellationToken cancellationToken = default)
         {
             // Simulate starting a print job in demo mode
-            if (file == null)
+            if (string.IsNullOrEmpty(fileName))
             {
                 LastTelemetry.LastResponse = "No file selected to print.";
                 RaiseTelemetryUpdated();
                 return;
             }
 
-            LastTelemetry.LastResponse = $"Started print job: {file.FullPath}";
+            LastTelemetry.LastResponse = $"Started print job: {fileName}";
             LastTelemetry.Status = PrinterStatus.Printing;
             RaiseTelemetryUpdated();
 
             // Simulate print duration
             await Task.Delay(1000);
 
-            LastTelemetry.LastResponse = $"Print job completed: {file.FullPath}";
+            LastTelemetry.LastResponse = $"Print job completed: {fileName}";
             LastTelemetry.Status = PrinterStatus.Connected;
             RaiseTelemetryUpdated();
         }
 
-        public Task StartPrint(GCodeDoc gcodeDoc)
+        public Task StartPrintAsync(GCodeDoc gcodeDoc, CancellationToken cancellationToken = default)
         {
             // For the demo printer, just log that we would print the provided G-code.
             LastTelemetry.LastResponse = string.IsNullOrWhiteSpace(gcodeDoc.Content)

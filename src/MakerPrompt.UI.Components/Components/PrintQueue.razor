@@ -326,7 +326,7 @@
             await ProjectService.AssignJobAsync(projectId, job.Id, target.Definition.Id, target.Definition.Name);
 
             // Start print
-            await target.Service.StartPrint(doc);
+            await target.Service.StartPrintAsync(doc);
 
             ToastService.Notify(new ToastMessage(
                 ToastType.Success,

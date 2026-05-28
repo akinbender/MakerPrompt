@@ -1,5 +1,5 @@
 using MakerPrompt.Core.Models;
-using MakerPrompt.Infrastructure.Camera;
+using MakerPrompt.Infrastructure;
 
 namespace MakerPrompt.Tests.Unit.Infrastructure;
 
