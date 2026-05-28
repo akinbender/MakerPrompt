@@ -107,8 +107,13 @@ public class AppiumSetup : IAsyncLifetime
     /// a full WebView2 page reload. A full GotoAsync would destroy the Blazor circuit
     /// because blazor.webview.js has autostart="false" and the BlazorWebView handler
     /// may not reinitialize Blazor after a CDP-triggered navigation.
+    /// <para>
+    /// Pass <paramref name="waitForSelector"/> to block until a specific element
+    /// appears on the target page. Prefer this over the default 500ms fixed delay
+    /// whenever the target page has a reliable landmark element.
+    /// </para>
     /// </summary>
-    public static async Task NavigateAsync(string relativePath)
+    public static async Task NavigateAsync(string relativePath, string? waitForSelector = null, int timeout = 15_000)
     {
         var path = relativePath.StartsWith("/") ? relativePath : $"/{relativePath}";
 
@@ -121,8 +126,16 @@ public class AppiumSetup : IAsyncLifetime
             }})()
         ");
 
-        // Give Blazor's router time to process the route change and render
-        await Page.WaitForTimeoutAsync(500);
+        if (waitForSelector != null)
+        {
+            await Page.WaitForSelectorAsync(waitForSelector,
+                new PageWaitForSelectorOptions { Timeout = timeout });
+        }
+        else
+        {
+            // Fallback: give Blazor's router time to process the route change
+            await Page.WaitForTimeoutAsync(500);
+        }
     }
 
     /// <summary>
@@ -228,7 +241,7 @@ public class AppiumSetup : IAsyncLifetime
         var dir = AppContext.BaseDirectory;
         while (dir != null)
         {
-            var mauiBin = Path.Combine(dir, "MakerPrompt.MAUI", "bin");
+            var mauiBin = Path.Combine(dir, "src", "MakerPrompt.UI.MAUI", "bin");
             if (Directory.Exists(mauiBin))
             {
                 foreach (var config in configs)
@@ -236,11 +249,11 @@ public class AppiumSetup : IAsyncLifetime
                     foreach (var tfm in tfms)
                     {
                         // TFM-only (default VS / dotnet build output)
-                        var direct = Path.Combine(mauiBin, config, tfm, "MakerPrompt.MAUI.exe");
+                        var direct = Path.Combine(mauiBin, config, tfm, "MakerPrompt.UI.MAUI.exe");
                         if (File.Exists(direct)) return direct;
 
                         // TFM + RID (dotnet build -r win-x64)
-                        var withRid = Path.Combine(mauiBin, config, tfm, "win-x64", "MakerPrompt.MAUI.exe");
+                        var withRid = Path.Combine(mauiBin, config, tfm, "win-x64", "MakerPrompt.UI.MAUI.exe");
                         if (File.Exists(withRid)) return withRid;
                     }
                 }
@@ -250,7 +263,7 @@ public class AppiumSetup : IAsyncLifetime
         }
 
         throw new FileNotFoundException(
-            "Could not find MakerPrompt.MAUI.exe. " +
+            "Could not find MakerPrompt.UI.MAUI.exe. " +
             "Build the MAUI project for Windows first:\n" +
             "  dotnet build MakerPrompt.MAUI -f net10.0-windows10.0.19041.0\n" +
             "Or set MAUI_APP_PATH environment variable to the built exe path.");

@@ -32,14 +32,13 @@ public class FarmModeTests(PlaywrightFixture fixture)
     {
         await NavigateToSettingsAsync();
 
-        // Enable farm mode
+        // Enable farm mode — OnFarmModeChangedAsync saves and auto-navigates to /fleet
         var toggle = Page.Locator("#farmModeEnabled");
         if (!await toggle.IsCheckedAsync())
         {
             await toggle.CheckAsync();
-            await Page.WaitForTimeoutAsync(300);
+            await Page.WaitForURLAsync("**/fleet", new PageWaitForURLOptions { Timeout = 10_000 });
         }
-        await SaveSettingsAsync();
 
         // Navigate to root — should redirect to fleet
         await Page.GotoAsync(_fixture.BaseUrl);
@@ -120,8 +119,8 @@ public class FarmModeTests(PlaywrightFixture fixture)
         await createBtn.ClickAsync();
         await Page.WaitForTimeoutAsync(500);
 
-        // Switch to the newly created farm
-        var selectEl = Page.Locator("select");
+        // Switch to the newly created farm using the scoped farm select
+        var selectEl = Page.Locator("select.form-select").First;
         await selectEl.SelectOptionAsync(new SelectOptionValue { Label = "Sidebar Farm" });
         var switchBtn = Page.Locator("[data-testid='farm-switch-btn']");
         await switchBtn.ClickAsync();
@@ -159,7 +158,7 @@ public class FarmModeTests(PlaywrightFixture fixture)
         await Page.WaitForTimeoutAsync(1000);
 
         // The new farm should appear in the dropdown
-        var option = Page.Locator("select option:has-text('E2E Test Farm')");
+        var option = Page.Locator("select.form-select option:has-text('E2E Test Farm')");
         Assert.True(await option.CountAsync() > 0);
 
         await RestoreDefaultFarmModeAsync();
@@ -230,15 +229,20 @@ public class FarmModeTests(PlaywrightFixture fixture)
 
     private async Task SaveSettingsAsync()
     {
-        await Page.Locator("[data-testid='save-settings-btn']").ClickAsync();
-        // Wait for the save toast to appear
+        // Settings saves automatically via @bind:after — no explicit save button.
+        // Wait for Blazor's change handler and any navigation side-effect to settle.
         await Page.WaitForTimeoutAsync(1000);
     }
 
     /// <summary>
-    /// Ensures farm mode is enabled in settings and reloads the page so the
-    /// farm configuration section is visible. Returns after the settings page
-    /// is ready.
+    /// Ensures farm mode is enabled in settings and navigates back to the
+    /// settings page so the farm configuration section is visible.
+    /// <para>
+    /// Enabling farm mode triggers <c>OnFarmModeChangedAsync</c> which saves
+    /// config and immediately calls <c>NavigationManager.NavigateTo("/fleet")</c>.
+    /// We must navigate back to settings afterwards and wait for the farm
+    /// config section to render before callers can interact with it.
+    /// </para>
     /// </summary>
     private async Task EnableFarmModeAsync()
     {
@@ -247,13 +251,14 @@ public class FarmModeTests(PlaywrightFixture fixture)
         if (!await toggle.IsCheckedAsync())
         {
             await toggle.CheckAsync();
-            // Wait for Blazor to re-render after @bind change
-            await Page.WaitForTimeoutAsync(500);
-            await SaveSettingsAsync();
-            // Reload the page so the farm config section renders from persisted state
-            await NavigateToSettingsAsync();
+            // Blazor auto-navigates to /fleet after toggle; wait for that transition
+            await Page.WaitForURLAsync("**/fleet", new PageWaitForURLOptions { Timeout = 10_000 });
         }
-        // Wait for the farm config section to appear
+
+        // Navigate back to settings so the farm config section is accessible
+        await NavigateToSettingsAsync();
+
+        // Wait for the farm config section to appear (only visible when farm mode is on)
         await Page.Locator("#farmNewName").WaitForAsync(
             new LocatorWaitForOptions { Timeout = 5_000 });
     }

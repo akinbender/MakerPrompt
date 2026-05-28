@@ -4,7 +4,7 @@
 @inject IStringLocalizer<Resources> localizer
 @implements IDisposable
 
-<LocalizedTitle TitleKey="PageTitle_Dashboard" />
+<LocalizedTitle TitleKey="@Resources.PageTitle_Dashboard" />
 
 <div class="container-fluid">
     @if (ConnectionManager.Printers.Any(p => p.Service?.IsConnected == true))

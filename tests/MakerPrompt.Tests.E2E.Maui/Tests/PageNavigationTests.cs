@@ -89,21 +89,6 @@ public class PageNavigationTests
         Assert.True(await m500Alert.IsVisibleAsync(), "M500 save reminder should be displayed");
     }
 
-    // ── About ──
-
-    [Fact]
-    public async Task About_Page_Loads()
-    {
-        await AppiumSetup.NavigateAsync("/about");
-        var content = Page.Locator(".col-12");
-        await content.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
-        var text = await content.InnerTextAsync();
-        Assert.False(string.IsNullOrWhiteSpace(text), "About page should have content");
-        await SaveScreenshot("about");
-    }
-
-    // ── Settings ──
-
     [Fact]
     public async Task Settings_Page_Loads()
     {
@@ -129,18 +114,6 @@ public class PageNavigationTests
     }
 
     [Fact]
-    public async Task Settings_Has_Save_Button()
-    {
-        await AppiumSetup.NavigateAsync("/settings");
-        await Page.Locator("h1:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
-
-        var saveBtn = Page.Locator("button.btn-primary:has-text('Save')");
-        Assert.True(await saveBtn.IsVisibleAsync(), "Save Settings button should exist");
-    }
-
-    // ── Fleet (home) ──
-
-    [Fact]
     public async Task Fleet_Page_Loads()
     {
         await AppiumSetup.NavigateAsync("/fleet");
@@ -158,7 +131,8 @@ public class PageNavigationTests
         await AppiumSetup.NavigateAsync("/");
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
-        var navLinks = new[] { "cheatsheet", "calculators", "about", "settings" };
+        // About was merged into Settings — no dedicated sidebar link any more
+        var navLinks = new[] { "cheatsheet", "calculators", "settings" };
         foreach (var href in navLinks)
         {
             var link = Page.Locator($".sidebar a[href='{href}']");

@@ -11,13 +11,27 @@ namespace MakerPrompt.Tests.E2E.Wasm.Tests;
 /// IMPORTANT: After connecting a printer and clicking its card, Fleet switches
 /// from the card grid to an inline ControlPanel view. Tests must account for
 /// this view transition.
+///
+/// IAsyncLifetime.DisposeAsync removes stored printer connections from localStorage
+/// so each test run starts with an empty fleet.
 /// </summary>
 [Collection("Playwright")]
 [Trait("Category", "E2E-Wasm")]
-public class FleetWorkflowTests(PlaywrightFixture fixture)
+public class FleetWorkflowTests(PlaywrightFixture fixture) : IAsyncLifetime
 {
     private readonly PlaywrightFixture _fixture = fixture;
     private IPage Page => _fixture.Page;
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        try
+        {
+            await Page.EvaluateAsync("() => localStorage.removeItem('MakerPrompt.PrinterConnections')");
+        }
+        catch { /* best-effort */ }
+    }
 
     [Fact]
     public async Task Fleet_AddPrinter_Demo_Mode()
@@ -28,7 +42,7 @@ public class FleetWorkflowTests(PlaywrightFixture fixture)
         await Page.Locator("[data-testid='fleet-add-btn']").ClickAsync();
 
         // Modal should appear — fill in the name
-        var nameInput = Page.Locator("#printerName");
+        var nameInput = Page.Locator("#printerNameInput");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync("E2E Test Printer");
 
@@ -62,19 +76,16 @@ public class FleetWorkflowTests(PlaywrightFixture fixture)
         await AddDemoPrinterAsync("Telemetry Test");
         await SelectAndConnectAsync("Telemetry Test");
 
-        // After connecting, the inline ControlPanel renders the Heating card
-        // with current temperature values (e.g. "C: 25.0") and °C labels.
-        var heatingCard = Page.Locator(".card-header", new PageLocatorOptions
-        {
-            HasTextRegex = new System.Text.RegularExpressions.Regex("Heating|Temperature", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
-        });
-        await heatingCard.WaitForAsync(new LocatorWaitForOptions { Timeout = 10_000 });
-        Assert.True(await heatingCard.IsVisibleAsync());
+        // ControlPanel renders a Heating card header once the Demo backend is live.
+        var heatingHeader = Page.Locator(".card-header span.fw-semibold",
+            new PageLocatorOptions { HasText = "Heating" });
+        await heatingHeader.WaitForAsync(new LocatorWaitForOptions { Timeout = 10_000 });
+        Assert.True(await heatingHeader.IsVisibleAsync());
 
-        // Verify temperature value is rendered in the ControlPanel
-        var tempValue = Page.Locator(".input-group-text:has-text('C:')");
-        await tempValue.First.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
-        Assert.True(await tempValue.First.IsVisibleAsync());
+        // Each temperature input group ends with an °C span.
+        var tempUnit = Page.Locator(".input-group-text:has-text('°C')");
+        await tempUnit.First.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
+        Assert.True(await tempUnit.First.IsVisibleAsync());
     }
 
     [Fact]
@@ -99,15 +110,34 @@ public class FleetWorkflowTests(PlaywrightFixture fixture)
     // ── Helpers ──
 
     /// <summary>
-    /// Navigates to the Fleet page with a clean slate (clears stored printers).
+    /// Ensures farm mode is on, then navigates to the Fleet page with a clean
+    /// slate (clears only stored printer connections). Uses a targeted
+    /// localStorage.removeItem so the AppConfig key (which holds FarmModeEnabled)
+    /// is not wiped before the reload.
     /// </summary>
     private async Task NavigateToFleetAsync()
     {
-        await Page.GotoAsync($"{_fixture.BaseUrl}/fleet");
-        // Clear stored printers from previous tests so each test starts fresh
-        await Page.EvaluateAsync("() => localStorage.clear()");
+        // Ensure farm mode is enabled — fleet UI requires it
+        await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
+        await Page.Locator("#farmModeEnabled").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
+        var toggle = Page.Locator("#farmModeEnabled");
+        if (!await toggle.IsCheckedAsync())
+        {
+            await toggle.CheckAsync();
+            // OnFarmModeChangedAsync saves config and auto-navigates to /fleet
+            await Page.WaitForURLAsync("**/fleet", new PageWaitForURLOptions { Timeout = 10_000 });
+        }
+        else
+        {
+            await Page.GotoAsync($"{_fixture.BaseUrl}/fleet");
+            await Page.Locator("[data-testid='fleet-add-btn']").WaitForAsync(
+                new LocatorWaitForOptions { Timeout = 15_000 });
+        }
+
+        // Remove only the printer connections key — do NOT clear() the whole
+        // storage or AppConfig (FarmModeEnabled) will be wiped on reload.
+        await Page.EvaluateAsync("() => localStorage.removeItem('MakerPrompt.PrinterConnections')");
         await Page.ReloadAsync();
-        // Wait for the Fleet page to be interactive
         await Page.Locator("[data-testid='fleet-add-btn']").WaitForAsync(
             new LocatorWaitForOptions { Timeout = 30_000 });
     }
@@ -115,7 +145,7 @@ public class FleetWorkflowTests(PlaywrightFixture fixture)
     private async Task AddDemoPrinterAsync(string name)
     {
         await Page.Locator("[data-testid='fleet-add-btn']").ClickAsync();
-        var nameInput = Page.Locator("#printerName");
+        var nameInput = Page.Locator("#printerNameInput");
         await nameInput.WaitForAsync(new LocatorWaitForOptions { Timeout = 5_000 });
         await nameInput.FillAsync(name);
         await Page.Locator("[data-testid='fleet-save-printer-btn']").ClickAsync();

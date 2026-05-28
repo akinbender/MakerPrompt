@@ -21,7 +21,7 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <button class="btn btn-sm btn-outline-light d-flex align-items-center gap-1" @onclick="OpenPrintersModal" title="@localizer[Resources.Fleet_Printers]">
+                        <button class="btn btn-sm btn-outline-light d-flex align-items-center gap-1" @onclick="OpenPrintersModal" title="@localizer[Resources.Fleet_Printers]" data-testid="header-add-printer">
                             <i class="bi bi-printer"></i>
                             <span class="d-none d-md-inline">@NavButtonLabel</span>
                             @if (_connectedCount > 0)

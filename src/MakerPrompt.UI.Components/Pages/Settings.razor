@@ -11,10 +11,13 @@
 @inject IStringLocalizer<Resources> localizer
 @implements IDisposable
 
-<LocalizedTitle TitleKey="PageTitle_Settings" />
+<LocalizedTitle TitleKey="@Resources.PageTitle_Settings" />
 
 <div class="container-fluid">
     <div class="row">
+        <div class="col-12">
+            @((MarkupString)localizer[Resources.AboutPage_Content].Value)
+        </div>
         <div class="col-md-6 col-sm-12">
             <div class="card mb-4">
                 <div class="card-header">

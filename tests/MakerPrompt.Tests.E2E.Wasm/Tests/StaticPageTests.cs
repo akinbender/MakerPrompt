@@ -140,21 +140,6 @@ public class StaticPageTests(PlaywrightFixture fixture)
         Assert.True(await m500Alert.IsVisibleAsync(), "M500 save reminder should be displayed");
     }
 
-    // ── About (/about) ──
-
-    [Fact]
-    public async Task About_Page_Loads()
-    {
-        await Page.GotoAsync($"{_fixture.BaseUrl}/about");
-        // Should render content (the localized about HTML)
-        var content = Page.Locator(".col-12");
-        await content.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
-        var text = await content.InnerTextAsync();
-        Assert.False(string.IsNullOrWhiteSpace(text), "About page should have content");
-    }
-
-    // ── Settings (/settings) ──
-
     [Fact]
     public async Task Settings_Page_Loads()
     {
@@ -179,25 +164,13 @@ public class StaticPageTests(PlaywrightFixture fixture)
     }
 
     [Fact]
-    public async Task Settings_Has_Save_Button()
-    {
-        await Page.GotoAsync($"{_fixture.BaseUrl}/settings");
-        await Page.Locator("h1:has-text('Settings')").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
-
-        var saveBtn = Page.Locator("button.btn-primary:has-text('Save')");
-        Assert.True(await saveBtn.IsVisibleAsync(), "Save Settings button should exist");
-    }
-
-    // ── Sidebar Navigation ──
-
-    [Fact]
     public async Task Sidebar_All_Nav_Links_Present()
     {
         await Page.GotoAsync(_fixture.BaseUrl);
         await Page.Locator(".sidebar").WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
 
-        // All core nav links should be in the sidebar
-        var navLinks = new[] { "cheatsheet", "calculators", "about", "settings" };
+        // All core nav links should be in the sidebar (About was merged into Settings)
+        var navLinks = new[] { "cheatsheet", "calculators", "settings" };
         foreach (var href in navLinks)
         {
             var link = Page.Locator($".sidebar a[href='{href}']");

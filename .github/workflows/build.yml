@@ -37,4 +37,4 @@ jobs:
       run: dotnet build src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj -c Release --no-restore
 
     - name: Test (Unit)
-      run: dotnet test src/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj -c Release
+      run: dotnet test tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj -c Release

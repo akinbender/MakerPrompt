@@ -56,28 +56,22 @@ public class FarmModeTests
     {
         await NavigateToSettingsAsync();
 
-        // Enable farm mode
+        // Enable farm mode — OnFarmModeChangedAsync saves and auto-navigates to /fleet
         var toggle = Page.Locator("#farmModeEnabled");
         if (!await toggle.IsCheckedAsync())
         {
             await toggle.CheckAsync();
+            // Wait for the fleet add-btn to confirm the navigation completed
+            await Page.Locator("[data-testid='fleet-add-btn']").WaitForAsync(
+                new LocatorWaitForOptions { Timeout = 15_000 });
         }
-        await SaveSettingsAsync();
 
         // Navigate to root — should redirect to fleet
-        await AppiumSetup.NavigateAsync("/");
+        await AppiumSetup.NavigateAsync("/", waitForSelector: "[data-testid='fleet-add-btn']");
         var addButton = Page.Locator("[data-testid='fleet-add-btn']");
-        await addButton.WaitForAsync(new LocatorWaitForOptions { Timeout = 15_000 });
         Assert.True(await addButton.IsVisibleAsync(), "Root should redirect to Fleet when farm mode is on");
 
-        // Restore default (disabled)
-        await NavigateToSettingsAsync();
-        toggle = Page.Locator("#farmModeEnabled");
-        if (await toggle.IsCheckedAsync())
-        {
-            await toggle.UncheckAsync();
-        }
-        await SaveSettingsAsync();
+        await RestoreDefaultFarmModeAsync();
     }
 
     [Fact]
@@ -131,7 +125,7 @@ public class FarmModeTests
         await Page.WaitForTimeoutAsync(500);
 
         // Switch to the newly created farm
-        var selectEl = Page.Locator("select");
+        var selectEl = Page.Locator("select.form-select").First;
         await selectEl.SelectOptionAsync(new SelectOptionValue { Label = "Sidebar Test Farm" });
         var switchBtn = Page.Locator("[data-testid='farm-switch-btn']");
         await switchBtn.ClickAsync();
@@ -173,7 +167,7 @@ public class FarmModeTests
         await Page.WaitForTimeoutAsync(1000);
 
         // The new farm should appear in the dropdown
-        var option = Page.Locator("select option:has-text('MAUI E2E Farm')");
+        var option = Page.Locator("select.form-select option:has-text('MAUI E2E Farm')");
         Assert.True(await option.CountAsync() > 0, "Created farm should appear in the dropdown");
 
         await RestoreDefaultFarmModeAsync();
@@ -243,12 +237,20 @@ public class FarmModeTests
 
     private static async Task SaveSettingsAsync()
     {
-        await Page.Locator("[data-testid='save-settings-btn']").ClickAsync();
+        // Settings saves automatically via @bind:after — no explicit save button.
+        // Wait for Blazor's change handler and any navigation side-effect to settle.
         await Page.WaitForTimeoutAsync(1000);
     }
 
     /// <summary>
-    /// Ensures farm mode is enabled and the farm configuration section is visible.
+    /// Ensures farm mode is enabled and navigates back to settings so the
+    /// farm configuration section is visible.
+    /// <para>
+    /// Enabling farm mode triggers <c>OnFarmModeChangedAsync</c> which saves
+    /// config and calls <c>NavigationManager.NavigateTo("/fleet")</c>. We wait
+    /// for the fleet add-btn (DOM-based, reliable in WebView2) then navigate
+    /// back to settings before callers interact with the farm config section.
+    /// </para>
     /// </summary>
     private static async Task EnableFarmModeAsync()
     {
@@ -257,9 +259,13 @@ public class FarmModeTests
         if (!await toggle.IsCheckedAsync())
         {
             await toggle.CheckAsync();
-            await SaveSettingsAsync();
-            await NavigateToSettingsAsync();
+            // Wait for the fleet page to confirm navigation completed
+            await Page.Locator("[data-testid='fleet-add-btn']").WaitForAsync(
+                new LocatorWaitForOptions { Timeout = 15_000 });
         }
+
+        // Navigate back to settings so farm config section is accessible
+        await AppiumSetup.NavigateAsync("/settings", waitForSelector: "#farmNewName");
     }
 
     /// <summary>

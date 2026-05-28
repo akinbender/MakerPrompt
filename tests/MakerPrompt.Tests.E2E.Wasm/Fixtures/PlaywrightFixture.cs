@@ -100,12 +100,13 @@ public class PlaywrightFixture : IAsyncLifetime
         var dir = AppContext.BaseDirectory;
         while (dir != null)
         {
-            var candidate = Path.Combine(dir, "MakerPrompt.Blazor", "MakerPrompt.Blazor.csproj");
-            if (File.Exists(candidate)) return candidate;
+            var candidateSrc = Path.Combine(dir, "src", "MakerPrompt.UI.Blazor", "MakerPrompt.UI.Blazor.csproj");
+            if (File.Exists(candidateSrc)) return candidateSrc;
+
             dir = Directory.GetParent(dir)?.FullName;
         }
         throw new FileNotFoundException(
-            "Could not find MakerPrompt.Blazor.csproj. " +
+            "Could not find MakerPrompt.UI.Blazor.csproj. " +
             "Run tests from the solution root or set E2E_BASE_URL to a running instance.");
     }
 }

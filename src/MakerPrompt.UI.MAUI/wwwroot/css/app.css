@@ -1,9 +1,0 @@
-/* MakerPrompt.UI.MAUI – minimal shell styles */
-html, body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; height: 100%; }
-.page { display: flex; min-height: 100vh; }
-.sidebar { width: 220px; background-color: #1a1a2e; color: #eee; padding-top: 1rem; flex-shrink: 0; }
-.sidebar .nav-link { color: #ccc; font-size: .9rem; padding: .35rem 1rem; }
-.sidebar .nav-link.active, .sidebar .nav-link:hover { color: #fff; background: rgba(255,255,255,.1); border-radius: .25rem; }
-main { flex: 1; display: flex; flex-direction: column; overflow: auto; }
-.top-row { padding: .5rem 1rem; background: #f8f9fa; border-bottom: 1px solid #dee2e6; text-align: right; }
-.content { padding: 1.5rem; flex: 1; }
