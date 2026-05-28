@@ -1,3 +1,5 @@
+using MakerPrompt.Infrastructure.Services.Printers;
+
 namespace MakerPrompt.UI.Components.Services
 {
     public interface IPrinterCameraProvider

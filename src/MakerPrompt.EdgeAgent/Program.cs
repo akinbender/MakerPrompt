@@ -1,10 +1,12 @@
-using MakerPrompt.Application.Services;
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
 using MakerPrompt.EdgeAgent.Models;
 using MakerPrompt.EdgeAgent.Workers;
-using MakerPrompt.Infrastructure;
-using MakerPrompt.Infrastructure.Printers;
+using MakerPrompt.Infrastructure.InMemoryStores;
+using MakerPrompt.Infrastructure.Services;
+using MakerPrompt.Infrastructure.Services.Printers;
+using MakerPrompt.Infrastructure.Utils;
+
 // Disambiguate: both Core.Abstractions and Infrastructure.Printers define IPrinterCommunicationService
 using IPrinterService = MakerPrompt.Core.Abstractions.IPrinterCommunicationService;
 

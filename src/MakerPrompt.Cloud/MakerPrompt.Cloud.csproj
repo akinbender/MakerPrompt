@@ -7,22 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- JWT Bearer is a framework-provided package; explicit reference ensures the right version -->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
-    <!-- Required for UseBlazorFrameworkFiles() to serve the Blazor WASM bundle -->
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MakerPrompt.Core\MakerPrompt.Core.csproj" />
-    <ProjectReference Include="..\MakerPrompt.Application\MakerPrompt.Application.csproj" />
     <ProjectReference Include="..\MakerPrompt.Infrastructure\MakerPrompt.Infrastructure.csproj" />
     <!--
       Include the Blazor WASM app as a static asset bundle without adding a code dependency.
       The WASM output lands in wwwroot/  and is served as static files by the Cloud host.
     -->
-    <ProjectReference Include="..\MakerPrompt.UI.Blazor\MakerPrompt.UI.Blazor.csproj"
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\MakerPrompt.UI.Blazor\MakerPrompt.UI.Blazor.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

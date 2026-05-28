@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using MakerPrompt.UI.Components.Utils;
-using MakerPrompt.Infrastructure.Printers;
+using MakerPrompt.Infrastructure.Services.Printers;
 using MakerPrompt.UI.Components.Services;
 using MakerPrompt.UI.MAUI.Services;
 using MakerPrompt.UI.MAUI.Storage;

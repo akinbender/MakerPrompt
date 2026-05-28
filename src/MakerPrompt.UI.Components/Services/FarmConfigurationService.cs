@@ -7,16 +7,25 @@ namespace MakerPrompt.UI.Components.Services
     /// and exporting farm profiles. Each farm stores a snapshot of printer connection
     /// definitions that are loaded into <see cref="PrinterConnectionManager"/> when active.
     /// </summary>
-    public sealed class FarmConfigurationService
+    public sealed class FarmConfigurationService(
+        IAppLocalStorageProvider storage,
+        IAppConfigurationService configService,
+        PrinterConnectionManager connectionManager,
+        ILogger<FarmConfigurationService> logger)
     {
         private const string StorageKey = "MakerPrompt.FarmConfigurations";
         private const string PrinterStorageKey = "MakerPrompt.PrinterConnections";
 
-        private readonly IAppLocalStorageProvider _storage;
-        private readonly IAppConfigurationService _configService;
-        private readonly PrinterConnectionManager _connectionManager;
-        private readonly ILogger<FarmConfigurationService> _logger;
+        private readonly IAppLocalStorageProvider _storage = storage;
+        private readonly IAppConfigurationService _configService = configService;
+        private readonly PrinterConnectionManager _connectionManager = connectionManager;
+        private readonly ILogger<FarmConfigurationService> _logger = logger;
         private List<FarmConfiguration> _farms = [];
+
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            WriteIndented = true
+        };
 
         public IReadOnlyList<FarmConfiguration> Farms => _farms.AsReadOnly();
 
@@ -24,18 +33,6 @@ namespace MakerPrompt.UI.Components.Services
             _farms.FirstOrDefault(f => f.Id == _configService.Configuration.ActiveFarmId);
 
         public event EventHandler? FarmsChanged;
-
-        public FarmConfigurationService(
-            IAppLocalStorageProvider storage,
-            IAppConfigurationService configService,
-            PrinterConnectionManager connectionManager,
-            ILogger<FarmConfigurationService> logger)
-        {
-            _storage = storage;
-            _configService = configService;
-            _connectionManager = connectionManager;
-            _logger = logger;
-        }
 
         public async Task InitializeAsync()
         {
@@ -154,7 +151,7 @@ namespace MakerPrompt.UI.Components.Services
                     .ToList();
             }
 
-            return JsonSerializer.Serialize(farm, new JsonSerializerOptions { WriteIndented = true });
+            return JsonSerializer.Serialize(farm, _jsonOptions);
         }
 
         /// <summary>

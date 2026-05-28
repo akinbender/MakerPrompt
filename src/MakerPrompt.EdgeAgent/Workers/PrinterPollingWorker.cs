@@ -1,6 +1,6 @@
-using MakerPrompt.Application.Services;
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
+using MakerPrompt.Infrastructure.Services;
 
 namespace MakerPrompt.EdgeAgent.Workers;
 

@@ -1,3 +1,5 @@
+using MakerPrompt.Infrastructure.Services.Printers;
+
 namespace MakerPrompt.UI.Components.Infrastructure
 {
 
@@ -24,9 +26,9 @@ namespace MakerPrompt.UI.Components.Infrastructure
         {
             switch (factory.Current)
             {
-                case MakerPrompt.Infrastructure.Printers.DemoPrinterService demo:
+                case DemoPrinterService demo:
                     return await demo.OpenReadAsync(fullPath);
-                case MakerPrompt.Infrastructure.Printers.MoonrakerApiService moonraker:
+                case MoonrakerApiService moonraker:
                     return await moonraker.OpenReadAsync(fullPath, cancellationToken);
                 default:
                     return null;
@@ -35,7 +37,7 @@ namespace MakerPrompt.UI.Components.Infrastructure
 
         public async Task SaveFileAsync(string fullPath, Stream content, CancellationToken cancellationToken = default)
         {
-            if (factory.Current is MakerPrompt.Infrastructure.Printers.DemoPrinterService svc)
+            if (factory.Current is DemoPrinterService svc)
             {
                 await svc.SaveFileAsync(fullPath, content);
             }
@@ -43,7 +45,7 @@ namespace MakerPrompt.UI.Components.Infrastructure
 
         public async Task DeleteFileAsync(string fullPath, CancellationToken cancellationToken = default)
         {
-            if (factory.Current is MakerPrompt.Infrastructure.Printers.DemoPrinterService svc)
+            if (factory.Current is DemoPrinterService svc)
             {
                 await svc.DeleteFileAsync(fullPath);
             }

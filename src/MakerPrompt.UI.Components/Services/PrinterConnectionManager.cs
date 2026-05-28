@@ -1,3 +1,4 @@
+using MakerPrompt.Infrastructure.Services.Printers;
 using Microsoft.Extensions.Logging;
 
 namespace MakerPrompt.UI.Components.Services

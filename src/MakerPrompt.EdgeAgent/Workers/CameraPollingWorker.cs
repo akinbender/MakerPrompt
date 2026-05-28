@@ -1,9 +1,9 @@
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
-using MakerPrompt.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using MakerPrompt.Infrastructure.Utils;
 
 namespace MakerPrompt.EdgeAgent.Workers;
 

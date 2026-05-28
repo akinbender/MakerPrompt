@@ -1,0 +1,12 @@
+﻿global using static MakerPrompt.UI.Components.Utils.Enums;
+global using System.Text;
+global using System.Net;
+global using MakerPrompt.Infrastructure.Services.Printers;
+global using MakerPrompt.Infrastructure.InMemoryStores;
+global using MakerPrompt.Core.Abstractions;
+global using MakerPrompt.Core.Models;
+global using MakerPrompt.UI.Components.Infrastructure;
+global using MakerPrompt.UI.Components.Services;
+global using MakerPrompt.UI.Components.Models;
+global using MakerPrompt.UI.Components.Utils;
+global using MakerPrompt.Tests.Unit.Utils;

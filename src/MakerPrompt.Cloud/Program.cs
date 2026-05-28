@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using MakerPrompt.Core.Abstractions;
 using MakerPrompt.Core.Models;
-using MakerPrompt.Infrastructure;
+using MakerPrompt.Infrastructure.InMemoryStores;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;

@@ -82,8 +82,8 @@ public partial class SerialService
                 if (_usbDriver is null) break;
 
                 // Android driver read is synchronous; offload to thread pool.
-                var bytes = await Task.Run(() => _usbDriver.Read(4096), ct);
-                if (bytes.Length > 0)
+                var bytes = await Task.Run(() => _usbDriver.Read(), ct);
+                if (bytes != null && bytes.Length > 0)
                     ProcessReceivedData(Encoding.ASCII.GetString(bytes));
 
                 await Task.Delay(10, ct);

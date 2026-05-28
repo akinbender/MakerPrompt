@@ -1,5 +1,5 @@
-using MakerPrompt.Infrastructure.Printers;
-using MakerPrompt.Infrastructure;
+using MakerPrompt.Infrastructure.Services;
+using MakerPrompt.Infrastructure.Services.Printers;
 
 namespace MakerPrompt.UI.MAUI.Services;
 

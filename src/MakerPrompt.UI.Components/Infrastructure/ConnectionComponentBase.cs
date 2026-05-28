@@ -1,4 +1,5 @@
 using BlazorBootstrap;
+using MakerPrompt.Infrastructure.Services.Printers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;

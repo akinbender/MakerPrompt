@@ -1,4 +1,6 @@
-﻿namespace MakerPrompt.UI.Components.Infrastructure
+﻿using MakerPrompt.Infrastructure.Services.Printers;
+
+namespace MakerPrompt.UI.Components.Infrastructure
 {
     public abstract class BaseSerialService : BasePrinterConnectionService
     {

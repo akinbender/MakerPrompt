@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace MakerPrompt.UI.MAUI
+namespace MakerPrompt.UI.MAUI.Platforms.MacCatalyst
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

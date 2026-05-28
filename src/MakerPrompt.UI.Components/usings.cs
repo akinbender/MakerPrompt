@@ -7,30 +7,12 @@ global using System.Reflection;
 global using System.Numerics;
 global using System.Net;
 global using System.Net.Http.Headers;
-global using MakerPrompt.Infrastructure.Printers;
+global using MakerPrompt.Infrastructure.Services.Printers;
 global using MakerPrompt.Core.Abstractions;
+global using MakerPrompt.Core.Models;
 global using MakerPrompt.UI.Components.Infrastructure;
 global using MakerPrompt.UI.Components.Properties;
 global using MakerPrompt.UI.Components.Services;
 global using MakerPrompt.UI.Components.Models;
 global using MakerPrompt.UI.Components.Utils;
 global using Microsoft.JSInterop;
-
-// ── Model consolidation — Core types replace UI.Components duplicates ───────────
-global using PrinterConnectionType = MakerPrompt.Core.Models.PrinterConnectionType;
-global using PrinterConnectionSettings = MakerPrompt.Core.Models.PrinterConnectionSettings;
-global using FarmConfiguration = MakerPrompt.Core.Models.FarmConfiguration;
-global using PrinterConnectionDefinition = MakerPrompt.Core.Models.PrinterConnectionDefinition;
-global using FilamentSpool = MakerPrompt.Core.Models.FilamentSpool;
-global using NotificationLevel = MakerPrompt.Core.Models.NotificationLevel;
-global using NotificationRecord = MakerPrompt.Core.Models.NotificationRecord;
-global using PrintJobUsageRecord = MakerPrompt.Core.Models.PrintJobUsageRecord;
-global using PrintProject = MakerPrompt.Core.Models.PrintProject;
-global using PrintJob = MakerPrompt.Core.Models.PrintJob;
-global using PrintJobStatus = MakerPrompt.Core.Models.PrintJobStatus;
-// PrinterStatus alias: Core type is used for telemetry; UI Enums version accessible via Enums.PrinterStatus for localized display
-global using PrinterStatus = MakerPrompt.Core.Models.PrinterStatus;
-global using PrinterTelemetry = MakerPrompt.Core.Models.PrinterTelemetry;
-global using FileEntry = MakerPrompt.Core.Models.FileEntry;
-global using GCodeDoc = MakerPrompt.Core.Models.GCodeDoc;
-global using PrinterCamera = MakerPrompt.Core.Models.PrinterCamera;

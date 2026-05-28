@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace MakerPrompt.UI.MAUI
+namespace MakerPrompt.UI.MAUI.Platforms.MacCatalyst
 {
     public class Program
     {

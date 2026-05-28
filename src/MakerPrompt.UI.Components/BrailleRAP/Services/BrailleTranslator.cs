@@ -251,7 +251,7 @@ namespace MakerPrompt.UI.Components.BrailleRAP.Services
             var translationMap = GetTranslationMap();
 
             // Split by newlines but preserve form feeds
-            var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.None)
+            var lines = text.Split(['\r', '\n'], StringSplitOptions.None)
                 .Where(line => !string.IsNullOrEmpty(line) || line == string.Empty)
                 .ToList();
 

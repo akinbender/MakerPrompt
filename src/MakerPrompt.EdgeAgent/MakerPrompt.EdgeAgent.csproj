@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MakerPrompt.Core\MakerPrompt.Core.csproj" />
-    <ProjectReference Include="..\MakerPrompt.Application\MakerPrompt.Application.csproj" />
     <ProjectReference Include="..\MakerPrompt.Infrastructure\MakerPrompt.Infrastructure.csproj" />
   </ItemGroup>
 

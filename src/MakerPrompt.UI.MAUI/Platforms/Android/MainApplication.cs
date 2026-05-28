@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace MakerPrompt.UI.MAUI
+namespace MakerPrompt.UI.MAUI.Platforms.Android
 {
     [Application]
     public class MainApplication : MauiApplication

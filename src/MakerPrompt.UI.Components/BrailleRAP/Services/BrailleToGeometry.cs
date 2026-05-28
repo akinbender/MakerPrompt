@@ -9,8 +9,8 @@ namespace MakerPrompt.UI.Components.BrailleRAP.Services
     public class BrailleToGeometry
     {
         // Standard 8-dot Braille dot positions
-        private static readonly (int X, int Y)[] DotPositions = new[]
-        {
+        private static readonly (int X, int Y)[] DotPositions =
+        [
             (0, 0), // Dot 1
             (0, 1), // Dot 2
             (0, 2), // Dot 3
@@ -19,7 +19,7 @@ namespace MakerPrompt.UI.Components.BrailleRAP.Services
             (1, 2), // Dot 6
             (0, 3), // Dot 7
             (1, 3)  // Dot 8
-        };
+        ];
 
         private readonly MachineConfig _config;
 
