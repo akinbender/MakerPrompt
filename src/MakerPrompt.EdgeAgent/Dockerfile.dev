@@ -1,0 +1,26 @@
+# EdgeAgent — Local dev (Mac Intel x64 / Linux x64)
+# Build: docker build -f Dockerfile.dev -t makerprompt/edge-agent:dev .
+# (Run from repo root)
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY MakerPrompt.sln .
+COPY src/MakerPrompt.Core/MakerPrompt.Core.csproj                           src/MakerPrompt.Core/
+COPY src/MakerPrompt.Infrastructure/MakerPrompt.Infrastructure.csproj       src/MakerPrompt.Infrastructure/
+COPY src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj                 src/MakerPrompt.EdgeAgent/
+RUN dotnet restore src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj
+
+COPY src/ src/
+RUN dotnet publish src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj \
+    -c Debug \
+    -r linux-x64 \
+    --self-contained true \
+    -p:PublishSingleFile=true \
+    -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 8080
+ENTRYPOINT ["./MakerPrompt.EdgeAgent"]

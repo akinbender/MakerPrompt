@@ -21,14 +21,14 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore MakerPrompt.Tests/MakerPrompt.Tests.csproj
+        run: dotnet restore tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj
 
       - name: Build
-        run: dotnet build MakerPrompt.Tests/MakerPrompt.Tests.csproj --no-restore -c Release
+        run: dotnet build tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj --no-restore -c Release
 
       - name: Test with coverage
         run: |
-          dotnet test MakerPrompt.Tests/MakerPrompt.Tests.csproj \
+          dotnet test tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj \
             --no-build \
             --configuration Release \
             --collect:"XPlat Code Coverage" \

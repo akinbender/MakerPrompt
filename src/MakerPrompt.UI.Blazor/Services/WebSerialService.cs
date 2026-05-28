@@ -1,0 +1,168 @@
+﻿using MakerPrompt.Core.Models;
+using MakerPrompt.UI.Components.Infrastructure;
+using Microsoft.JSInterop;
+using MakerPrompt.Infrastructure.Services.Printers;
+
+namespace MakerPrompt.UI.Blazor.Services
+{
+    public class WebSerialService : BaseSerialService, ISerialService, IAsyncDisposable
+    {
+        private readonly Lazy<Task<IJSObjectReference>> _moduleTask;
+        private DotNetObjectReference<WebSerialService>? _dotNetRef;
+        private IJSObjectReference? _portReference;
+
+        public bool IsSupported { get; private set; } = false;
+
+        public WebSerialService(IJSRuntime jsRuntime)
+        {
+            _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./serialJsInterop.js").AsTask());
+            _dotNetRef = DotNetObjectReference.Create(this);
+        }
+
+        public async Task<bool> CheckSupportedAsync()
+        {
+            var module = await _moduleTask.Value;
+            IsSupported = await module.InvokeAsync<bool>("checkSupported");
+            return IsSupported;
+        }
+
+        public async Task RequestPortAsync()
+        {
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("requestPort");
+        }
+
+        public async Task<IEnumerable<string>> GetAvailablePortsAsync()
+        {
+            await RequestPortAsync();
+            var module = await _moduleTask.Value;
+            var ports = await module.InvokeAsync<IEnumerable<SerialPortInfo>>("getGrantedPorts");
+            return ports.Select(p => $"{p.Name} ({p.Manufacturer})");
+        }
+
+        public async Task DisconnectAsync(CancellationToken cancellationToken = default)
+        {
+            // Stop telemetry timer and detach handler first
+            updateTimer.Stop();
+            updateTimer.Elapsed -= OnUpdateTimerElapsed;
+
+            if (_portReference != null)
+            {
+                var module = await _moduleTask.Value;
+                await module.InvokeVoidAsync("closePort", _portReference);
+                _portReference = null;
+            }
+
+            IsConnected = false;
+            RaiseConnectionChanged();
+        }
+
+        public async Task<bool> ConnectAsync(PrinterConnectionSettings connectionSettings, CancellationToken cancellationToken = default)
+        {
+            if (connectionSettings.ConnectionType != ConnectionType || string.IsNullOrEmpty(connectionSettings.PortName)) throw new ArgumentException();
+            await OpenPortAsync(connectionSettings.PortName, connectionSettings.BaudRate); 
+            return IsConnected;
+        }
+
+        public async Task OpenPortAsync(string port, int baudRate, int dataBits = 8,
+            int stopBits = 1, string parity = "none", string flowControl = "none")
+        {
+            var module = await _moduleTask.Value;
+            var options = new { baudRate, dataBits, stopBits, parity, flowControl };
+            _portReference = await module.InvokeAsync<IJSObjectReference>("openPort", options, _dotNetRef);
+            IsConnected = true;
+            ConnectionName = port;
+
+            // Ensure only one subscription to the telemetry timer
+            updateTimer.Stop();
+            updateTimer.Elapsed -= OnUpdateTimerElapsed;
+            updateTimer.Elapsed += OnUpdateTimerElapsed;
+            updateTimer.Start();
+
+            RaiseConnectionChanged();
+        }
+
+        private async void OnUpdateTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            // Guard against callbacks after disconnect
+            if (!IsConnected || _portReference == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await GetTelemetryAsync();
+            }
+            catch
+            {
+                // Swallow background telemetry errors
+            }
+        }
+
+        public override async Task WriteDataAsync(string data, CancellationToken cancellationToken = default)
+        {
+            if (_portReference == null) throw new InvalidOperationException("Port not open");
+            var module = await _moduleTask.Value;
+            await module.InvokeVoidAsync("writeData", _portReference, data);
+        }
+
+        public Task StartPrint(GCodeDoc gcodeDoc)
+        {
+            if (!IsConnected || string.IsNullOrEmpty(gcodeDoc.Content))
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.Run(async () =>
+            {
+                await foreach (var command in gcodeDoc.EnumerateCommandsAsync())
+                {
+                    if (!IsConnected)
+                    {
+                        break;
+                    }
+
+                    await WriteDataAsync(command);
+                }
+            });
+        }
+
+        [JSInvokable]
+        public void OnDataReceived(string data)
+        {
+            ProcessReceivedData(data);
+        }
+
+        [JSInvokable]
+        public void OnConnectionChanged(bool isConnected)
+        {
+            IsConnected = isConnected;
+            if (!IsConnected)
+            {
+                updateTimer.Stop();
+            }
+            RaiseConnectionChanged();
+        }
+
+        public override async ValueTask DisposeAsync()
+        {
+            await DisconnectAsync();
+
+            if (_moduleTask.IsValueCreated)
+            {
+                var module = await _moduleTask.Value;
+                await module.DisposeAsync();
+            }
+
+            _dotNetRef?.Dispose();
+        }
+    }
+
+    public class SerialPortInfo
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Manufacturer { get; set; } = string.Empty;
+    }
+}

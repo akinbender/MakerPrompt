@@ -1,0 +1,68 @@
+version: "3.9"
+
+# MakerPrompt local development stack.
+#
+# Usage:
+#   docker compose up           # start everything
+#   docker compose up cloud     # start only the Cloud API + UI
+#   docker compose up edge      # start only the EdgeAgent
+#
+# To rebuild after code changes:
+#   docker compose build && docker compose up
+#
+# To configure a real printer edit the edge-agent section of this file
+# or supply an appsettings.Production.json volume mount.
+
+services:
+
+  # ── Cloud API + Blazor WASM UI ───────────────────────────────────────────────
+  cloud:
+    build:
+      context: .
+      dockerfile: src/MakerPrompt.Cloud/Dockerfile.dev
+    image: makerprompt/cloud:dev
+    container_name: makerprompt-cloud
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:8080"
+      # Override in .env or compose.override.yml for production:
+      # MakerPrompt__Auth__Authority: https://your-oidc-provider/
+      # MakerPrompt__Auth__Audience:  https://api.makerprompt.io
+      # CloudApi__AgentApiKeyHash:    <sha256-hex of your pre-shared key>
+    networks:
+      - makerprompt
+
+  # ── EdgeAgent (local x64 dev mode) ──────────────────────────────────────────
+  # For ARM64 / Jetson Nano use:
+  #   dockerfile: src/MakerPrompt.EdgeAgent/Dockerfile
+  edge:
+    build:
+      context: .
+      dockerfile: src/MakerPrompt.EdgeAgent/Dockerfile.dev
+    image: makerprompt/edge-agent:dev
+    container_name: makerprompt-edge
+    restart: unless-stopped
+    depends_on:
+      - cloud
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # Point to the cloud container by service name.
+      CloudApi__BaseUrl: "http://cloud:8080"
+      # Set CloudApi__ApiToken to the plain-text key whose SHA-256 hash is in
+      # CloudApi__AgentApiKeyHash on the cloud service.
+      CloudApi__ApiToken: ""
+      # Configure printers via environment overrides or a volume-mounted
+      # appsettings.Production.json (recommended for real deployments).
+      # Example single-printer override:
+      # EdgeAgent__Printers__0__PrinterId: "printer-1"
+      # EdgeAgent__Printers__0__Protocol:  "Moonraker"
+      # EdgeAgent__Printers__0__ApiUrl:    "http://192.168.1.100"
+    networks:
+      - makerprompt
+
+networks:
+  makerprompt:
+    driver: bridge
