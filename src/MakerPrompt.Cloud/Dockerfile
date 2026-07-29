@@ -25,10 +25,9 @@ RUN dotnet publish src/MakerPrompt.Cloud/MakerPrompt.Cloud.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS runtime
 WORKDIR /app
 
-RUN adduser --disabled-password --gecos "" appuser \
-    && mkdir -p /app/data \
-    && chown -R appuser /app
-USER appuser
+RUN mkdir -p /app/data \
+    && chown -R $APP_UID:$APP_UID /app
+USER $APP_UID
 
 COPY --from=build /app/publish .
 

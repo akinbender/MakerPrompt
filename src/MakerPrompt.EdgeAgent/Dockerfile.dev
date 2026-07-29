@@ -24,9 +24,8 @@ RUN dotnet publish src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj \
 FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
-RUN adduser --disabled-password --gecos "" appuser \
-    && mkdir -p /app/data \
-    && chown -R appuser /app
-USER appuser
+RUN mkdir -p /app/data \
+    && chown -R $APP_UID:$APP_UID /app
+USER $APP_UID
 EXPOSE 8080
 ENTRYPOINT ["./MakerPrompt.EdgeAgent"]

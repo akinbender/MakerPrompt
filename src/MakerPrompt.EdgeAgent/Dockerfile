@@ -28,11 +28,10 @@ RUN dotnet publish src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj \
 FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-arm64v8 AS runtime
 WORKDIR /app
 
-# Non-root user for security.
-RUN adduser --disabled-password --gecos "" appuser \
-    && mkdir -p /app/data \
-    && chown -R appuser /app
-USER appuser
+# Use the non-root identity built into official .NET Linux images.
+RUN mkdir -p /app/data \
+    && chown -R $APP_UID:$APP_UID /app
+USER $APP_UID
 
 COPY --from=build /app/publish .
 
