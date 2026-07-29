@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Coverage settings for CI.
-  Used by: dotnet test --collect:"XPlat Code Coverage" --settings coverage.runsettings
+  Used by the CI XPlat Code Coverage data-collector invocation.
   
-  Targets MakerPrompt.Shared — the layer that contains all measurable logic.
-  Excludes: Program.cs, generated files, Razor-compiled UI, DTO-only classes.
+  Targets the host-independent Core, Application, Infrastructure, and shared UI
+  assemblies. Excludes host entry points, generated files, and Razor UI.
 -->
 <RunSettings>
   <DataCollectionRunSettings>
@@ -14,16 +14,11 @@
           <!-- Emit Cobertura XML so Codecov can parse it -->
           <Format>cobertura</Format>
 
-          <!-- Only measure the shared application library -->
-          <Include>[MakerPrompt.Shared]*</Include>
+          <!-- Measure production logic, not host or test assemblies. -->
+          <Include>[MakerPrompt.Core]*,[MakerPrompt.Application]*,[MakerPrompt.Infrastructure*]*,[MakerPrompt.UI.Components]*</Include>
 
           <!-- Exclude UI namespaces — pages, layout, and components are covered by E2E -->
-          <Exclude>
-            [MakerPrompt.Shared]MakerPrompt.Shared.Pages.*,
-            [MakerPrompt.Shared]MakerPrompt.Shared.Layout.*,
-            [MakerPrompt.Shared]MakerPrompt.Shared.Components.*,
-            [MakerPrompt.Shared]MakerPrompt.Shared.BrailleRAP.*
-          </Exclude>
+          <Exclude>[MakerPrompt.UI.Components]MakerPrompt.UI.Components.Pages.*,[MakerPrompt.UI.Components]MakerPrompt.UI.Components.Layout.*,[MakerPrompt.UI.Components]MakerPrompt.UI.Components.Components.*,[MakerPrompt.UI.Components]MakerPrompt.UI.Components.BrailleRAP.*</Exclude>
 
           <!-- Exclude generated and infrastructure-only files -->
           <ExcludeByFile>

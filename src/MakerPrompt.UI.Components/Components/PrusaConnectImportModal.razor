@@ -1,0 +1,257 @@
+@* Two-step Standalone import flow for printers registered to PrusaConnect. *@
+@inject PrusaConnectProvider Provider
+@inject PrinterConnectionManager ConnectionManager
+@inject ToastService ToastService
+@inject ILogger<PrusaConnectImportModal> Logger
+
+<Modal @ref="_modal" Title="Import from PrusaConnect" Size="ModalSize.Large">
+    <BodyTemplate>
+        @if (_step == Step.Token)
+        {
+            <p class="text-muted small mb-3">
+                Enter a PrusaConnect Bearer token to discover the printers registered
+                to your account.
+            </p>
+            <div class="mb-3">
+                <label class="form-label" for="prusaconnect-token">Bearer token</label>
+                <input id="prusaconnect-token" type="password" class="form-control"
+                       autocomplete="off" @bind="_bearerToken"
+                       placeholder="Paste your Bearer token" />
+            </div>
+        }
+        else if (_discoveredPrinters.Count == 0)
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-printer me-2"></i>
+                No printers were found on this PrusaConnect account.
+            </div>
+        }
+        else
+        {
+            <p class="text-muted small mb-3">
+                @_discoveredPrinters.Count printer(s) found. Select the printers to import.
+            </p>
+            <div class="list-group">
+                @foreach (var printer in _discoveredPrinters)
+                {
+                    var alreadyAdded = _alreadyImported.Contains(printer.Id);
+                    <label class="list-group-item list-group-item-action @(alreadyAdded ? "text-muted" : string.Empty)"
+                           style="cursor: @(alreadyAdded ? "default" : "pointer")">
+                        <div class="d-flex align-items-center gap-3">
+                            <input type="checkbox" class="form-check-input flex-shrink-0"
+                                   checked="@_selected.Contains(printer.Id)"
+                                   disabled="@alreadyAdded"
+                                   @onchange="e => ToggleSelection(printer.Id, (bool)(e.Value ?? false))" />
+                            <div>
+                                <div class="fw-semibold">
+                                    @GetDisplayName(printer)
+                                    @if (alreadyAdded)
+                                    {
+                                        <span class="badge bg-secondary ms-2">Already added</span>
+                                    }
+                                </div>
+                                <div class="text-muted small">
+                                    @if (!string.IsNullOrWhiteSpace(printer.Model))
+                                    {
+                                        <span class="me-2">@printer.Model</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(printer.RawStatus))
+                                    {
+                                        <span class="badge bg-light text-dark border">@printer.RawStatus</span>
+                                    }
+                                    <span class="ms-1 font-monospace" style="font-size: 0.75em">@printer.Id</span>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                }
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger d-flex align-items-start gap-2 mt-3 mb-0" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+                <div>@_error</div>
+            </div>
+        }
+    </BodyTemplate>
+
+    <FooterTemplate>
+        <button class="btn btn-outline-secondary" @onclick="CloseAsync" disabled="@_isBusy">
+            Cancel
+        </button>
+        @if (_step == Step.Token)
+        {
+            <button class="btn btn-outline-primary" @onclick="DiscoverAsync"
+                    data-testid="prusaconnect-discover-btn"
+                    disabled="@(_isBusy || string.IsNullOrWhiteSpace(_bearerToken))">
+                @if (_isBusy)
+                {
+                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                    <span>Discovering...</span>
+                }
+                else
+                {
+                    <i class="bi bi-search me-1"></i>
+                    <span>Discover printers</span>
+                }
+            </button>
+        }
+        else
+        {
+            <button class="btn btn-outline-secondary" @onclick="GoBack" disabled="@_isBusy">
+                <i class="bi bi-arrow-left me-1"></i>Back
+            </button>
+            <button class="btn btn-primary" @onclick="ImportAsync"
+                    data-testid="prusaconnect-import-selected-btn"
+                    disabled="@(_isBusy || _selected.Count == 0)">
+                @if (_isBusy)
+                {
+                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                    <span>Importing...</span>
+                }
+                else
+                {
+                    <i class="bi bi-cloud-download me-1"></i>
+                    <span>Import selected (@_selected.Count)</span>
+                }
+            </button>
+        }
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private enum Step { Token, Printers }
+
+    private Modal _modal = default!;
+    private Step _step;
+    private string _bearerToken = string.Empty;
+    private bool _isBusy;
+    private string? _error;
+    private List<PrinterInfo> _discoveredPrinters = [];
+    private HashSet<string> _selected = [];
+    private HashSet<string> _alreadyImported = [];
+
+    public async Task ShowAsync()
+    {
+        _step = Step.Token;
+        _bearerToken = string.Empty;
+        _error = null;
+        _isBusy = false;
+        _discoveredPrinters = [];
+        _selected = [];
+        _alreadyImported = BuildAlreadyImportedSet();
+        await _modal.ShowAsync();
+    }
+
+    private async Task DiscoverAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_bearerToken)) return;
+
+        _isBusy = true;
+        _error = null;
+        try
+        {
+            await Provider.ConfigureAsync(_bearerToken.Trim());
+            _discoveredPrinters = (await Provider.GetPrintersAsync()).ToList();
+            _selected = _discoveredPrinters
+                .Where(printer => !_alreadyImported.Contains(printer.Id))
+                .Select(printer => printer.Id)
+                .ToHashSet(StringComparer.Ordinal);
+            _step = Step.Printers;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "PrusaConnect printer discovery failed");
+            _error = "Could not reach PrusaConnect. Check the Bearer token and network connection.";
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private async Task ImportAsync()
+    {
+        if (_selected.Count == 0) return;
+
+        _isBusy = true;
+        _error = null;
+        var imported = 0;
+        try
+        {
+            foreach (var printer in _discoveredPrinters.Where(p => _selected.Contains(p.Id)))
+            {
+                var definition = new PrinterConnectionDefinition
+                {
+                    Name = GetDisplayName(printer),
+                    ConnectionType = PrinterConnectionType.PrusaConnect,
+                    Settings = new PrinterConnectionSettings
+                    {
+                        ConnectionType = PrinterConnectionType.PrusaConnect,
+                        ProviderId = printer.Id,
+                        Password = _bearerToken.Trim()
+                    }
+                };
+
+                await ConnectionManager.AddPrinterAsync(definition);
+                imported++;
+            }
+
+            var noun = imported == 1 ? "printer" : "printers";
+            ToastService.Notify(new ToastMessage(
+                ToastType.Success, $"{imported} {noun} imported from PrusaConnect"));
+            await _modal.HideAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "PrusaConnect printer import failed");
+            _error = $"Import failed: {ex.Message}";
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        _step = Step.Token;
+        _error = null;
+    }
+
+    private async Task CloseAsync()
+    {
+        _error = null;
+        await _modal.HideAsync();
+    }
+
+    private void ToggleSelection(string id, bool isChecked)
+    {
+        if (isChecked)
+            _selected.Add(id);
+        else
+            _selected.Remove(id);
+    }
+
+    private static string GetDisplayName(PrinterInfo printer)
+    {
+        if (!string.IsNullOrWhiteSpace(printer.Name)) return printer.Name;
+        if (!string.IsNullOrWhiteSpace(printer.Model)) return printer.Model;
+
+        var abbreviatedId = printer.Id[..Math.Min(8, printer.Id.Length)];
+        return $"PrusaConnect {abbreviatedId}";
+    }
+
+    private HashSet<string> BuildAlreadyImportedSet() =>
+        ConnectionManager.Printers
+            .Where(printer =>
+                printer.Definition.ConnectionType == PrinterConnectionType.PrusaConnect)
+            .Select(printer =>
+                printer.Definition.Settings.ProviderId ??
+                printer.Definition.Settings.UserName)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id => id!)
+            .ToHashSet(StringComparer.Ordinal);
+}

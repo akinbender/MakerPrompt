@@ -1,0 +1,65 @@
+﻿@inherits ConnectionComponentBase
+
+<div class="calibration-section">
+    <div class="form-group mb-2">
+        <label>@Localizer[Resources.GCodeDescription_S_TargetTemp]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Temperature" disabled="@(!IsConnected)" 
+               title="@(IsConnected? Localizer[Resources.GCodeDescription_S_TargetTemp] : Localizer[Resources.PrinterStatus_Disconnected])" />
+    </div>
+
+    <div class="form-group mb-2">
+        <label>@Localizer[Resources.GCodeDescription_C_Cycle]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Cycles" disabled="@(!IsConnected)"
+               title="@(IsConnected? Localizer[Resources.GCodeDescription_C_Cycle] : Localizer[Resources.PrinterStatus_Disconnected])" />
+    </div>
+
+    <div class="form-group mb-2">
+        <label>@Localizer[Resources.CalibrationPage_HeaterIndex]:</label>
+        <input type="number" class="form-control" @bind="@HeaterIndex" disabled="@(!CanCalibrate)"
+               title="@(IsConnected? Localizer[Resources.CalibrationPage_HeaterIndex] : Localizer[Resources.PrinterStatus_Disconnected])" />
+        <small>Bed = -1, Hotend = 0</small>
+    </div>
+
+    <button class="btn btn-primary" @onclick="RunPidTuningAsync" disabled="@(!CanCalibrate)">
+        <i class="fas fa-cog"></i> @Localizer[Resources.CalibrationPage_Start]
+    </button>
+
+    @if (!string.IsNullOrEmpty(calibrationResult))
+    {
+        <div class="result-box">
+            <h4>@Localizer[Resources.CalibrationPage_Result]:</h4>
+            <pre>@calibrationResult</pre>
+        </div>
+    }
+</div>
+
+@code{
+    private CalibrationParameters Calibration { get; set; } = new();
+    private int HeaterIndex { get; set; } = 0;
+    private string calibrationResult = string.Empty;
+
+    private bool CanCalibrate =>
+        IsConnected &&
+        (PrinterServiceFactory.Current?.SupportsDirectControl ?? false);
+
+    private async Task RunPidTuningAsync()
+    {
+        if (PrinterServiceFactory.Current is not { SupportsDirectControl: true } printer) return;
+
+        calibrationResult = string.Empty;
+        await RunAsync(
+            () => printer.RunPidTuningAsync(
+                Calibration.Cycles, Calibration.Temperature, HeaterIndex),
+            Localizer[Resources.CalibrationPage_PidTuning]);
+    }
+
+    protected override void HandleTelemetryUpdated(object? sender, PrinterTelemetry printerTelemetry)
+    {
+        if (string.IsNullOrWhiteSpace(printerTelemetry.LastResponse)) return;
+        if (!printerTelemetry.LastResponse.Contains("Kp", StringComparison.OrdinalIgnoreCase) &&
+            !printerTelemetry.LastResponse.Contains("PID", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        calibrationResult = printerTelemetry.LastResponse;
+    }
+}

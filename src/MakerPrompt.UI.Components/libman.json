@@ -1,0 +1,28 @@
+{
+    "version": "3.0",
+    "defaultProvider": "cdnjs",
+    "libraries": [
+        {
+            "provider": "cdnjs",
+            "library": "bootstrap@5.3.3",
+            "destination": "wwwroot/lib/bootstrap/",
+            "files": [
+                "js/bootstrap.min.js",
+                "js/bootstrap.bundle.min.js",
+                "js/bootstrap.bundle.js.map",
+                "css/bootstrap.min.css"
+            ]
+        },
+        {
+          "provider": "cdnjs",
+          "library": "bootstrap-icons@1.11.3",
+          "destination": "wwwroot/lib/bootstrap-icons/",
+          "files": [
+            "font/fonts/bootstrap-icons.woff",
+            "font/fonts/bootstrap-icons.woff2",
+            "font/bootstrap-icons.json",
+            "font/bootstrap-icons.min.css"
+          ]
+        }
+    ]
+}

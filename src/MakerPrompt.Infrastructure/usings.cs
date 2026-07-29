@@ -1,0 +1,10 @@
+global using System.Text;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Text.RegularExpressions;
+global using System.Numerics;
+global using System.Net;
+global using System.Net.Http.Headers;
+global using Microsoft.Extensions.Logging;
+global using MakerPrompt.Core.Models;
+global using MakerPrompt.Core.Abstractions;

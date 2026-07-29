@@ -1,97 +1,49 @@
-﻿# Copilot Instructions
+# Copilot Instructions
 
-## Project Overview
+MakerPrompt is a .NET 10 3D-printer control and monitoring application. Production
+projects are under `src/`; tests are under `tests/`. Read
+`docs/ARCHITECTURE.md` before changing dependencies or Cloud/Edge behavior.
 
-MakerPrompt is a **cross-platform 3D printer control app** built on Blazor WASM + .NET MAUI, targeting .NET 10.
+## Boundaries
 
-- `MakerPrompt.Shared` — Blazor Razor class library (all shared UI, services, models)
-- `MakerPrompt.Blazor` — Blazor WASM browser host
-- `MakerPrompt.MAUI` — .NET MAUI native host (BlazorWebView)
-- `MakerPrompt.Tests` — xUnit test project
+- `MakerPrompt.Core`: host-independent models and contracts; no project references.
+- `MakerPrompt.Application`: cross-host orchestration; depends only on Core.
+- `MakerPrompt.Infrastructure`: protocol, camera, and transport implementations.
+- `MakerPrompt.Infrastructure.Sqlite`: durable Core store implementations.
+- `MakerPrompt.UI.Components`: shared Razor application and UI workflows.
+- `MakerPrompt.UI.Blazor` / `MakerPrompt.UI.MAUI`: platform composition.
+- `MakerPrompt.Cloud`: authenticated, API-only remote monitoring.
+- `MakerPrompt.EdgeAgent`: outbound local polling and forwarding.
 
-## Core Rules
+Do not reintroduce the deleted root-level `MakerPrompt.Shared`,
+`MakerPrompt.Blazor`, `MakerPrompt.MAUI`, or `MakerPrompt.Tests` projects.
 
-- Prefer **additive changes**. Do not refactor unless explicitly asked.
-- **Do not break existing printer backends**.
-- Keep diffs small and reviewable. One concern per change.
-- Do not add speculative features.
+## Implementation rules
 
-## Architecture
+- Printer backends implement
+  `src/MakerPrompt.Core/Abstractions/IPrinterCommunicationService.cs`.
+- Respect direct-control, command, print-start, and queue capability properties
+  in both adapters and UI.
+- Give every managed printer its own disposable adapter instance.
+- Register shared interactive services through
+  `src/MakerPrompt.UI.Components/Utils/ServiceCollectionExtensions.cs`; keep
+  browser/native registrations in their host.
+- Use BlazorBootstrap and existing error-boundary/toast patterns. Log exception
+  details, but show only safe localized messages.
+- Keep storage DTO migration compatible with existing saved configurations.
+  Protect stored credentials and redact exports.
+- Do not add inbound Edge endpoints, Cloud-to-Edge commands, or claims of
+  multi-tenant isolation. Those capabilities are not implemented.
+- Prefer focused changes with tests over broad stylistic rewrites.
 
-### Service Registration
-All shared services register through `RegisterMakerPromptSharedServices<P,L>()` in
-`MakerPrompt.Shared/Utils/ServiceCollectionExtensions.cs`.
-New shared services go here. Host-specific services go in `Program.cs` (Blazor) or `MauiProgram.cs` (MAUI).
+## Validation
 
-### Printer Backends
-All printer logic flows through:
-- `IPrinterCommunicationService` — the contract every backend implements
-- `BasePrinterConnectionService` — base with shared telemetry, events, and connection state
-- `BaseSerialService` — extends the base for serial/USB backends
+Build and test specific projects on hosts without every MAUI workload:
 
-Existing backends (do not break these):
-| Backend | Class | Protocol |
-|---|---|---|
-| PrusaLink | `PrusaLinkApiService` | HTTP/JSON |
-| Moonraker | `MoonrakerApiService` | WebSocket + HTTP |
-| BambuLab | `BambuLabApiService` | proprietary |
-| WebSerial | `WebSerialService` (Blazor only) | WebUSB/Serial via JS interop |
-| Serial | `SerialService.<Platform>.cs` (MAUI) | Native per-platform |
-| Demo | `DemoPrinterService` | in-memory |
-
-Active backend resolved via `PrinterCommunicationServiceFactory` / `PrinterServiceFactory.Current`.
-
-New backends must follow this pattern and register in `RegisterMakerPromptSharedServices`.
-Telemetry must be async and **must not spam logs or command output** (swallow polling errors silently).
-
-### Error Handling
-- `GlobalErrorBoundary` wraps the `<Router>` in both hosts. Catches unhandled Blazor exceptions → `ILogger.LogError` + `ToastService.Notify` + `Recover()`.
-- `ProcessError` provides a `[CascadingParameter]` `Handle(Exception)` for manual try/catch reporting.
-- **Never** put stack traces in UI. Toast = friendly message. Logger = full exception.
-
-### Layout
+```bash
+dotnet build src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj -c Release
+dotnet build src/MakerPrompt.Cloud/MakerPrompt.Cloud.csproj -c Release
+dotnet build src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj -c Release
+dotnet test tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj -c Release
+dotnet test tests/MakerPrompt.Tests.Integration/MakerPrompt.Tests.Integration.csproj -c Release
 ```
-MainLayout
-  ├─ <header> sticky navbar — NavConnection (printer dropdown)
-  ├─ .layout-body (flex row, fills remaining height)
-  │     ├─ NavMenu  — collapseable sidebar (220px expanded / 48px icon-only)
-  │     └─ <main class="layout-main">
-  │           └─ .layout-content
-  │                 ├─ .layout-page → @Body
-  │                 └─ .layout-right (CommandPrompt + GCodeViewer, hidden <992px)
-  └─ <Toasts> BottomRight, AutoHide 4s
-```
-
-Sidebar collapse state: `_navCollapsed` bool in `MainLayout`, passed as `[Parameter] bool Collapsed` to `NavMenu`.
-CSS layout uses flexbox (`flex: 1; min-height: 0`). Do NOT use `vh-100` / `min-vh-100` in the shell.
-The `#app` element is scaled 80% via CSS transform — logical dimensions are 125% of viewport.
-
-### UI Rules
-- Use **BlazorBootstrap** for modals, toasts, and alerts.
-- Toast: `ToastService.Notify(new ToastMessage(ToastType.X, "title", "message"))`.
-- Conditional UI (buttons, tabs, cards) only when the feature is supported — check `IsConnected`, `IsPrinting`, etc.
-- Bootstrap Icons (`bi bi-*`) are available for icons.
-
-### Localization
-- Strings: `MakerPrompt.Shared/Properties/Resources.resx` (and locale files).
-- In Razor: `@inject IStringLocalizer<Resources> Localizer` → `@Localizer[Resources.SomeKey]`.
-- Always add the key to the .resx file before using it.
-
-### Storage / Config
-- `IAppLocalStorageProvider` — localStorage (Blazor) / Preferences (MAUI).
-- `IAppConfigurationService` / `AppConfiguration` — app-wide config, initialized on startup.
-
-## Key Files
-
-| File | Purpose |
-|---|---|
-| `MakerPrompt.Shared/Infrastructure/IPrinterCommunicationService.cs` | Backend contract |
-| `MakerPrompt.Shared/Infrastructure/BasePrinterConnectionService.cs` | Backend base class |
-| `MakerPrompt.Shared/Utils/ServiceCollectionExtensions.cs` | Shared DI registration |
-| `MakerPrompt.Shared/Layout/MainLayout.razor` | App shell + sidebar toggle |
-| `MakerPrompt.Shared/Layout/NavMenu.razor` | Collapseable sidebar |
-| `MakerPrompt.Shared/Components/GlobalErrorBoundary.cs` | Global unhandled exception → toast |
-| `MakerPrompt.Shared/Components/ProcessError.razor` | Cascading manual error handler |
-| `MakerPrompt.Shared/wwwroot/css/app.css` | Flexbox layout, sidebar, theme CSS vars |
-| `MakerPrompt.Blazor/App.razor` | Blazor WASM root (ProcessError > GlobalErrorBoundary > Router) |
-| `MakerPrompt.MAUI/Components/Routes.razor` | MAUI root (same wrapping) |

@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,18 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MakerPrompt</title>
     <meta name="title" content="MakerPrompt - Open Source 3D Printer Management">
-    <meta name="description" content="Cross-platform interface for 3D printer management. Supports Prusalink, Moonraker, and direct serial control. Developed at x-hain hackspace using Blazor Hybrid.">
-    <meta name="keywords" content="3D printer management, 3D printer maintenance, Blazor Hybrid, open source 3D printing, Pronterface alternative, Prusalink, Moonraker, Web Serial control" />
+    <meta name="description" content="Cross-platform, open-source 3D printer management for local serial and network-connected printers.">
+    <meta name="keywords" content="3D printer management, Blazor Hybrid, open source 3D printing, PrusaLink, Prusa Connect, Moonraker, OctoPrint, Web Serial" />
     <meta name="robots" content="index, follow">
     <meta name="author" content="Akın Bender" />
     <base href="/" />
-    <link rel="stylesheet" href="MakerPrompt.Blazor.styles.css" />
-    <link rel="stylesheet" href="_content/MakerPrompt.Shared/lib/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="_content/MakerPrompt.Shared/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="_content/MakerPrompt.Shared/css/app.css" />
-    <link rel="icon" type="image/png" href="_content/MakerPrompt.Shared/favicon.png" />
+    <script>
+        (function () {
+            try {
+                var configJson = window.localStorage.getItem('AppConfig');
+                var themeKey = 'auto';
+                if (configJson) {
+                    var config = JSON.parse(configJson);
+                    if (config && config.Theme !== undefined && config.Theme !== null) {
+                        var raw = config.Theme;
+                        if (typeof raw === 'string') {
+                            themeKey = raw.toLowerCase();
+                        } else if (typeof raw === 'number') {
+                            switch (raw) {
+                                case 1: themeKey = 'light'; break;
+                                case 2: themeKey = 'dark'; break;
+                                case 3: themeKey = 'mpdark'; break;
+                                default: themeKey = 'auto'; break;
+                            }
+                        }
+                    }
+                }
+
+                var resolvedTheme = themeKey;
+                if (!resolvedTheme || resolvedTheme === 'auto') {
+                    resolvedTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                        ? 'dark'
+                        : 'light';
+                }
+
+                document.documentElement.setAttribute('data-bs-theme', resolvedTheme);
+                document.documentElement.style.colorScheme = resolvedTheme;
+            } catch { }
+        })();
+    </script>
+    <link rel="stylesheet" href="MakerPrompt.UI.Blazor.styles.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.UI.Components/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.UI.Components/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="_content/Blazor.Bootstrap/blazor.bootstrap.css" />
+    <link rel="stylesheet" href="_content/MakerPrompt.UI.Components/css/app.css" />
+    <link rel="icon" type="image/png" href="_content/MakerPrompt.UI.Components/favicon.png" />
     <link href="manifest.webmanifest" rel="manifest" />
-    <link rel="apple-touch-icon" sizes="512x512" href="favicon.png" />
+    <link rel="apple-touch-icon" href="_content/MakerPrompt.UI.Components/favicon.png" />
     <script type="text/javascript">
         // Single Page Apps for GitHub Pages
         // https://github.com/rafrex/spa-github-pages
@@ -65,9 +100,10 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="decode.js"></script>
-    <script src="_content/MakerPrompt.Shared/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="_content/MakerPrompt.Shared/lib/gcode-viewer/_bundles/gcode-viewer.min.js"></script>
+    <script src="_content/MakerPrompt.UI.Components/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="_content/MakerPrompt.UI.Components/lib/gcode-preview/gcode-preview.bundle.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script>
         window.blazorCulture = {

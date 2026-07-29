@@ -1,0 +1,33 @@
+# Cloud — Local dev (x64, hot-reload friendly)
+# Build: docker build -f src/MakerPrompt.Cloud/Dockerfile.dev -t makerprompt/cloud:dev .
+# (Run from repo root)
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY MakerPrompt.sln .
+COPY src/MakerPrompt.Core/MakerPrompt.Core.csproj                           src/MakerPrompt.Core/
+COPY src/MakerPrompt.Infrastructure/MakerPrompt.Infrastructure.csproj       src/MakerPrompt.Infrastructure/
+COPY src/MakerPrompt.Infrastructure.Sqlite/MakerPrompt.Infrastructure.Sqlite.csproj src/MakerPrompt.Infrastructure.Sqlite/
+COPY src/MakerPrompt.Cloud/MakerPrompt.Cloud.csproj                         src/MakerPrompt.Cloud/
+RUN dotnet restore src/MakerPrompt.Cloud/MakerPrompt.Cloud.csproj
+
+COPY src/ src/
+RUN dotnet publish src/MakerPrompt.Cloud/MakerPrompt.Cloud.csproj \
+    -c Debug \
+    -r linux-x64 \
+    --self-contained false \
+    -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+RUN adduser --disabled-password --gecos "" appuser \
+    && mkdir -p /app/data \
+    && chown -R appuser /app
+USER appuser
+
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENTRYPOINT ["dotnet", "MakerPrompt.Cloud.dll"]
