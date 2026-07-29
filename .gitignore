@@ -57,5 +57,16 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
+# Local runtime state and secrets
+.env
+.env.*
+!.env.example
+**/appsettings.Local.json
+**/appsettings.Production.json
+**/data/
+*.db
+*.db-shm
+*.db-wal
+
 # Apple
 .DS_Store

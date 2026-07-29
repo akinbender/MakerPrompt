@@ -9,13 +9,15 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: read
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
 
@@ -27,14 +29,36 @@ jobs:
         dotnet workload install maui
         dotnet workload install maui-windows
         
+    - name: Restore dependencies (MAUI Windows)
+      run: dotnet restore src/MakerPrompt.UI.MAUI/MakerPrompt.UI.MAUI.csproj -p:TargetFramework=net10.0-windows10.0.19041.0 -r win-x64
+
     - name: Restore dependencies (Blazor)
-      run: dotnet restore MakerPrompt.Blazor/MakerPrompt.Blazor.csproj
+      run: dotnet restore src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj
+
+    - name: Restore dependencies (Cloud and Edge)
+      run: |
+        dotnet restore src/MakerPrompt.Cloud/MakerPrompt.Cloud.csproj
+        dotnet restore src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj
+
+    - name: Restore dependencies (Unit tests)
+      run: |
+        dotnet restore tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj
+        dotnet restore tests/MakerPrompt.Tests.Integration/MakerPrompt.Tests.Integration.csproj
 
     - name: Build (Windows)
-      run: dotnet build MakerPrompt.MAUI/MakerPrompt.MAUI.csproj -c Release -f net10.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64
+      run: dotnet build src/MakerPrompt.UI.MAUI/MakerPrompt.UI.MAUI.csproj -c Release -f net10.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64 --no-restore
 
     - name: Build (Blazor WebAssembly)
-      run: dotnet build MakerPrompt.Blazor/MakerPrompt.Blazor.csproj -c Release --no-restore
+      run: dotnet build src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj -c Release --no-restore
+
+    - name: Build (Cloud)
+      run: dotnet build src/MakerPrompt.Cloud/MakerPrompt.Cloud.csproj -c Release --no-restore
+
+    - name: Build (EdgeAgent)
+      run: dotnet build src/MakerPrompt.EdgeAgent/MakerPrompt.EdgeAgent.csproj -c Release --no-restore
 
     - name: Test (Unit)
-      run: dotnet test MakerPrompt.Tests/MakerPrompt.Tests.csproj -c Release
+      run: dotnet test tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj -c Release --no-restore
+
+    - name: Test (Cloud integration)
+      run: dotnet test tests/MakerPrompt.Tests.Integration/MakerPrompt.Tests.Integration.csproj -c Release --no-restore

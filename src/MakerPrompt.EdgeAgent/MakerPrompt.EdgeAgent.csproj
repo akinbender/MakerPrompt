@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>MakerPrompt.EdgeAgent</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MakerPrompt.Application\MakerPrompt.Application.csproj" />
+    <ProjectReference Include="..\MakerPrompt.Core\MakerPrompt.Core.csproj" />
+    <ProjectReference Include="..\MakerPrompt.Infrastructure\MakerPrompt.Infrastructure.csproj" />
+    <ProjectReference Include="..\MakerPrompt.Infrastructure.Sqlite\MakerPrompt.Infrastructure.Sqlite.csproj" />
+  </ItemGroup>
+
+</Project>

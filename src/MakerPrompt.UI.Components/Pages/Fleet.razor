@@ -1,0 +1,387 @@
+@page "/fleet"
+@* ─────────────────────────────────────────────────────────────────────
+   Fleet Dashboard — Farm mode main landing page.
+   
+   Shows all saved printers as cards. Clicking a connected printer opens
+   the full Dashboard (ControlPanel / PID / Thermal) inline. Disconnected
+   printers show a connect button. Each card has edit/delete actions that
+   appear when the card is selected.
+   ───────────────────────────────────────────────────────────────────── *@
+@using MakerPrompt.UI.Components.Infrastructure
+@using static MakerPrompt.UI.Components.Utils.Enums
+@inject PrinterConnectionManager ConnectionManager
+@inject FilamentInventoryService FilamentInventoryService
+@inject IAppConfigurationService ConfigService
+@inject NavigationManager Navigation
+@inject IPrinterCameraProvider CameraProvider
+@inject IStringLocalizer<Resources> localizer
+@inject ToastService ToastService
+@inject ILogger<Fleet> Logger
+@implements IDisposable
+
+<LocalizedTitle TitleKey="@Resources.PageTitle_Fleet" />
+
+@* ── Selected printer → show Dashboard ── *@
+@if (_selectedPrinter?.Service?.IsConnected == true)
+{
+    <div class="container-fluid">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <button class="btn btn-sm btn-outline-secondary" @onclick="DeselectPrinter">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <h5 class="mb-0">@_selectedPrinter.Definition.Name</h5>
+            <span class="badge bg-success">@_selectedPrinter.Status.GetLocalizedDisplayName()</span>
+            <button class="btn btn-sm btn-outline-danger ms-auto"
+                    @onclick="() => DisconnectAsync(_selectedPrinter.Definition.Id)"
+                    disabled="@_selectedPrinter.IsBusy"
+                    title="@localizer[Resources.NavConnection_Disconnect]">
+                <i class="bi bi-x-circle me-1"></i>@localizer[Resources.NavConnection_Disconnect]
+            </button>
+        </div>
+        <ControlPanel @key="_selectedPrinterId" />
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        @* ── Toolbar ── *@
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <button class="btn btn-outline-secondary"
+                    @onclick="() => _importModal!.ShowAsync()"
+                    data-testid="fleet-prusaconnect-import-btn">
+                <i class="bi bi-cloud-download me-1"></i>Import from PrusaConnect
+            </button>
+            <button class="btn btn-outline-primary" @onclick="() => ConnectionModal!.ShowAddAsync()" data-testid="fleet-add-btn">
+                <i class="bi bi-plus-circle me-1"></i>@localizer[Resources.Fleet_AddPrinter]
+            </button>
+        </div>
+
+        <PrusaConnectImportModal @ref="_importModal" />
+
+        @if (!ConnectionManager.Printers.Any())
+        {
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="bi bi-info-circle me-2" style="font-size: 1.5rem;"></i>
+                <div>
+                    @localizer[Resources.Fleet_NoPrinters]
+                    <br />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+                @foreach (var printer in ConnectionManager.Printers)
+                {
+                    var isSelected = _selectedPrinterId == printer.Definition.Id;
+                    <div class="col">
+                        <div class="card h-100 @(isSelected ? "border-primary" : "")" style="cursor: pointer;" @onclick="() => SelectPrinter(printer)">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi @GetStatusIcon(printer) @GetStatusColor(printer)"></i>
+                                    <strong>@printer.Definition.Name</strong>
+                                </div>
+                                @if (isSelected)
+                                {
+                                    <div class="d-flex gap-1" @onclick:stopPropagation="true">
+                                        @if (printer.Status == PrinterStatus.Disconnected || printer.Status == PrinterStatus.Error)
+                                        {
+                                            <button class="btn btn-sm btn-outline-success" @onclick="() => ConnectAsync(printer.Definition.Id)" title="@localizer[Resources.NavConnection_Connect]" disabled="@printer.IsBusy">
+                                                @if (printer.IsBusy)
+                                                {
+                                                    <span class="spinner-border spinner-border-sm"></span>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-plug"></i>
+                                                }
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DisconnectAsync(printer.Definition.Id)" title="@localizer[Resources.NavConnection_Disconnect]" disabled="@printer.IsBusy">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        }
+                                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => ConnectionModal!.ShowEditAsync(printer.Definition)" title="@localizer[Resources.Fleet_EditPrinter]">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePrinter(printer.Definition.Id)" title="@localizer[Resources.Fleet_DeletePrinter]">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                            <div class="card-body">
+                                @if (printer.Status == PrinterStatus.Disconnected || printer.Status == PrinterStatus.Error)
+                                {
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-plug text-muted" style="font-size: 3rem;"></i>
+                                        <p class="text-muted mt-2">@printer.Status.GetLocalizedDisplayName()</p>
+                                        @if (!string.IsNullOrEmpty(printer.LastError))
+                                        {
+                                            <small class="text-danger d-block">@printer.LastError</small>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    @* ── Temperatures ── *@
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="bi bi-thermometer-half text-danger"></i>
+                                                <div>
+                                                    <small class="text-muted d-block">@localizer[Resources.PrinterComponent_Hotend]</small>
+                                                    <strong>@($"{printer.Telemetry.HotendTemp:F1}°C")</strong>
+                                                    <small class="text-muted">&rarr; @($"{printer.Telemetry.HotendTarget:F0}°C")</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="bi bi-align-bottom text-warning"></i>
+                                                <div>
+                                                    <small class="text-muted d-block">@localizer[Resources.PrinterComponent_Heatbed]</small>
+                                                    <strong>@($"{printer.Telemetry.BedTemp:F1}°C")</strong>
+                                                    <small class="text-muted">&rarr; @($"{printer.Telemetry.BedTarget:F0}°C")</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @* ── Progress ── *@
+                                    @if (printer.Telemetry.SDCard.Printing || printer.Status == PrinterStatus.Printing)
+                                    {
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <small>@localizer[Resources.Fleet_Progress]</small>
+                                                <small>@($"{printer.Telemetry.SDCard.Progress:F0}%")</small>
+                                            </div>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                                                     role="progressbar"
+                                                     style="width: @($"{printer.Telemetry.SDCard.Progress:F0}%")"
+                                                     aria-valuenow="@printer.Telemetry.SDCard.Progress"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @* ── Camera Preview ── *@
+                                    @if (_cameras.TryGetValue(printer.Definition.Id, out var cam) && cam is not null)
+                                    {
+                                        <div class="mb-2">
+                                            <WebcamViewer Camera="@cam" SnapshotInterval="@TimeSpan.FromSeconds(5)" />
+                                        </div>
+                                    }
+
+                                    @* ── Assigned Filament ── *@
+                                    @if (ConfigService.Configuration.EnableFilamentInventory && printer.Definition.AssignedFilamentSpoolId.HasValue)
+                                    {
+                                        var spool = FilamentInventoryService.GetSpool(printer.Definition.AssignedFilamentSpoolId.Value);
+                                        if (spool != null)
+                                        {
+                                            <div class="mt-3 pt-3 border-top">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted"><i class="bi bi-vinyl-fill me-1"></i>@spool.Name</small>
+                                                    <small class="text-muted">@($"{spool.RemainingWeightGrams:F0}g / {spool.TotalWeightGrams:F0}g")</small>
+                                                </div>
+                                                <div class="progress mt-1" style="height: 4px;">
+                                                    <div class="progress-bar @(spool.RemainingWeightGrams < spool.TotalWeightGrams * 0.1 ? "bg-danger" : "bg-info")"
+                                                         role="progressbar"
+                                                         style="width: @($"{(spool.RemainingWeightGrams / spool.TotalWeightGrams) * 100:F0}%")">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [CascadingParameter] private PrinterConnectionModal? ConnectionModal { get; set; }
+
+    private PrusaConnectImportModal? _importModal;
+    private readonly Dictionary<Guid, PrinterCamera?> _cameras = new();
+
+    // Selection state
+    private Guid? _selectedPrinterId;
+    private ManagedPrinterState? _selectedPrinter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConfigService.InitializeAsync();
+        if (!ConfigService.Configuration.FarmModeEnabled)
+        {
+            Navigation.NavigateTo("/dashboard", replace: true);
+            return;
+        }
+        ConnectionManager.PrintersChanged += HandlePrintersChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshCameraUrlsAsync();
+        }
+    }
+
+    private async void HandlePrintersChanged(object? sender, EventArgs e)
+    {
+        // Keep selected printer reference fresh
+        if (_selectedPrinterId.HasValue)
+        {
+            _selectedPrinter = ConnectionManager.Printers.ToList().FirstOrDefault(p => p.Definition.Id == _selectedPrinterId);
+            if (_selectedPrinter == null)
+                _selectedPrinterId = null;
+            // When the selected printer just became connected (e.g. user hit Connect
+            // while its card was selected), sync factory.Current before the re-render
+            // creates the dashboard — otherwise the StorageExplorer reads stale data.
+            else if (_selectedPrinter.Service?.IsConnected == true && !_selectedPrinter.IsActive)
+                ConnectionManager.SetActivePrinter(_selectedPrinter.Definition.Id);
+        }
+
+        await RefreshCameraUrlsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Selection ──
+    private void SelectPrinter(ManagedPrinterState printer)
+    {
+        if (_selectedPrinterId == printer.Definition.Id && printer.Service?.IsConnected != true)
+        {
+            // Clicking the already-selected card again deselects it
+            _selectedPrinterId = null;
+            _selectedPrinter = null;
+            return;
+        }
+
+        _selectedPrinterId = printer.Definition.Id;
+        _selectedPrinter = printer;
+
+        // If connected, sync to factory so Dashboard/ControlPanel/CommandPrompt work
+        if (printer.Service?.IsConnected == true)
+        {
+            ConnectionManager.SetActivePrinter(printer.Definition.Id);
+        }
+    }
+
+    private void DeselectPrinter()
+    {
+        _selectedPrinterId = null;
+        _selectedPrinter = null;
+    }
+
+    // ── Camera ──
+    private async Task RefreshCameraUrlsAsync()
+    {
+        foreach (var printer in ConnectionManager.Printers.ToList())
+        {
+            if (printer.Service == null || !printer.Service.IsConnected)
+            {
+                _cameras.Remove(printer.Definition.Id);
+                continue;
+            }
+
+            try
+            {
+                IReadOnlyList<PrinterCamera> cameras = printer.Service switch
+                {
+                    MoonrakerApiService moonraker => await moonraker.GetCamerasAsync(),
+                    OctoPrintApiService octoprint => await octoprint.GetCamerasAsync(),
+                    BambuLabApiService bambu => await bambu.GetCamerasAsync(),
+                    PrusaLinkApiService prusa => await prusa.GetCamerasAsync(),
+                    PrusaConnectPrinterService prusaConnect => await prusaConnect.GetCamerasAsync(),
+                    _ => Array.Empty<PrinterCamera>()
+                };
+
+                _cameras[printer.Definition.Id] = cameras.FirstOrDefault();
+            }
+            catch
+            {
+                _cameras.Remove(printer.Definition.Id);
+            }
+        }
+    }
+
+    // ── Connection actions ──
+    private async Task ConnectAsync(Guid id)
+    {
+        try { await ConnectionManager.ConnectPrinterAsync(id); }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Fleet: connect failed");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_ConnectFailed], ex.Message));
+        }
+    }
+
+    private async Task DisconnectAsync(Guid id)
+    {
+        try { await ConnectionManager.DisconnectPrinterAsync(id); }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Fleet: disconnect failed");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_DisconnectFailed], ex.Message));
+        }
+    }
+
+    private async Task DeletePrinter(Guid id)
+    {
+        try
+        {
+            await ConnectionManager.RemovePrinterAsync(id);
+            if (_selectedPrinterId == id)
+            {
+                _selectedPrinterId = null;
+                _selectedPrinter = null;
+            }
+            ToastService.Notify(new ToastMessage(ToastType.Success, localizer[Resources.NavPrinters_PrinterRemoved]));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to delete printer");
+            ToastService.Notify(new ToastMessage(ToastType.Danger, localizer[Resources.NavPrinters_DeleteFailed], ex.Message));
+        }
+    }
+
+    // ── Helpers ──
+    private static string GetStatusIcon(ManagedPrinterState printer)
+    {
+        return printer.Status switch
+        {
+            PrinterStatus.Connected => "bi-check-circle-fill",
+            PrinterStatus.Printing => "bi-play-circle-fill",
+            PrinterStatus.Paused => "bi-pause-circle-fill",
+            PrinterStatus.Error => "bi-exclamation-circle-fill",
+            _ => "bi-dash-circle"
+        };
+    }
+
+    private static string GetStatusColor(ManagedPrinterState printer)
+    {
+        return printer.Status switch
+        {
+            PrinterStatus.Connected => "text-success",
+            PrinterStatus.Printing => "text-primary",
+            PrinterStatus.Paused => "text-warning",
+            PrinterStatus.Error => "text-danger",
+            _ => "text-muted"
+        };
+    }
+
+    public void Dispose()
+    {
+        ConnectionManager.PrintersChanged -= HandlePrintersChanged;
+    }
+}

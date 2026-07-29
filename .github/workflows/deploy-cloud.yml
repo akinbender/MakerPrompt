@@ -1,0 +1,29 @@
+# Cloud deployment is intentionally gated off until the private infrastructure
+# repository and its deployment contract can be restored. Setting the repository
+# variable CLOUD_DEPLOYMENT_ENABLED to "true" only enables this guard job; replace
+# the placeholder step with the reviewed private-infrastructure deployment before
+# enabling the variable.
+name: Deploy Cloud (disabled)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: GHCR Cloud image tag or digest to deploy
+        required: true
+        default: latest
+
+jobs:
+  deploy:
+    if: ${{ vars.CLOUD_DEPLOYMENT_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    environment: cloud
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Deployment is not configured
+        run: |
+          echo "::error::Cloud deployment is disabled until the private infrastructure workflow is restored."
+          exit 1

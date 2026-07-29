@@ -1,0 +1,52 @@
+﻿@inherits ConnectionComponentBase
+
+<div class="calibration-section">
+    <div class="form-group mb-2">
+        <label>@Localizer[Resources.GCodeDescription_S_TargetTemp]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Temperature" disabled="@(!IsConnected)" />
+    </div>
+
+    <div class="form-group mb-2">
+        <label>@Localizer[Resources.GCodeDescription_C_Cycle]:</label>
+        <input type="number" class="form-control" @bind="@Calibration.Cycles" disabled="@(!IsConnected)" />
+    </div>
+
+    <button class="btn btn-primary" @onclick="RunThermalModelCalibrationAsync" disabled="@(!CanCalibrate)">
+        <i class="fas fa-fire"></i> @Localizer[Resources.CalibrationPage_Start]
+    </button>
+
+    @if (!string.IsNullOrWhiteSpace(calibrationResult))
+    {
+        <div class="result-box">
+            <h4>@Localizer[Resources.CalibrationPage_Result]:</h4>
+            <pre>@calibrationResult</pre>
+        </div>
+    }
+</div>
+
+@code {
+    private CalibrationParameters Calibration { get; set; } = new();
+    private string calibrationResult = string.Empty;
+
+    private bool CanCalibrate =>
+        IsConnected &&
+        (PrinterServiceFactory.Current?.SupportsDirectControl ?? false);
+
+    private async Task RunThermalModelCalibrationAsync()
+    {
+        if (PrinterServiceFactory.Current is not { SupportsDirectControl: true } printer) return;
+
+        calibrationResult = string.Empty;
+        await RunAsync(
+            () => printer.RunThermalModelCalibrationAsync(
+                Calibration.Cycles, Calibration.Temperature),
+            Localizer[Resources.CalibrationPage_ThermalModel]);
+    }
+
+    protected override void HandleTelemetryUpdated(
+        object? sender, PrinterTelemetry printerTelemetry)
+    {
+        if (!string.IsNullOrWhiteSpace(printerTelemetry.LastResponse))
+            calibrationResult = printerTelemetry.LastResponse;
+    }
+}

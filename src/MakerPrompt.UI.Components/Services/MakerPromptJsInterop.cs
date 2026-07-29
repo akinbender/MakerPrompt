@@ -1,0 +1,63 @@
+﻿using Microsoft.AspNetCore.Components;
+
+namespace MakerPrompt.UI.Components.Services
+{
+    public class MakerPromptJsInterop : IAsyncDisposable
+    {
+        private readonly IJSRuntime jsRuntime;
+        private readonly Lazy<Task<IJSObjectReference>> moduleTask;
+
+        public MakerPromptJsInterop(IJSRuntime jsRuntime)
+        {
+            this.jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
+            moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/MakerPrompt.UI.Components/js/makerpromptJsInterop.js").AsTask());
+        }
+
+        public async ValueTask ScrollToBottom(ElementReference container)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("scrollToBottom", container);
+        }
+
+        public async ValueTask CopyToClipboard(string text)
+        {
+            await jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        }
+
+        public async ValueTask DownloadFileAsync(string filename, string content)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("downloadFile", filename, content);
+        }
+
+        // https://github.com/remcoder/gcode-preview — MIT, supports Klipper/Moonraker, PrusaLink, Cura, Marlin G-code
+        public async ValueTask InitializeViewerAsync(ElementReference container, string gcodeContent)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("initializeViewer", container, gcodeContent);
+        }
+
+        public async ValueTask DisposeViewerAsync(ElementReference container)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync("disposeViewer", container);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (moduleTask.IsValueCreated)
+            {
+                try
+                {
+                    var module = await moduleTask.Value;
+                    await module.DisposeAsync();
+                }
+                catch
+                {
+                    // ignore JS module dispose errors
+                }
+            }
+        }
+    }
+}

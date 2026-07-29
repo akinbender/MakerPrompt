@@ -11,6 +11,8 @@ jobs:
   playwright-wasm:
     name: E2E — Playwright (Blazor WASM)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -21,23 +23,23 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install WASM workload
+      - name: Install WebAssembly workload
         run: dotnet workload install wasm-tools
 
       - name: Restore
-        run: dotnet restore MakerPrompt.E2E.Wasm/MakerPrompt.E2E.Wasm.csproj
+        run: dotnet restore tests/MakerPrompt.Tests.E2E.Wasm/MakerPrompt.Tests.E2E.Wasm.csproj
 
       - name: Build E2E project
-        run: dotnet build MakerPrompt.E2E.Wasm/MakerPrompt.E2E.Wasm.csproj --no-restore -c Release
+        run: dotnet build tests/MakerPrompt.Tests.E2E.Wasm/MakerPrompt.Tests.E2E.Wasm.csproj --no-restore -c Release
 
       - name: Install Playwright browsers
-        run: pwsh MakerPrompt.E2E.Wasm/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        run: pwsh tests/MakerPrompt.Tests.E2E.Wasm/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
 
       - name: Run Playwright E2E tests
         env:
           E2E_HEADLESS: "true"
         run: |
-          dotnet test MakerPrompt.E2E.Wasm/MakerPrompt.E2E.Wasm.csproj \
+          dotnet test tests/MakerPrompt.Tests.E2E.Wasm/MakerPrompt.Tests.E2E.Wasm.csproj \
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=wasm-e2e-results.trx" \
@@ -54,6 +56,8 @@ jobs:
   playwright-maui:
     name: E2E — Playwright (MAUI Windows)
     runs-on: windows-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -74,25 +78,25 @@ jobs:
 
       - name: Build MAUI app (Debug — enables CDP debugging port)
         run: >
-          dotnet build MakerPrompt.MAUI/MakerPrompt.MAUI.csproj
+          dotnet build src/MakerPrompt.UI.MAUI/MakerPrompt.UI.MAUI.csproj
           -c Debug
           -f net10.0-windows10.0.19041.0
           -p:RuntimeIdentifierOverride=win-x64
 
       - name: Restore E2E.Maui
-        run: dotnet restore MakerPrompt.E2E.Maui/MakerPrompt.E2E.Maui.csproj
+        run: dotnet restore tests/MakerPrompt.Tests.E2E.Maui/MakerPrompt.Tests.E2E.Maui.csproj
 
       - name: Build E2E.Maui project
-        run: dotnet build MakerPrompt.E2E.Maui/MakerPrompt.E2E.Maui.csproj --no-restore -c Release
+        run: dotnet build tests/MakerPrompt.Tests.E2E.Maui/MakerPrompt.Tests.E2E.Maui.csproj --no-restore -c Release
 
       - name: Install Playwright browsers
-        run: pwsh MakerPrompt.E2E.Maui/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        run: pwsh tests/MakerPrompt.Tests.E2E.Maui/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
 
       - name: Run MAUI E2E tests
         env:
-          MAUI_APP_PATH: ${{ github.workspace }}\MakerPrompt.MAUI\bin\Debug\net10.0-windows10.0.19041.0\win-x64\MakerPrompt.MAUI.exe
+          MAUI_APP_PATH: ${{ github.workspace }}\src\MakerPrompt.UI.MAUI\bin\Debug\net10.0-windows10.0.19041.0\win-x64\MakerPrompt.UI.MAUI.exe
         run: |
-          dotnet test MakerPrompt.E2E.Maui/MakerPrompt.E2E.Maui.csproj `
+          dotnet test tests/MakerPrompt.Tests.E2E.Maui/MakerPrompt.Tests.E2E.Maui.csproj `
             --no-build `
             --configuration Release `
             --logger "trx;LogFileName=maui-e2e-results.trx" `

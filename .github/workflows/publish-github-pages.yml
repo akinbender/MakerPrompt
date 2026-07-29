@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  WASM_PROJECT: 'MakerPrompt.Blazor/MakerPrompt.Blazor.csproj'
+  WASM_PROJECT: 'src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj'
   OUTPUT_DIR: 'publish_wasm'
 
 concurrency:
@@ -32,7 +32,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install MAUI workloads
+      - name: Install WebAssembly workload
         run: dotnet workload install wasm-tools
 
       - name: Publish Blazor App

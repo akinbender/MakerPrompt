@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "MakerPrompt.Cloud": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "health",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:54778;http://localhost:54779"
+    }
+  }
+}

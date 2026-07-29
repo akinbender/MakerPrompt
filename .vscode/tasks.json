@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/MakerPrompt.Blazor/MakerPrompt.Blazor.csproj",
+        "${workspaceFolder}/src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -24,9 +24,20 @@
       "args": [
         "watch",
         "--project",
-        "${workspaceFolder}/MakerPrompt.Blazor/MakerPrompt.Blazor.csproj"
+        "${workspaceFolder}/src/MakerPrompt.UI.Blazor/MakerPrompt.UI.Blazor.csproj"
       ],
       "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test-unit",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/tests/MakerPrompt.Tests.Unit/MakerPrompt.Tests.Unit.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "test"
     }
   ]
 }

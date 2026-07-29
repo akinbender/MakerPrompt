@@ -6,19 +6,21 @@ on:
     - 'v*'
 
 env:
-  MAUI_PROJECT_DIR: 'MakerPrompt.MAUI/'
-  MAUI_PROJECT: 'MakerPrompt.MAUI/MakerPrompt.MAUI.csproj'
+  MAUI_PROJECT_DIR: 'src/MakerPrompt.UI.MAUI/'
+  MAUI_PROJECT: 'src/MakerPrompt.UI.MAUI/MakerPrompt.UI.MAUI.csproj'
   OUTPUT_DIR: 'publish'
 
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
 
@@ -27,38 +29,30 @@ jobs:
 
     - name: Install MAUI workloads
       run: |
-        dotnet workload install maui
-        dotnet workload install maui-desktop
+        dotnet workload install maui-windows
         dotnet workload install maui-android
 
-    - name: Restore dependencies
-      run: dotnet restore ${{ env.MAUI_PROJECT }}
+    - name: Publish MAUI Windows 10 (x64)
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-windows10.0.19041.0 -r win-x64 -p:WindowsPackageType=None --self-contained false -o ${{ env.OUTPUT_DIR }}/windows10-x64
 
-
-    - name: Publish MAUI Windows 10
-      continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-windows10.0.19041.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows10
-
-    - name: Publish MAUI Windows 11
-      continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-windows10.0.22000.0 -p:WindowsPackageType=None -o ${{ env.OUTPUT_DIR }}/windows11
+    - name: Publish MAUI Windows 11 (x64)
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-windows10.0.22000.0 -r win-x64 -p:WindowsPackageType=None --self-contained false -o ${{ env.OUTPUT_DIR }}/windows11-x64
 
     - name: Publish MAUI Android
-      continue-on-error: true
       run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-android -o ${{ env.OUTPUT_DIR }}/android
 
 
-    - name: Zip Windows 10 Release
+    - name: Zip Windows 10 x64 release
       uses: vimtor/action-zip@v1.2
       with:
-        files: ${{ env.OUTPUT_DIR }}/windows10
-        dest: windows10-release.zip
+        files: ${{ env.OUTPUT_DIR }}/windows10-x64
+        dest: windows10-x64-release.zip
 
-    - name: Zip Windows 11 Release
+    - name: Zip Windows 11 x64 release
       uses: vimtor/action-zip@v1.2
       with:
-        files: ${{ env.OUTPUT_DIR }}/windows11
-        dest: windows11-release.zip
+        files: ${{ env.OUTPUT_DIR }}/windows11-x64
+        dest: windows11-x64-release.zip
 
     - name: Zip Android Release
       uses: vimtor/action-zip@v1.2
@@ -73,75 +67,54 @@ jobs:
          body_path: ${{ github.workspace }}/CHANGELOG.md
          make_latest: true
          files: |
-           windows10-release.zip
-           windows11-release.zip
+           windows10-x64-release.zip
+           windows11-x64-release.zip
            android-release.zip
 
   build-maccatalyst:
     runs-on: macos-latest
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
+    permissions:
+      contents: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
 
     - name: Install MAUI workloads
-      run: |
-        dotnet workload install maui
-        dotnet workload install maui-maccatalyst
-
-    - name: Restore dependencies
-      run: dotnet restore ${{ env.MAUI_PROJECT }}
+      run: dotnet workload install maui-maccatalyst
 
     - name: Publish MAUI MacCatalyst x64
-      id: publish_maccatalyst_x64
-      continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-x64 -o ${{ env.OUTPUT_DIR }}/maccatalyst-x64
 
     - name: Publish MAUI MacCatalyst arm64
-      id: publish_maccatalyst_arm64
-      continue-on-error: true
-      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64
+      run: dotnet publish ${{ env.MAUI_PROJECT }} -c Release -f net10.0-maccatalyst -r maccatalyst-arm64 -o ${{ env.OUTPUT_DIR }}/maccatalyst-arm64
 
     - name: Create MacCatalyst x64 DMG
-      if: steps.publish_maccatalyst_x64.outcome == 'success'
       run: |
-        APP_DIR="${{ env.MAUI_PROJECT_DIR }}bin/Release/net10.0-maccatalyst/maccatalyst-x64"
         hdiutil create \
           -volname "MakerPrompt" \
-          -srcfolder "$APP_DIR/MakerPrompt.app" \
+          -srcfolder "${{ env.OUTPUT_DIR }}/maccatalyst-x64/MakerPrompt.UI.MAUI.app" \
           -ov -format UDZO \
           "makerprompt-maccatalyst-x64.dmg"
 
     - name: Create MacCatalyst arm64 DMG
-      if: steps.publish_maccatalyst_arm64.outcome == 'success'
       run: |
-        APP_DIR="${{ env.MAUI_PROJECT_DIR }}bin/Release/net10.0-maccatalyst/maccatalyst-arm64"
         hdiutil create \
           -volname "MakerPrompt" \
-          -srcfolder "$APP_DIR/MakerPrompt.app" \
+          -srcfolder "${{ env.OUTPUT_DIR }}/maccatalyst-arm64/MakerPrompt.UI.MAUI.app" \
           -ov -format UDZO \
           "makerprompt-maccatalyst-arm64.dmg"
 
-    - name: Release MacCatalyst x64 asset
+    - name: Release MacCatalyst assets
       uses: softprops/action-gh-release@v2
-      if: github.ref_type == 'tag' && steps.publish_maccatalyst_x64.outcome == 'success'
+      if: github.ref_type == 'tag'
       with:
         body_path: ${{ github.workspace }}/CHANGELOG.md
         make_latest: true
         files: |
           makerprompt-maccatalyst-x64.dmg
-
-    - name: Release MacCatalyst arm64 asset
-      uses: softprops/action-gh-release@v2
-      if: github.ref_type == 'tag' && steps.publish_maccatalyst_arm64.outcome == 'success'
-      with:
-        body_path: ${{ github.workspace }}/CHANGELOG.md
-        make_latest: true
-        files: |
           makerprompt-maccatalyst-arm64.dmg

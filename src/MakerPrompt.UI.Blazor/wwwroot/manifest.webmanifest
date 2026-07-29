@@ -1,0 +1,17 @@
+{
+  "name": "MakerPrompt",
+  "short_name": "MakerPrompt",
+  "id": "./",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#151E3F",
+  "theme_color": "#85D4FF",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "_content/MakerPrompt.UI.Components/favicon.png",
+      "type": "image/png",
+      "sizes": "1361x1361"
+    }
+  ]
+}
