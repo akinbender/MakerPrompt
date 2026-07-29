@@ -1,6 +1,7 @@
+global using Microsoft.Extensions.Logging;
+
 using MakerPrompt.Infrastructure.Services;
 using MakerPrompt.Infrastructure.Services.Printers;
-using Microsoft.Extensions.Logging;
 
 namespace MakerPrompt.UI.MAUI.Services;
 
